@@ -24,7 +24,10 @@ GPT-Cat是一个反向代理服务器，用于管理一系列的LLM后端与用�
 本项目完全由Rust开发，您完全可以信任它的性能和安全性。
 
 ----
+## 快速开始
+todo
 
+## 二次开发
 ### 添加后端
 项目默认提供了[OpenAI](./src/http/client/specific_responder/openai_responder.rs)和[通义千问](./src/http/client/specific_responder/qianwen_responder.rs)的适配，因此你可以参考这两个适配器来添加你自己的适配器。  
 - "Endpoint"： 支持的后端列表，在适配新后端时，应首先在此处添加你的后端信息，并根据rustc提供的信息完成相关信息的填写。
