@@ -30,7 +30,7 @@ colored = "2.1.0"
 color-eyre = { version = "0.6.3", default-features = false }
 
 parking_lot = { version = "0.12.3", features = ["send_guard"] }
-dashmap = { version = "5.5.3", features = ["inline", "serde"] }
+dashmap = { version = "6.0.0-rc.1", features = ["inline", "serde"] }
 blake3 = "1.5.1"
 
 serde = { version = "1.0.203", features = ["derive"] }
@@ -63,7 +63,7 @@ version = "0.6.0"
 features = ["tls-rustls"]
 
 [dependencies.sea-orm]
-version = "1.0.0-rc.5"
+version = "1.0.0-rc.6"
 features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"]
 
 [dependencies.tokio]
@@ -71,6 +71,6 @@ version = "1.38.0"
 features = ["full"]
 
 [dependencies.reqwest]
-version = "0.12.4"
+version = "0.12.5"
 default-features = false
 features = ["gzip", "deflate", "brotli", "json", "stream", "socks", "rustls-tls"]
