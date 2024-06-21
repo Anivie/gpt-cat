@@ -2,12 +2,12 @@ use std::collections::HashSet;
 use std::fs::File;
 use std::io::BufReader;
 
-use dashmap::DashMap;
+use dashmap::{DashMap, DashSet};
 use log::info;
 use crate::data::config::endpoint::Endpoint;
 
 
-type ModelInfo = DashMap<Endpoint, HashSet<String>>;
+type ModelInfo = DashMap<Endpoint, DashSet<String>>;
 
 /// The manager of the model, because we need to know which model is available for each endpoint,
 /// so we need to store the model info in memory.
