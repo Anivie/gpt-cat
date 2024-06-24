@@ -6,7 +6,7 @@ use reqwest::header::{HeaderMap, HeaderValue};
 use crate::data::config::config_file::Config;
 use crate::data::config::endpoint::Endpoint;
 
-pub fn get_client(proxy_config: &Option<String>, config: &Config, endpoint: &Endpoint, token: &String) -> Client {
+pub fn get_client(proxy_config: &Option<String>, config: &Config, endpoint: &Endpoint, token: &str) -> Client {
     let client = Client::builder()
         .read_timeout(Duration::from_secs(30))
         .default_headers(match endpoint {
@@ -36,7 +36,7 @@ pub fn get_client(proxy_config: &Option<String>, config: &Config, endpoint: &End
     client.build().unwrap()
 }
 
-fn openai_chat_header_map(token: &String) -> HeaderMap {
+fn openai_chat_header_map(token: &str) -> HeaderMap {
     let mut header_map = HeaderMap::new();
     header_map.insert("Authorization", HeaderValue::from_str(format!("Bearer {}", token).as_str()).unwrap());
     header_map.insert("Content-Type", HeaderValue::from_str("application/json").unwrap());
@@ -44,7 +44,7 @@ fn openai_chat_header_map(token: &String) -> HeaderMap {
     header_map
 }
 
-fn qian_wen_chat_header_map(token: &String) -> HeaderMap {
+fn qian_wen_chat_header_map(token: &str) -> HeaderMap {
     let mut header_map = HeaderMap::new();
     header_map.insert("Authorization", HeaderValue::from_str(format!("Bearer {}", token).as_str()).unwrap());
     header_map.insert("Content-Type", HeaderValue::from_str("application/json").unwrap());
