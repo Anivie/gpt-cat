@@ -216,8 +216,7 @@ dependencies = [
 [[package]]
 name = "axum"
 version = "0.7.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3a6c9af12842a67734c9a2e355436e5d03b22383ed60cf13cd0c18fbfe3dcbcf"
+source = "git+https://github.com/tokio-rs/axum.git#4f3999c20f26f27c6b3513884d90e783352d1f8e"
 dependencies = [
  "async-trait",
  "axum-core",
@@ -240,7 +239,7 @@ dependencies = [
  "serde_json",
  "serde_path_to_error",
  "serde_urlencoded",
- "sync_wrapper 1.0.1",
+ "sync_wrapper",
  "tokio",
  "tower",
  "tower-layer",
@@ -251,8 +250,7 @@ dependencies = [
 [[package]]
 name = "axum-core"
 version = "0.4.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a15c63fd72d41492dc4f497196f5da1fb04fb7529e631d73630d1b491e47a2e3"
+source = "git+https://github.com/tokio-rs/axum.git#4f3999c20f26f27c6b3513884d90e783352d1f8e"
 dependencies = [
  "async-trait",
  "bytes",
@@ -263,7 +261,7 @@ dependencies = [
  "mime",
  "pin-project-lite",
  "rustversion",
- "sync_wrapper 0.1.2",
+ "sync_wrapper",
  "tower-layer",
  "tower-service",
  "tracing",
@@ -272,10 +270,8 @@ dependencies = [
 [[package]]
 name = "axum-macros"
 version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "00c055ee2d014ae5981ce1016374e8213682aa14d9bf40e48ab48b5f3ef20eaa"
+source = "git+https://github.com/tokio-rs/axum.git#4f3999c20f26f27c6b3513884d90e783352d1f8e"
 dependencies = [
- "heck",
  "proc-macro2",
  "quote",
  "syn 2.0.60",
@@ -284,8 +280,7 @@ dependencies = [
 [[package]]
 name = "axum-server"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c1ad46c3ec4e12f4a4b6835e173ba21c25e484c9d02b49770bf006ce5367c036"
+source = "git+https://github.com/programatik29/axum-server.git#c4cfbad3f9eae46c75346b9786e02d0c7af8bf1d"
 dependencies = [
  "arc-swap",
  "bytes",
@@ -749,9 +744,9 @@ dependencies = [
 
 [[package]]
 name = "dashmap"
-version = "6.0.0-rc.1"
+version = "6.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fed3747fdaf744f2481fe2c0d44f804431f788e6dc476716432f05d0a364642a"
+checksum = "804c8821570c3f8b70230c2ba75ffa5c0f9a4189b9a432b6656c536712acae28"
 dependencies = [
  "cfg-if",
  "crossbeam-utils",
@@ -2215,7 +2210,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_urlencoded",
- "sync_wrapper 1.0.1",
+ "sync_wrapper",
  "tokio",
  "tokio-rustls 0.26.0",
  "tokio-socks",
@@ -2986,12 +2981,6 @@ dependencies = [
  "quote",
  "syn 2.0.60",
 ]
-
-[[package]]
-name = "sync_wrapper"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2047c6ded9c721764247e62cd3b03c09ffc529b2ba5b10ec482ae507a4a70160"
 
 [[package]]
 name = "sync_wrapper"

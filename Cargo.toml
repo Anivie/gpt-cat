@@ -55,11 +55,11 @@ version = "0.5.2"
 features = ["compression-full", "cors"]
 
 [dependencies.axum]
-version = "0.7.5"
+git = "https://github.com/tokio-rs/axum.git"
 features = ["tokio", "json", "macros"]
 
 [dependencies.axum-server]
-version = "0.6.0"
+git = "https://github.com/programatik29/axum-server.git"
 features = ["tls-rustls"]
 
 [dependencies.sea-orm]
