@@ -24,7 +24,7 @@ bytes = "1.6.0"
 rustls = "0.23.10"
 rustls-pemfile = "2.1.2"
 
-log = "0.4.21"
+log = "0.4.22"
 fast_log = { version = "1.6.16", features = ["lz4"] }
 colored = "2.1.0"
 color-eyre = { version = "0.6.3", default-features = false }
@@ -34,10 +34,10 @@ dashmap = { version = "6.0.0", features = ["inline", "serde"] }
 blake3 = "1.5.1"
 
 serde = { version = "1.0.203", features = ["derive"] }
-serde_json = "1.0.117"
+serde_json = "1.0.118"
 notify = "6.1.1"
 
-uuid = { version = "1.9.0", features = ["v4"] }
+uuid = { version = "1.9.1", features = ["v4"] }
 rand = "0.9.0-alpha.1"
 
 tiktoken-rs = "0.5.9"
@@ -63,7 +63,7 @@ git = "https://github.com/programatik29/axum-server.git"
 features = ["tls-rustls"]
 
 [dependencies.sea-orm]
-version = "1.0.0-rc.6"
+version = "1.0.0-rc.7"
 features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"]
 
 [dependencies.tokio]
