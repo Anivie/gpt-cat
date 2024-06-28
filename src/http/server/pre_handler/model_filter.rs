@@ -14,7 +14,7 @@ impl ClientJoinPreHandlerImpl for ModelFilterHandler {
         }
 
         if !model_price.contains_key(&context.sender.request.model) {
-            return Err(anyhow!("Request model: '{}' could not be found in account pool.", &context.sender.request.model));
+            return Err(anyhow!("Request model: '{}'s price could not be found in config.", &context.sender.request.model));
         }
 
         drop(model_info);
