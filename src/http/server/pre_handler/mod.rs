@@ -24,7 +24,7 @@ macro_rules! impl_client_join_handler {
         }
 
         impl ClientJoinPreHandlerImpl for ClientJoinPreHandler {
-            async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> anyhow::Result<()> {
+            async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> anyhow::Result<Option<String>> {
                 match self {
                     $(
                         ClientJoinPreHandler::$variant(handler) => handler.client_join(context).await,
@@ -53,7 +53,7 @@ pub struct ClientJoinContext<'a> {
 }
 
 pub trait ClientJoinPreHandlerImpl {
-    async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> anyhow::Result<()>;
+    async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> anyhow::Result<Option<String>>;
 }
 
 pub struct ClientJoinHandlers {

@@ -5,7 +5,7 @@ use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerIm
 pub(crate) struct TitleCatchHandler;
 
 impl ClientJoinPreHandlerImpl for TitleCatchHandler {
-    async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> anyhow::Result<()> {
+    async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> anyhow::Result<Option<String>> {
         if let Some(message) = context.sender.request.messages.get_user_input(MessageLocation::LAST) {
             if message.starts_with("请总结上述对话为10个字以内的标题") && context.sender.request.model != "gpt-3.5-turbo"
             {
@@ -13,6 +13,6 @@ impl ClientJoinPreHandlerImpl for TitleCatchHandler {
             }
         }
 
-        Ok(())
+        Ok(None)
     }
 }

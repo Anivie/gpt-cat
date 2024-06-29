@@ -32,7 +32,7 @@ macro_rules! process_message {
 }
 
 impl ClientJoinPreHandlerImpl for CommandHandler {
-    async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> anyhow::Result<()> {
+    async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> anyhow::Result<Option<String>> {
         let system_message = {
             let system_message = context
                 .sender
@@ -43,7 +43,7 @@ impl ClientJoinPreHandlerImpl for CommandHandler {
                 .collect::<Vec<_>>();
 
             if system_message.is_empty() {
-                return Ok(());
+                return Ok(None);
             }
 
             system_message
@@ -67,23 +67,21 @@ impl ClientJoinPreHandlerImpl for CommandHandler {
                         .all(&context.global_data.data_base)
                         .await?;
 
-                    let mut string = String::from_str("命令 | 描述\n").unwrap();
-                    string.push_str("-- | --\n");
-
                     let map = public_commands
                         .iter()
                         .map(|x| format!("{} | {}", x.command, x.describe));
 
-                    private_commands
+                    let mut back = private_commands
                         .iter()
                         .map(|x| format!("{} | {}", x.command, x.describe))
                         .chain(map)
-                        .for_each(|x| {
-                            string.push_str(&x);
-                            string.push('\n');
-                        });
+                        .reduce(|mut origin: String, new: String| {
+                            origin.push_str(format!("{}\n", new).as_str());
+                            origin
+                        }).unwrap();
+                    back.insert_str(0, "命令 | 描述\n-- | --\n");
 
-                    return Err(anyhow!("Available commands:\n{}", string));
+                    return Ok(Some(back));
                 }
                 "custom-command" => {
                     let system_message = system_message.iter()
@@ -159,6 +157,6 @@ impl ClientJoinPreHandlerImpl for CommandHandler {
             }
         }
 
-        Ok(())
+        Ok(None)
     }
 }

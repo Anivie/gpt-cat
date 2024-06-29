@@ -10,7 +10,7 @@ use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerIm
 pub(crate) struct UserIDHandler;
 
 impl ClientJoinPreHandlerImpl for UserIDHandler {
-    async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> anyhow::Result<()> {
+    async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> anyhow::Result<Option<String>> {
         let user_id = if let Some(auth) = &context.user_key {
             let user = User::find()
                 .filter(crate::data::database::entities::user::Column::ApiKey.eq(auth))
@@ -37,6 +37,6 @@ impl ClientJoinPreHandlerImpl for UserIDHandler {
         };
 
         context.user_id.replace(user_id);
-        Ok(())
+        Ok(None)
     }
 }

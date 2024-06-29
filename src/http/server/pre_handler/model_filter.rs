@@ -5,7 +5,7 @@ use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerIm
 pub(crate) struct ModelFilterHandler;
 
 impl ClientJoinPreHandlerImpl for ModelFilterHandler {
-    async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> anyhow::Result<()> {
+    async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> anyhow::Result<Option<String>> {
         let model_info = context.global_data.model_info.read();
         let model_price = context.global_data.model_price.read();
 
@@ -18,6 +18,6 @@ impl ClientJoinPreHandlerImpl for ModelFilterHandler {
         }
 
         drop(model_info);
-        Ok(())
+        Ok(None)
     }
 }
