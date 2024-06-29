@@ -8,6 +8,7 @@ use crate::data::database::entities::prelude::{PrivateCommand, PublicCommand};
 use crate::data::database::entities::private_command;
 use crate::data::openai_api::openai_request::Message;
 use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerImpl};
+use rayon::prelude::*;
 
 #[derive(Default, Clone)]
 pub(crate) struct CommandHandler;
@@ -20,7 +21,7 @@ macro_rules! process_message {
             .request
             .messages
             .clone()
-            .into_iter()
+            .into_par_iter()
             .filter(|x| {
                 x.content.deref() != "/".to_owned() + &$command.command
             })
@@ -37,7 +38,7 @@ impl ClientJoinPreHandlerImpl for CommandHandler {
                 .sender
                 .request
                 .messages
-                .iter()
+                .par_iter()
                 .filter(|x| x.role == "system" && x.content.starts_with('/'))
                 .collect::<Vec<_>>();
 
@@ -46,7 +47,7 @@ impl ClientJoinPreHandlerImpl for CommandHandler {
             }
 
             system_message
-                .iter()
+                .par_iter()
                 .map(|&x| x.clone())
                 .collect::<Vec<_>>()
         };
@@ -83,7 +84,7 @@ impl ClientJoinPreHandlerImpl for CommandHandler {
                     return Ok(Some(back));
                 }
                 "custom-command" => {
-                    let system_message = system_message.iter()
+                    let system_message = system_message.par_iter()
                         .filter(|&x| x.content.starts_with("/custom-command"))
                         .collect::<Vec<_>>();
 
@@ -97,7 +98,7 @@ impl ClientJoinPreHandlerImpl for CommandHandler {
                     let command_describe = split.next().ok_or(anyhow!("Error when parse command describe"))?.to_string();
 
                     let messages = context.sender.request.messages.clone();
-                    let messages = messages.into_iter()
+                    let messages = messages.into_par_iter()
                         .filter(|x| !x.content.starts_with("/custom-command"))
                         .filter(|x| x.content.deref() != "/end")
                         .collect::<Vec<_>>();

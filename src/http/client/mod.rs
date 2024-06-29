@@ -1,9 +1,9 @@
 use crate::http::client::specific_responder::openai_responder::*;
 use crate::http::client::specific_responder::qianwen_responder::QianWenResponder;
 
-pub(crate) mod client;
+pub mod client;
 #[macro_use]
-pub(crate) mod specific_responder;
+pub mod specific_responder;
 pub mod util;
 pub mod client_sender;
 

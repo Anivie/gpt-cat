@@ -72,6 +72,8 @@ impl ClientJoinHandlers {
             match handler.client_join(&mut context).await {
                 Ok(Some(message)) => {
                     context.sender.send_text(&message, false).await.unwrap();
+                    context.sender.stopped = true;
+                    break;
                 }
                 Err(error) => {
                     context.sender.append_error(ResponsiveError {

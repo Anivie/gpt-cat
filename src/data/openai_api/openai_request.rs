@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 use std::ops::Deref;
-
+use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
 /// OpenAIRequest is a struct that represents the request that will be sent to the OpenAI API.
@@ -136,7 +136,7 @@ impl MessageUtil for Vec<Message> {
     #[inline]
     fn get_user_input(&self, location: MessageLocation) -> Option<&str> {
         let option = self
-            .iter()
+            .par_iter()
             .filter(|x| {
                 x.role == "user"
             })
@@ -162,7 +162,7 @@ impl MessageUtil for Vec<Message> {
     fn get_all_input(&self) -> InputMessageContent<'_> {
         InputMessageContent {
             inner: self,
-            slice: self.iter().map(|x| x.content.deref()).collect::<Vec<_>>(),
+            slice: self.par_iter().map(|x| x.content.deref()).collect::<Vec<_>>(),
         }
     }
 }
@@ -177,16 +177,16 @@ pub trait FancyWaysObtainLength {
 impl FancyWaysObtainLength for Vec<Message> {
     #[inline]
     fn get_user_length(&self) -> usize {
-        self.iter().filter(|x| x.role == "user").count()
+        self.par_iter().filter(|x| x.role == "user").count()
     }
 
     #[inline]
     fn get_user_and_assistant_length(&self) -> usize {
-        self.iter().filter(|x| x.role == "user" || x.role == "assistant").count()
+        self.par_iter().filter(|x| x.role == "user" || x.role == "assistant").count()
     }
 
     #[inline]
     fn get_system_length(&self) -> usize {
-        self.iter().filter(|x| x.role == "system").count()
+        self.par_iter().filter(|x| x.role == "system").count()
     }
 }

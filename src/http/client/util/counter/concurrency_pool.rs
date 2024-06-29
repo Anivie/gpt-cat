@@ -3,6 +3,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use rand::Rng;
+use rayon::prelude::*;
 use tokio::sync::mpsc::Sender;
 use tokio::time::sleep;
 use crate::data::config::endpoint::Endpoint;
@@ -58,7 +59,7 @@ impl<T> SafePool<T> {
                     interval.tick().await;
 
                     let tmp = counter
-                        .iter()
+                        .par_iter()
                         .filter(|&counter| {
                             !counter.is_active()
                         })

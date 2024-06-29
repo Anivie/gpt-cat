@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
 use crate::data::config::config_file::Config;
@@ -13,7 +14,7 @@ pub async fn load_account_from_database(config: &Config, db: &DatabaseConnection
         .all(db)
         .await
         .unwrap()
-        .into_iter()
+        .into_par_iter()
         .map(|account| {
             let endpoint = Endpoint::from_str(&account.endpoint);
             let client = get_client(&account.use_proxy, &config, &endpoint, &account.password);

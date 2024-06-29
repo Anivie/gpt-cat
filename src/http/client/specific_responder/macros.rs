@@ -1,16 +1,24 @@
 /// Helper macros that process the stream with ResponseParser
 macro_rules! process_stream {
     ($stream:expr, $handler:expr, $sender:expr) => {
-        use crate::http::client::util::truncated_json_processor::TruncatedJsonProcessor;
+        use crate::http::client::util::sse::rayon_json_processor::RayonJsonProcessor;
+        use crate::http::client::util::sse::sse_processor::SSEProcessor;
         use futures_util::StreamExt;
         use bytes::Bytes;
 
-        let mut interrupt_processor = TruncatedJsonProcessor::default();
+        let mut interrupt_processor = RayonJsonProcessor::default();
         let mut handler = $handler;
         let mut stream = $stream;
+
+        use std::io::Write;
+        let mut file = std::fs::OpenOptions::new();
+        let mut file = file.write(true).create(true).open("data.tmp").unwrap();
+
         while let Some(item) = stream.next().await {
             let item: Bytes = item.map_err(|e| ResponderError::Request(e.to_string()))?;
             let item = item.as_ref();
+            // 把数据保存在临时文件data.tmp中
+            file.write_all(item).unwrap();
 
             let (split, first) = interrupt_processor.process(item);
             if let Some(response) = first {
