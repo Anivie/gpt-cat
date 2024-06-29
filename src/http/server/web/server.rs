@@ -64,7 +64,7 @@ pub async fn main_chat(
     };
 
     let client_request = pipeline.pre_handler.client_join(pre_handler_context).await;
-    if client_request.sender.has_error() {
+    if client_request.sender.stopped {
         client_request.sender.send_error().await.unwrap();
         return end(receiver, client_request.sender.is_stream()).await;
     }

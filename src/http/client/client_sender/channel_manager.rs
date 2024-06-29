@@ -33,6 +33,7 @@ pub struct ClientSender {
     error_message: Vec<ResponsiveError>,
     buffer: String,
 
+    pub stopped: bool,
     pub request: OpenAIRequest,
 }
 
@@ -41,6 +42,7 @@ impl ClientSender {
         Self {
             inner,
             request,
+            stopped: false,
             buffer: String::new(),
             error_message: Vec::new(),
         }
@@ -87,7 +89,6 @@ impl Deref for ClientSender {
 pub trait ChannelSender {
     async fn send_text(&self, response: &str, end: bool) -> Result<(), SendError<String>>;
     async fn send_error(&self) -> Result<(), SendError<String>>;
-    fn has_error(&self) -> bool;
     fn append_error(&mut self, error_message: ResponsiveError);
 }
 
@@ -135,12 +136,9 @@ impl ChannelSender for ClientSender {
         self.to_json(&self.request, &base_message, false).await
     }
 
-    fn has_error(&self) -> bool {
-        !self.error_message.is_empty()
-    }
-
     fn append_error(&mut self, error_message: ResponsiveError) {
         self.error_message.push(error_message);
+        self.stopped = true;
     }
 }
 

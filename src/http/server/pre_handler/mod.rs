@@ -69,16 +69,22 @@ impl ClientJoinHandlers {
 
     pub async fn client_join<'a>(&'a self, mut context: ClientJoinContext<'a>) -> ClientJoinContext {
         for handler in self.handlers.iter() {
-            if let Err(error) = handler.client_join(&mut context).await {
-                context.sender.append_error(ResponsiveError {
-                    component: "预处理器".to_string(),
-                    reason: "阻止了您的会话".to_string(),
-                    message: error.to_string(),
-                    suggestion: None,
-                });
-                error!("ClientJoinHandlers: {}", error.to_string());
-                break;
-            };
+            match handler.client_join(&mut context).await {
+                Ok(Some(message)) => {
+                    context.sender.send_text(&message, false).await.unwrap();
+                }
+                Err(error) => {
+                    context.sender.append_error(ResponsiveError {
+                        component: "预处理器".to_string(),
+                        reason: "阻止了您的会话".to_string(),
+                        message: error.to_string(),
+                        suggestion: None,
+                    });
+                    error!("ClientJoinHandlers: {}", error.to_string());
+                    break;
+                }
+                _ => {}
+            }
         }
 
         context
