@@ -110,7 +110,10 @@ impl GlobalData {
                     message: "无法发起请求，且自动重试以失败告终".to_string(),
                     suggestion: Some("多个上游均请求失败请考虑当前上游服务崩溃，请等待一段时间后重试".to_string()),
                 });
-                sender.send_error().await.unwrap();
+
+                if let Err(send_error) = sender.send_error().await {
+                    error!("Error when send error message: {}", send_error);
+                }
 
                 break Some(ResponseData {
                     account_id: account.account_id,
