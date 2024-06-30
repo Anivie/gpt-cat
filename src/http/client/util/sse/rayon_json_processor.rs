@@ -8,8 +8,9 @@ pub struct RayonJsonProcessor {
 
 impl SSEProcessor for RayonJsonProcessor {
     fn process<'a>(&mut self, target: &'a [u8]) -> (Vec<&'a [u8]>, Option<Vec<u8>>) {
-        let mut lines: Vec<&[u8]> = Vec::new();
-        let mut first_line = None;
+        if target.is_empty() {
+            return (Vec::new(), None);
+        }
 
         let tail_index = target
             .par_iter()
@@ -18,10 +19,19 @@ impl SSEProcessor for RayonJsonProcessor {
             .map(|x| x.0 + 2)
             .collect::<Vec<_>>();
 
+        if tail_index.is_empty() ||
+            target[tail_index[0] - 1] != b'\n'
+        {
+            return (vec![&target[..]], None);
+        }
+
         let tail_index = tail_index
             .par_iter()
             .step_by(2)
             .collect::<Vec<_>>();
+
+        let mut lines: Vec<&[u8]> = Vec::new();
+        let mut first_line = None;
 
         let jump_first = if let Some(&tail_first) = tail_index.first() &&
             !self.inner.is_empty()
@@ -43,7 +53,7 @@ impl SSEProcessor for RayonJsonProcessor {
                 lines.push(&target[*tail_index[index - 1] + 6 .. *value]);
             }
         }
-        
+
         if !target.ends_with(&[b'\n', b'\n']) {
             self.inner.extend(&target[*tail_index[tail_index.len() - 1] + 6 ..]);
         }
