@@ -9,16 +9,9 @@ macro_rules! process_stream {
         let mut interrupt_processor = RayonJsonProcessor::default();
         let mut handler = $handler;
         let mut stream = $stream;
-
-        use std::io::Write;
-        let mut file = std::fs::OpenOptions::new();
-        let mut file = file.write(true).create(true).open("data.tmp").unwrap();
-
         while let Some(item) = stream.next().await {
             let item: Bytes = item.map_err(|e| ResponderError::Request(e.to_string()))?;
             let item = item.as_ref();
-            // 把数据保存在临时文件data.tmp中
-            file.write_all(item).unwrap();
 
             let (split, first) = interrupt_processor.process(item);
             if let Some(response) = first {

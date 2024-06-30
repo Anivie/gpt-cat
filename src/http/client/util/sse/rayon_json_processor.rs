@@ -114,34 +114,3 @@ impl SSEProcessor for RayonJsonProcessor {
         (lines, first_line)
     }
 }
-
-#[test]
-fn cat() {
-    use crate::data::openai_api::openai_stream_response::OpenAIStreamResponse;
-    let sse = include_str!("./data.tmp");
-    let sse2 = include_str!("./test_2.txt");
-    let mut processor = RayonJsonProcessor {
-        inner: Vec::new(),
-    };
-    let (vec, first) = processor.process_return_label(sse.as_bytes());
-
-    println!("len: {}", vec.len());
-
-    vec.iter().for_each(|x| {
-        println!("label: {}", String::from_utf8_lossy(x.0));
-        let result = serde_json::from_slice::<OpenAIStreamResponse>(x.1).unwrap();
-        let x1 = result.choices.first().unwrap();
-        println!("content: {:?}", x1.delta.content);
-    });
-
-    /*let (vec, first) = processor.process(sse2.as_bytes());
-
-    println!("len: {}", vec.len());
-
-    vec.iter().for_each(|x| {
-        print!("{}", String::from_utf8_lossy(x));
-        let result = serde_json::from_slice::<OpenAIStreamResponse>(x).unwrap();
-        let x1 = result.choices.first().unwrap();
-        println!("{:?}", x1.delta.content);
-    });*/
-}
