@@ -13,6 +13,7 @@ impl SSEProcessor for RayonJsonProcessor {
         if positions.is_empty() {
             if !self.inner.is_empty() {
                 self.inner.extend_from_slice(target);
+                return (vec![], None);
             }
             return (vec![target], None);
         }
@@ -93,6 +94,7 @@ impl SSEProcessor for RayonJsonProcessor {
         if positions.is_empty() {
             if !self.inner.is_empty() {
                 self.inner.extend_from_slice(target);
+                return (vec![(None, &target[0..0])], None);
             }
             return (vec![(None, target)], None);
         }
