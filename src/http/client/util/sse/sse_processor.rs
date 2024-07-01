@@ -14,5 +14,5 @@ pub trait SSEProcessor {
     /// * A tuple contains the **label**, **split** and the **first response** in
     /// previous stream
     #[allow(dead_code)]
-    fn process_return_label<'a>(&mut self, target: &'a [u8]) -> (Vec<(Option<&'a [u8]>, &'a [u8])>, Option<Vec<u8>>);
+    fn process_return_label<'a>(&mut self, target: &'a [u8]) -> (Vec<(Option<&'a [u8]>, &'a [u8])>, Option<(Option<Vec<u8>>, Vec<u8>)>);
 }

@@ -17,7 +17,7 @@ impl ResponseParser for QianWenResponderParser {
     ) -> Result<(), ResponderError> {
         match (serde_json::from_slice::<QianWenResponse>(response), sender.request.is_stream()) {
             (Err(err), _) => {
-                return Err(ResponderError::Request(format!("Error when parse response: {}, origin text: {}", err, String::from_utf8_lossy(response))));
+                return Err(ResponderError::Request(format!("Error when parse response from serde: {}, origin text: {}", err, String::from_utf8_lossy(response))));
             }
 
             (Ok(response), false) => {

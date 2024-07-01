@@ -21,7 +21,7 @@ impl ResponseParser for OpenAIResponderParser {
         if sender.request.is_stream() {
             match serde_json::from_slice::<OpenAIStreamResponse>(response) {
                 Err(err) => {
-                    return Err(ResponderError::Request(format!("Error when parse response: {}, origin text: {}", err, String::from_utf8_lossy(response))));
+                    return Err(ResponderError::Request(format!("Error when parse response from serde: {}, origin text: {}", err, String::from_utf8_lossy(response))));
                 }
 
                 Ok(response) => {
@@ -42,7 +42,7 @@ impl ResponseParser for OpenAIResponderParser {
 
         match serde_json::from_slice::<OpenAISyncResponse>(response) {
             Err(err) => {
-                return Err(ResponderError::Request(format!("Error when parse response: {}, origin text: {}", err, String::from_utf8_lossy(response))));
+                return Err(ResponderError::Request(format!("Error when parse response from serde: {}, origin text: {}", err, String::from_utf8_lossy(response))));
             }
 
             Ok(response) => {

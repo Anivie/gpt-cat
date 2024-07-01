@@ -2,8 +2,6 @@
 #![allow(unused_doc_comments)]
 #![cfg_attr(debug_assertions, allow(warnings))]
 
-extern crate core;
-
 use std::fs::File;
 use std::io::BufReader;
 use std::net::SocketAddr;

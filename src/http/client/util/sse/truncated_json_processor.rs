@@ -85,7 +85,7 @@ impl SSEProcessor for TruncatedJsonProcessor {
         (back, first)
     }
 
-    fn process_return_label<'a>(&mut self, target: &'a [u8]) -> (Vec<(Option<&'a [u8]>, &'a [u8])>, Option<Vec<u8>>) {
+    fn process_return_label<'a>(&mut self, target: &'a [u8]) -> (Vec<(Option<&'a [u8]>, &'a [u8])>, Option<(Option<Vec<u8>>, Vec<u8>)>) {
         let mut label = Vec::new();
         let mut back = Vec::new();
         let mut first = None;
@@ -141,11 +141,12 @@ impl SSEProcessor for TruncatedJsonProcessor {
                 back.push(&target[last_index..index + 1]);
             }else {
                 first.replace(
-                    self.inner
+                    //     ↓ bad way, wait for the replace
+                    (None, self.inner
                         .iter()
                         .chain(&target[..index + 1])
-                        .copied()
-                        .collect()
+                        .cloned()
+                        .collect())
                 );
 
                 self.inner.clear();
@@ -165,6 +166,7 @@ impl SSEProcessor for TruncatedJsonProcessor {
             .zip(label.par_iter())
             .map(|(&x, &y)| (Some(x), y))
             .collect();
+
 
         (back, first)
     }
