@@ -10,20 +10,9 @@ macro_rules! process_stream {
         let mut handler = $handler;
         let mut stream = $stream;
 
-        use std::io::Write;
-        let file = std::fs::OpenOptions::new()
-                .write(true)
-                .create(true)
-                .append(true)
-                .open("../../../../temp_full.data")
-                .unwrap();
-        let mut writer = std::io::BufWriter::new(file);
-
-
         while let Some(item) = stream.next().await {
             let item: Bytes = item.map_err(|e| ResponderError::Request(e.to_string()))?;
             let item = item.as_ref();
-            writer.write_all(item).unwrap();
 
             let (split, first) = interrupt_processor.process(item);
             if let Some(response) = first {
