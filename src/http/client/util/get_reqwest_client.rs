@@ -48,7 +48,6 @@ fn qian_wen_chat_header_map(token: &str) -> HeaderMap {
     let mut header_map = HeaderMap::new();
     header_map.insert("Authorization", HeaderValue::from_str(format!("Bearer {}", token).as_str()).unwrap());
     header_map.insert("Content-Type", HeaderValue::from_str("application/json").unwrap());
-    header_map.insert("X-DashScope-SSE", HeaderValue::from_str("enable").unwrap());
 
     header_map
 }

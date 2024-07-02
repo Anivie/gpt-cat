@@ -15,6 +15,6 @@ pub struct Input {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Parameters {
-    pub incremental_output: bool,
+    pub incremental_output: Option<bool>,
     pub result_format: String,
 }

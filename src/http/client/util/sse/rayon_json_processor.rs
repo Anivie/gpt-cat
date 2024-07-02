@@ -11,11 +11,8 @@ impl SSEProcessor for RayonJsonProcessor {
     fn process<'a>(&mut self, target: &'a [u8]) -> (Vec<&'a [u8]>, Option<Vec<u8>>) {
         let positions = target.par_windows(2).positions(|x| x == b"\n\n").collect::<Vec<_>>();
         if positions.is_empty() {
-            if !self.inner.is_empty() {
-                self.inner.extend_from_slice(target);
-                return (vec![], None);
-            }
-            return (vec![target], None);
+            self.inner.extend_from_slice(target);
+            return (vec![], None);
         }
 
         let (target, positions, first_line) = if self.inner.is_empty() {
@@ -92,11 +89,8 @@ impl SSEProcessor for RayonJsonProcessor {
     fn process_return_label<'a>(&mut self, target: &'a [u8]) -> (Vec<(Option<&'a [u8]>, &'a [u8])>, Option<(Option<Vec<u8>>, Vec<u8>)>) {
         let positions = target.par_windows(2).positions(|x| x == b"\n\n").collect::<Vec<_>>();
         if positions.is_empty() {
-            if !self.inner.is_empty() {
-                self.inner.extend_from_slice(target);
-                return (vec![(None, &target[0..0])], None);
-            }
-            return (vec![(None, target)], None);
+            self.inner.extend_from_slice(target);
+            return (vec![(None, &target[0..0])], None);
         }
 
         let (target, positions, first_line) = if self.inner.is_empty() {

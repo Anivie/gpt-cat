@@ -77,7 +77,7 @@ impl SpecificResponder for OpenAIResponder {
             )));
         }
 
-        process_stream!(stream.bytes_stream(), OpenAIResponderParser::default(), sender);
+        process_stream!(stream, OpenAIResponderParser::default(), sender);
 
         Ok(())
     }

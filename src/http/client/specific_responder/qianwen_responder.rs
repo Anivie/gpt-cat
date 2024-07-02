@@ -1,5 +1,4 @@
 use reqwest::StatusCode;
-
 use crate::data::alibaba::qian_wen_request::{Input, Parameters, QianWenRequest};
 use crate::data::alibaba::qian_wen_response::QianWenResponse;
 use crate::data::config::runtime_data::AccountVisitor;
@@ -53,16 +52,29 @@ impl SpecificResponder for QianWenResponder {
                            sender: &mut ClientSender,
                            accessor: &AccountVisitor
     ) -> Result<(), ResponderError> {
+        // header_map.insert("X-DashScope-SSE", HeaderValue::from_str("enable").unwrap());
         let stream = accessor
             .client
             .post(accessor.endpoint_url.clone())
+            .header(
+                "X-DashScope-SSE",
+                if sender.is_stream() {
+                    "enable"
+                } else {
+                    "disable"
+                }
+            )
             .json(&QianWenRequest {
                 model: sender.request.model.clone(),
                 input: Input {
                     messages: sender.request.messages.clone(),
                 },
                 parameters: Parameters {
-                    incremental_output: true,
+                    incremental_output: if sender.is_stream() {
+                        Some(true)
+                    }else {
+                        None
+                    },
                     result_format: "message".to_string(),
                 },
             })
@@ -78,7 +90,7 @@ impl SpecificResponder for QianWenResponder {
             )));
         }
 
-        process_stream!(stream.bytes_stream(), QianWenResponderParser::default(), sender);
+        process_stream!(stream, QianWenResponderParser::default(), sender);
 
         Ok(())
     }

@@ -1,28 +1,35 @@
 /// Helper macros that process the stream with ResponseParser
 macro_rules! process_stream {
-    ($stream:expr, $handler:expr, $sender:expr) => {
+    ($request:expr, $handler:expr, $sender:expr) => {
         use crate::http::client::util::sse::rayon_json_processor::RayonJsonProcessor;
         use crate::http::client::util::sse::sse_processor::SSEProcessor;
         use futures_util::StreamExt;
         use bytes::Bytes;
 
-        let mut interrupt_processor = RayonJsonProcessor::default();
         let mut handler = $handler;
-        let mut stream = $stream;
 
-        while let Some(item) = stream.next().await {
-            let item: Bytes = item.map_err(|e| ResponderError::Request(e.to_string()))?;
-            let item = item.as_ref();
+        if $sender.is_stream() {
+            let mut interrupt_processor = RayonJsonProcessor::default();
+            let mut stream = $request.bytes_stream();
 
-            let (split, first) = interrupt_processor.process(item);
-            if let Some(response) = first {
-                handler.parse_response($sender, response.as_slice()).await?;
+            while let Some(item) = stream.next().await {
+                let item: Bytes = item.map_err(|e| ResponderError::Request(e.to_string()))?;
+                let item = item.as_ref();
+
+                let (split, first) = interrupt_processor.process(item);
+                if let Some(response) = first {
+                    handler.parse_response($sender, response.as_slice()).await?;
+                }
+
+                for response in split {
+                    handler.parse_response($sender, response).await?;
+                }
             }
-
-            for response in split {
-                handler.parse_response($sender, response).await?;
-            }
+        }else {
+            let item = $request.bytes().await.map_err(|e| ResponderError::Request(e.to_string()))?;
+            handler.parse_response($sender, item.as_ref()).await?;
         }
+
         handler.parse_end($sender).await?;
     }
 }
