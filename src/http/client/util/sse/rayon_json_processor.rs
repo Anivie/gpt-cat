@@ -69,7 +69,9 @@ impl SSEProcessor for RayonJsonProcessor {
                         })
                     })
                     .filter(|&(label, _)| {
-                        label.is_some() && label.unwrap() == b"data"
+                        label.map_or(false, |label| {
+                            label == b"data"
+                        })
                     })
                     .map(|x| x.1)
                     .collect::<Vec<_>>()
