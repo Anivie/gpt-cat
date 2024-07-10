@@ -21,7 +21,7 @@ tokio-channel = "0.1.0"
 tokio-util = "0.7.11"
 
 bytes = "1.6.0"
-rustls = "0.23.10"
+rustls = "0.23.11"
 rustls-pemfile = "2.1.2"
 
 log = "0.4.22"
@@ -38,7 +38,7 @@ serde_json = "1.0.120"
 notify = "6.1.1"
 rayon = "1.10.0"
 
-uuid = { version = "1.9.1", features = ["v4"] }
+uuid = { version = "1.10.0", features = ["v4"] }
 rand = "0.9.0-alpha.1"
 
 tiktoken-rs = "0.5.9"
