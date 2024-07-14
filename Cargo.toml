@@ -13,14 +13,12 @@ codegen-units = 1
 
 [dependencies]
 time = "0.3.36"
-thiserror = "1.0.61"
+thiserror = "1.0.62"
 
 async-stream = "0.3.5"
-tokio-stream = "0.1.15"
-tokio-channel = "0.1.0"
 tokio-util = "0.7.11"
 
-bytes = "1.6.0"
+bytes = "1.6.1"
 rustls = "0.23.11"
 rustls-pemfile = "2.1.2"
 
@@ -31,7 +29,6 @@ color-eyre = { version = "0.6.3", default-features = false }
 
 parking_lot = { version = "0.12.3", features = ["send_guard"] }
 dashmap = { version = "6.0.0", features = ["inline", "serde"] }
-blake3 = "1.5.1"
 
 serde = { version = "1.0.204", features = ["derive"] }
 serde_json = "1.0.120"
