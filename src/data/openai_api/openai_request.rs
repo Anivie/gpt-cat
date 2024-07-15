@@ -1,7 +1,9 @@
 use std::fmt::{Display, Formatter};
 use std::ops::Deref;
+
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 /// OpenAIRequest is a struct that represents the request that will be sent to the OpenAI API.
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -15,7 +17,7 @@ pub struct OpenAIRequest {
     pub top_p: f32,
     pub stream: Option<bool>,
     pub max_tokens: Option<u32>,
-    pub tools: Option<String>,
+    pub tools: Option<Value>,
 }
 
 impl OpenAIRequest {
