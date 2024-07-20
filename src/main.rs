@@ -6,10 +6,10 @@ use std::fs::File;
 use std::io::BufReader;
 use std::net::SocketAddr;
 use std::thread;
-use axum::Router;
-use axum::routing::post;
-use axum_server::tls_rustls::RustlsConfig;
 
+use axum::routing::post;
+use axum::Router;
+use axum_server::tls_rustls::RustlsConfig;
 use fast_log::consts::LogSize;
 use fast_log::plugin::file_split::RollingType;
 use fast_log::plugin::packer::LogPacker;
@@ -26,8 +26,8 @@ use crate::data::config::runtime_data::{GlobalData, ServerPipeline};
 use crate::data::database::database_manager::connect_to_database;
 use crate::http::client::util::account_manager::load_account_from_database;
 use crate::http::client::util::counter::concurrency_pool::VecSafePool;
-use crate::http::server::{get_client_end_handler, get_client_join_handler};
 use crate::http::server::web::server::main_chat;
+use crate::http::server::{get_client_end_handler, get_client_join_handler};
 
 mod data;
 #[macro_use]
@@ -39,11 +39,7 @@ fn enable_logging() {
         .level(log::LevelFilter::Info)
         .console()
         .chan_len(Some(100000))
-        .file_split("./logs/",
-                    LogSize::MB(1),
-                    RollingType::All,
-                    LogPacker {}
-        );
+        .file_split("./logs/", LogSize::MB(1), RollingType::All, LogPacker {});
     fast_log::init(config).unwrap();
 }
 
@@ -57,7 +53,7 @@ async fn main() -> std::io::Result<()> {
         let config = {
             let file = File::open("./config/config.json").expect("Unable to open config file.");
             let config = BufReader::new(file);
-            let config :Config = serde_json::from_reader(config).expect("Unable to read json");
+            let config: Config = serde_json::from_reader(config).expect("Unable to read json");
             config
         };
 
@@ -104,7 +100,9 @@ async fn main() -> std::io::Result<()> {
 
     let service_http = service.clone();
     tokio::spawn(async move {
-        let listener = TcpListener::bind(SocketAddr::from(([0, 0, 0, 0], 7117))).await.unwrap();
+        let listener = TcpListener::bind(SocketAddr::from(([0, 0, 0, 0], 7117)))
+            .await
+            .unwrap();
         axum::serve(listener, service_http).await.unwrap();
     });
 

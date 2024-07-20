@@ -4,9 +4,9 @@ use std::sync::Arc;
 use async_stream::stream;
 use axum::extract::State;
 use axum::http::{header, HeaderMap};
-use axum::Json;
-use axum::response::{IntoResponse, Sse};
 use axum::response::sse::Event;
+use axum::response::{IntoResponse, Sse};
+use axum::Json;
 use futures::Stream;
 use log::info;
 use tokio::spawn;
@@ -14,11 +14,11 @@ use tokio::sync::mpsc::{channel, Receiver};
 
 use crate::data::config::runtime_data::ServerPipeline;
 use crate::data::openai_api::openai_request::OpenAIRequest;
-use crate::GlobalData;
 use crate::http::client::client_sender::channel_manager::{ChannelSender, ClientSender};
 use crate::http::server::after_handler::ClientEndContext;
 use crate::http::server::pre_handler::ClientJoinContext;
 use crate::http::server::web::enum_response::ResponseData;
+use crate::GlobalData;
 
 /// The main chat handler
 /// This handler will handle the main chat request
@@ -93,7 +93,8 @@ pub async fn main_chat(
                 .expect("Error when start after handler");
 
             for handler_future in handlers_result {
-                handler_future.await
+                handler_future
+                    .await
                     .expect("Error when run after handler")
                     .expect("Error when try after handler");
             }
@@ -105,7 +106,10 @@ pub async fn main_chat(
     end(receiver, is_stream).await
 }
 
-async fn end(mut receiver: Receiver<String>, is_stream: bool) -> ResponseData<impl Stream<Item = Result<Event, Infallible>>> {
+async fn end(
+    mut receiver: Receiver<String>,
+    is_stream: bool,
+) -> ResponseData<impl Stream<Item = Result<Event, Infallible>>> {
     if is_stream {
         let stream = stream! {
             while let Some(message) = receiver.recv().await {
@@ -127,7 +131,10 @@ async fn end(mut receiver: Receiver<String>, is_stream: bool) -> ResponseData<im
         let mut headers = HeaderMap::new();
         headers.insert(header::CONTENT_TYPE, "application/json".parse().unwrap());
         headers.insert(header::CONTENT_ENCODING, "identity".parse().unwrap());
-        headers.insert(header::CACHE_CONTROL, "no-cache, must-revalidate".parse().unwrap());
+        headers.insert(
+            header::CACHE_CONTROL,
+            "no-cache, must-revalidate".parse().unwrap(),
+        );
 
         ResponseData::Json((headers, back))
     }

@@ -1,8 +1,11 @@
 use reqwest::StatusCode;
+
 use crate::data::alibaba::qian_wen_request::{Input, Parameters, QianWenRequest};
 use crate::data::alibaba::qian_wen_response::QianWenResponse;
 use crate::data::config::runtime_data::AccountVisitor;
-use crate::http::client::client_sender::channel_manager::{ChannelBufferManager, ChannelSender, ClientSender};
+use crate::http::client::client_sender::channel_manager::{
+    ChannelBufferManager, ChannelSender, ClientSender,
+};
 use crate::http::client::specific_responder::{ResponderError, ResponseParser, SpecificResponder};
 
 /// The parser for the QianWen responder
@@ -10,32 +13,38 @@ use crate::http::client::specific_responder::{ResponderError, ResponseParser, Sp
 pub struct QianWenResponderParser;
 
 impl ResponseParser for QianWenResponderParser {
-    async fn parse_response(&mut self,
-                            sender: &mut ClientSender,
-                            response: &[u8]
+    async fn parse_response(
+        &mut self,
+        sender: &mut ClientSender,
+        response: &[u8],
     ) -> Result<(), ResponderError> {
-        match (serde_json::from_slice::<QianWenResponse>(response), sender.request.is_stream()) {
+        match (
+            serde_json::from_slice::<QianWenResponse>(response),
+            sender.request.is_stream(),
+        ) {
             (Err(err), _) => {
-                return Err(ResponderError::Request(format!("Error when parse response from serde: {}, origin text: {}", err, String::from_utf8_lossy(response))));
+                return Err(ResponderError::Request(format!(
+                    "Error when parse response from serde: {}, origin text: {}",
+                    err,
+                    String::from_utf8_lossy(response)
+                )));
             }
 
             (Ok(response), false) => {
-                if let Some(choice) = response.output.choices.first()
-                {
+                if let Some(choice) = response.output.choices.first() {
                     let content = &choice.message.content;
                     sender.append_buffer(content.as_str());
                 }
             }
 
             (Ok(response), true) => {
-                if let Some(choice) = response.output.choices.first()
-                {
+                if let Some(choice) = response.output.choices.first() {
                     let content = &choice.message.content;
                     sender.append_buffer(content.as_str());
-                    sender.send_text(
-                        content,
-                        choice.finish_reason == "stop".to_string()
-                    ).await.map_err(|e| ResponderError::Response(e.to_string()))?;
+                    sender
+                        .send_text(content, choice.finish_reason == "stop".to_string())
+                        .await
+                        .map_err(|e| ResponderError::Response(e.to_string()))?;
                 }
             }
         }
@@ -48,9 +57,10 @@ impl ResponseParser for QianWenResponderParser {
 pub struct QianWenResponder;
 
 impl SpecificResponder for QianWenResponder {
-    async fn make_response(&self,
-                           sender: &mut ClientSender,
-                           accessor: &AccountVisitor
+    async fn make_response(
+        &self,
+        sender: &mut ClientSender,
+        accessor: &AccountVisitor,
     ) -> Result<(), ResponderError> {
         // header_map.insert("X-DashScope-SSE", HeaderValue::from_str("enable").unwrap());
         let stream = accessor
@@ -62,7 +72,7 @@ impl SpecificResponder for QianWenResponder {
                     "enable"
                 } else {
                     "disable"
-                }
+                },
             )
             .json(&QianWenRequest {
                 model: sender.request.model.clone(),
@@ -70,11 +80,7 @@ impl SpecificResponder for QianWenResponder {
                     messages: sender.request.messages.clone(),
                 },
                 parameters: Parameters {
-                    incremental_output: if sender.is_stream() {
-                        Some(true)
-                    }else {
-                        None
-                    },
+                    incremental_output: if sender.is_stream() { Some(true) } else { None },
                     result_format: "message".to_string(),
                 },
             })
@@ -86,7 +92,10 @@ impl SpecificResponder for QianWenResponder {
             return Err(ResponderError::Request(format!(
                 "Error when get response with code: {}, error message: {}",
                 stream.status(),
-                stream.text().await.map_err(|e| ResponderError::Request(e.to_string()))?
+                stream
+                    .text()
+                    .await
+                    .map_err(|e| ResponderError::Request(e.to_string()))?
             )));
         }
 

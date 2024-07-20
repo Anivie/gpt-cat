@@ -23,35 +23,50 @@ pub fn enable_config_hot_reload(global_data: &GlobalData) -> notify::Result<()> 
 
     let mut watcher = PollWatcher::new(tx, config)?;
     watcher.watch(Path::new("./config/config.json"), RecursiveMode::Recursive)?;
-    watcher.watch(Path::new("./config/model_price.json"), RecursiveMode::Recursive)?;
+    watcher.watch(
+        Path::new("./config/model_price.json"),
+        RecursiveMode::Recursive,
+    )?;
     watcher.watch(Path::new("./config/model.json"), RecursiveMode::Recursive)?;
 
     for res in rx {
         match res {
             Ok(event) => {
                 if let Some(path) = event.paths.first() {
-                    if let Some(path) = path.file_name() &&
-                        let Some(path) = path.to_str()
+                    if let Some(path) = path.file_name()
+                        && let Some(path) = path.to_str()
                     {
                         match path {
                             "config.json" => {
-                                info!("{}", format!("Start hot reload config file: {:?}", event).blue());
+                                info!(
+                                    "{}",
+                                    format!("Start hot reload config file: {:?}", event).blue()
+                                );
                                 let config = {
-                                    let file = File::open("./config/config.json").expect("Unable to open file.");
+                                    let file = File::open("./config/config.json")
+                                        .expect("Unable to open file.");
                                     let config = BufReader::new(file);
-                                    let config: Config = serde_json::from_reader(config).expect("Unable to read json.");
+                                    let config: Config = serde_json::from_reader(config)
+                                        .expect("Unable to read json.");
                                     config
                                 };
                                 *global_data.config.write() = config;
                                 info!("{}", "Hot reload config file success.".green());
                             }
                             "model_price.json" => {
-                                info!("{}", format!("Start hot reload model price file: {:?}", event).blue());
+                                info!(
+                                    "{}",
+                                    format!("Start hot reload model price file: {:?}", event)
+                                        .blue()
+                                );
                                 *global_data.model_price.write() = ModelPriceMap::default();
                                 info!("{}", "Hot reload price file success.".green());
                             }
                             "model.json" => {
-                                info!("{}", format!("Start hot reload model file: {:?}", event).blue());
+                                info!(
+                                    "{}",
+                                    format!("Start hot reload model file: {:?}", event).blue()
+                                );
                                 *global_data.model_info.write() = ModelManager::default();
                                 info!("{}", "Hot reload model file success.".green());
                             }

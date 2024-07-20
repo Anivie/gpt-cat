@@ -1,4 +1,5 @@
 use std::sync::Arc;
+
 use tokio::spawn;
 use tokio::task::JoinHandle;
 
@@ -55,24 +56,23 @@ pub trait ClientEndAfterHandlerImpl {
 }
 
 pub struct ClientEndHandlers {
-    handlers: Vec<ClientEndAfterHandle>
+    handlers: Vec<ClientEndAfterHandle>,
 }
 
 impl ClientEndHandlers {
     pub fn new(inner: Vec<ClientEndAfterHandle>) -> Self {
-        Self {
-            handlers: inner
-        }
+        Self { handlers: inner }
     }
 
-    pub async fn client_end(&self, context: Arc<ClientEndContext>) -> Result<Vec<JoinHandle<Result<(), String>>>, String> {
+    pub async fn client_end(
+        &self,
+        context: Arc<ClientEndContext>,
+    ) -> Result<Vec<JoinHandle<Result<(), String>>>, String> {
         let mut handles = Vec::new();
         for handler in self.handlers.iter() {
             let context = context.clone();
             let handler = handler.clone();
-            let handler = spawn(async move {
-                handler.client_end(context).await
-            });
+            let handler = spawn(async move { handler.client_end(context).await });
             handles.push(handler);
         }
         Ok(handles)

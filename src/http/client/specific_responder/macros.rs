@@ -3,8 +3,8 @@ macro_rules! process_stream {
     ($request:expr, $handler:expr, $sender:expr) => {
         use crate::http::client::util::sse::rayon_json_processor::RayonJsonProcessor;
         use crate::http::client::util::sse::sse_processor::SSEProcessor;
-        use futures_util::StreamExt;
         use bytes::Bytes;
+        use futures_util::StreamExt;
 
         let mut handler = $handler;
 
@@ -25,13 +25,16 @@ macro_rules! process_stream {
                     handler.parse_response($sender, response).await?;
                 }
             }
-        }else {
-            let item = $request.bytes().await.map_err(|e| ResponderError::Request(e.to_string()))?;
+        } else {
+            let item = $request
+                .bytes()
+                .await
+                .map_err(|e| ResponderError::Request(e.to_string()))?;
             handler.parse_response($sender, item.as_ref()).await?;
         }
 
         handler.parse_end($sender).await?;
-    }
+    };
 }
 
 /// # Enum dispatcher

@@ -1,7 +1,8 @@
 use std::convert::Infallible;
+
 use axum::http::HeaderMap;
-use axum::response::{IntoResponse, Response, Sse};
 use axum::response::sse::Event;
+use axum::response::{IntoResponse, Response, Sse};
 use futures::Stream;
 
 /// The enum for the response data
@@ -14,7 +15,9 @@ pub enum ResponseData<T: Stream<Item = Result<Event, Infallible>> + Send + 'stat
 }
 
 /// Implement the IntoResponse trait for the ResponseData
-impl<T: Stream<Item = Result<Event, Infallible>> + Send + 'static> IntoResponse for ResponseData<T> {
+impl<T: Stream<Item = Result<Event, Infallible>> + Send + 'static> IntoResponse
+    for ResponseData<T>
+{
     fn into_response(self) -> Response {
         match self {
             ResponseData::Sse(sse) => sse.into_response(),

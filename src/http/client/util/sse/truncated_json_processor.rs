@@ -1,4 +1,5 @@
 use rayon::prelude::*;
+
 use crate::http::client::util::sse::sse_processor::SSEProcessor;
 
 #[derive(Default)]
@@ -8,7 +9,7 @@ pub struct TruncatedJsonProcessor {
     left: u8,
     right: u8,
 
-    double_quote: bool
+    double_quote: bool,
 }
 
 impl SSEProcessor for TruncatedJsonProcessor {
@@ -39,12 +40,16 @@ impl SSEProcessor for TruncatedJsonProcessor {
                     continue;
                 }
                 b'{' => {
-                    if self.double_quote { continue; }
+                    if self.double_quote {
+                        continue;
+                    }
                     self.left += 1;
                     continue;
                 }
                 b'}' => {
-                    if self.double_quote { continue; }
+                    if self.double_quote {
+                        continue;
+                    }
                     self.right += 1;
                 }
                 _ => {
@@ -61,13 +66,13 @@ impl SSEProcessor for TruncatedJsonProcessor {
 
             if self.inner.is_empty() {
                 back.push(&target[last_index..index + 1]);
-            }else {
+            } else {
                 first.replace(
                     self.inner
-                    .iter()
-                    .chain(&target[..index + 1])
-                    .copied()
-                    .collect()
+                        .iter()
+                        .chain(&target[..index + 1])
+                        .copied()
+                        .collect(),
                 );
 
                 self.inner.clear();
@@ -85,7 +90,13 @@ impl SSEProcessor for TruncatedJsonProcessor {
         (back, first)
     }
 
-    fn process_return_label<'a>(&mut self, target: &'a [u8]) -> (Vec<(Option<&'a [u8]>, &'a [u8])>, Option<(Option<Vec<u8>>, Vec<u8>)>) {
+    fn process_return_label<'a>(
+        &mut self,
+        target: &'a [u8],
+    ) -> (
+        Vec<(Option<&'a [u8]>, &'a [u8])>,
+        Option<(Option<Vec<u8>>, Vec<u8>)>,
+    ) {
         let mut label = Vec::new();
         let mut back = Vec::new();
         let mut first = None;
@@ -113,7 +124,9 @@ impl SSEProcessor for TruncatedJsonProcessor {
                     continue;
                 }
                 b'{' => {
-                    if self.double_quote { continue; }
+                    if self.double_quote {
+                        continue;
+                    }
 
                     if self.left == 0 && self.right == 0 {
                         while target[last_index] == b'\n' {
@@ -127,10 +140,12 @@ impl SSEProcessor for TruncatedJsonProcessor {
                     continue;
                 }
                 b'}' => {
-                    if self.double_quote { continue; }
+                    if self.double_quote {
+                        continue;
+                    }
                     self.right += 1;
                 }
-                _ => continue
+                _ => continue,
             }
 
             if self.left != self.right {
@@ -139,14 +154,17 @@ impl SSEProcessor for TruncatedJsonProcessor {
 
             if self.inner.is_empty() {
                 back.push(&target[last_index..index + 1]);
-            }else {
+            } else {
                 first.replace(
                     //     ↓ bad way, wait for the replace
-                    (None, self.inner
-                        .iter()
-                        .chain(&target[..index + 1])
-                        .cloned()
-                        .collect())
+                    (
+                        None,
+                        self.inner
+                            .iter()
+                            .chain(&target[..index + 1])
+                            .cloned()
+                            .collect(),
+                    ),
                 );
 
                 self.inner.clear();
@@ -166,7 +184,6 @@ impl SSEProcessor for TruncatedJsonProcessor {
             .zip(label.par_iter())
             .map(|(&x, &y)| (Some(x), y))
             .collect();
-
 
         (back, first)
     }

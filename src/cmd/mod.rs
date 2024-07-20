@@ -3,19 +3,20 @@
 
 use std::ops::Deref;
 use std::time::Duration;
+
 use log::info;
 use rand::Rng;
-use sea_orm::{EntityTrait, QueryFilter};
 use sea_orm::ActiveValue::Set;
 use sea_orm::ColumnTrait;
+use sea_orm::{EntityTrait, QueryFilter};
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::select;
 use tokio::time::sleep;
-use crate::data::config::endpoint::Endpoint;
 
+use crate::data::config::endpoint::Endpoint;
 use crate::data::config::runtime_data::{AccountVisitor, GlobalData};
-use crate::data::database::entities::{account_list, user, user_usage};
 use crate::data::database::entities::prelude::{AccountList, ChatList, User, UserUsage};
+use crate::data::database::entities::{account_list, user, user_usage};
 use crate::http::client::util::counter::concurrency_pool::VecSafePool;
 use crate::http::client::util::get_reqwest_client::get_client;
 

@@ -1,7 +1,6 @@
 /// Custom SSE processor, which can extract the truncated json from the stream
 pub mod sse_processor;
 
-
 /// Description for **truncated json processor**:
 /// This project was originally designed to handle some additional tasks, in those tasks, the SSE stream encountered
 /// is not always split according to the standard `\n\n`, so a custom processor is needed to handle this situation.

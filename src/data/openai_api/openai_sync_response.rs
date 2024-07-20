@@ -1,4 +1,5 @@
 use std::time::{SystemTime, UNIX_EPOCH};
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -38,24 +39,21 @@ impl OpenAISyncResponse {
         OpenAISyncResponse {
             id: Some("chatcmpl-123".to_string()),
             object: Some("chat.completion".to_string()),
-            created: SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs(),
+            created: SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
             model: Some(model_name),
             system_fingerprint: Some("fp_44709d6fcb".to_string()),
-            choices: vec![
-                crate::data::openai_api::openai_sync_response::Choice {
-                    index:0,
-                    logprobs:None,
-                    finish_reason:if end {
-                        Some("stop".to_string())
-                    }else {
-                        None
-                    },
-                    message: crate::data::openai_api::openai_sync_response::Message {
-                        role: "assistant".to_string(),
-                        content: answer.to_string()
-                    }
-                }
-            ],
+            choices: vec![crate::data::openai_api::openai_sync_response::Choice {
+                index: 0,
+                logprobs: None,
+                finish_reason: if end { Some("stop".to_string()) } else { None },
+                message: crate::data::openai_api::openai_sync_response::Message {
+                    role: "assistant".to_string(),
+                    content: answer.to_string(),
+                },
+            }],
             usage: Default::default(),
         }
     }

@@ -1,14 +1,17 @@
 use axum::http::HeaderMap;
 use log::error;
+
 use crate::data::config::runtime_data::GlobalData;
-use crate::http::client::client_sender::channel_manager::{ChannelSender, ClientSender, ResponsiveError};
+use crate::http::client::client_sender::channel_manager::{
+    ChannelSender, ClientSender, ResponsiveError,
+};
 use crate::http::server::ClientJoinPreHandler;
 
-pub(super) mod title_catcher;
 pub(super) mod command_handler;
-pub(super) mod userid_handler;
-pub(super) mod user_key_handler;
 pub(super) mod model_filter;
+pub(super) mod title_catcher;
+pub(super) mod user_key_handler;
+pub(super) mod userid_handler;
 
 macro_rules! impl_client_join_handler {
     ($($variant:ident),*) => {
@@ -53,21 +56,25 @@ pub struct ClientJoinContext<'a> {
 }
 
 pub trait ClientJoinPreHandlerImpl {
-    async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> anyhow::Result<Option<String>>;
+    async fn client_join<'a>(
+        &'a self,
+        context: &mut ClientJoinContext<'a>,
+    ) -> anyhow::Result<Option<String>>;
 }
 
 pub struct ClientJoinHandlers {
-    handlers: Vec<ClientJoinPreHandler>
+    handlers: Vec<ClientJoinPreHandler>,
 }
 
 impl ClientJoinHandlers {
     pub fn new(inner: Vec<ClientJoinPreHandler>) -> Self {
-        Self {
-            handlers: inner
-        }
+        Self { handlers: inner }
     }
 
-    pub async fn client_join<'a>(&'a self, mut context: ClientJoinContext<'a>) -> ClientJoinContext {
+    pub async fn client_join<'a>(
+        &'a self,
+        mut context: ClientJoinContext<'a>,
+    ) -> ClientJoinContext {
         for handler in self.handlers.iter() {
             match handler.client_join(&mut context).await {
                 Ok(Some(message)) => {

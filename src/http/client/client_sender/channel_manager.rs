@@ -1,4 +1,5 @@
 use std::ops::Deref;
+
 use log::error;
 use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::Sender;
@@ -16,7 +17,7 @@ pub struct ResponsiveError {
     pub component: String,
     pub reason: String,
     pub message: String,
-    pub suggestion: Option<String>
+    pub suggestion: Option<String>,
 }
 
 pub type ClientSenderInner = Sender<String>;
@@ -93,7 +94,12 @@ pub trait ChannelSender {
 }
 
 trait ChannelSenderUtil {
-    async fn to_json(&self, request: &OpenAIRequest, response: &str, end: bool) -> Result<(), SendError<String>>;
+    async fn to_json(
+        &self,
+        request: &OpenAIRequest,
+        response: &str,
+        end: bool,
+    ) -> Result<(), SendError<String>>;
 }
 
 impl ChannelSender for ClientSender {
@@ -109,7 +115,9 @@ impl ChannelSender for ClientSender {
 
         let mut error_details = String::new();
         for x in self.error_message.iter() {
-            error_details.push_str(format!("|🚝 {}|🚫 {}|🔑 {}|  \n", x.component, x.reason, x.message).as_str())
+            error_details.push_str(
+                format!("|🚝 {}|🚫 {}|🔑 {}|  \n", x.component, x.reason, x.message).as_str(),
+            )
         }
 
         let mut suggestions = String::new();
@@ -119,7 +127,8 @@ impl ChannelSender for ClientSender {
             }
         }
 
-        let base_message = format!("❗️ **发生错误！** ❗️
+        let base_message = format!(
+            "❗️ **发生错误！** ❗️
 😿好吧，您的请求似乎发生了一点小小的问题……
 
 🛑**错误详情：**
@@ -132,7 +141,9 @@ impl ChannelSender for ClientSender {
 - 🔎 确保您的密钥与提供给您的账户的密钥一致。
 {}- 📞 如果您继续遇到问题，请立即联系我们的支持团队。
 
-🐾**GPT-Cat**始终伴您左右！", error_details, suggestions);
+🐾**GPT-Cat**始终伴您左右！",
+            error_details, suggestions
+        );
         self.to_json(&self.request, &base_message, false).await
     }
 
@@ -143,19 +154,33 @@ impl ChannelSender for ClientSender {
 }
 
 impl ChannelSenderUtil for ClientSender {
-    async fn to_json(&self, request: &OpenAIRequest, response: &str, end: bool) -> Result<(), SendError<String>> {
+    async fn to_json(
+        &self,
+        request: &OpenAIRequest,
+        response: &str,
+        end: bool,
+    ) -> Result<(), SendError<String>> {
         let json = if request.is_stream() {
-            serde_json::to_string(&OpenAIStreamResponse::new(request.model.clone(), &response, end))
-        }else {
-            serde_json::to_string(&OpenAISyncResponse::new(request.model.clone(), &response, end))
+            serde_json::to_string(&OpenAIStreamResponse::new(
+                request.model.clone(),
+                &response,
+                end,
+            ))
+        } else {
+            serde_json::to_string(&OpenAISyncResponse::new(
+                request.model.clone(),
+                &response,
+                end,
+            ))
         };
 
         match json {
-            Ok(message) => {
-                self.send(message).await
-            }
+            Ok(message) => self.send(message).await,
             Err(err) => {
-                error!("Success to get response, but serde json make an error: {:?}", err);
+                error!(
+                    "Success to get response, but serde json make an error: {:?}",
+                    err
+                );
                 let mut tmp = Vec::new();
                 tmp.extend(err.to_string().as_bytes());
                 self.send(String::from_utf8(tmp).unwrap()).await

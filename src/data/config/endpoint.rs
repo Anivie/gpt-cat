@@ -1,12 +1,14 @@
 use std::fmt::{Display, Formatter};
+
 use log::error;
 use serde::{Deserialize, Serialize};
+
 use crate::data::config::config_file::Config;
 
 /// Supported endpoint of this server, default have OpenAI and QianWen endpoint.
 /// This app is fully type safe, so you can add a new endpoint here,
 /// and then rustc will tell you what you need to do.
-#[derive(Debug, Clone, Eq, PartialEq , Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub enum Endpoint {
     OpenAI,
     QianWen,
@@ -37,7 +39,7 @@ impl Endpoint {
         match s.to_ascii_uppercase().as_str() {
             "OPENAI" => Endpoint::OpenAI,
             "QIANWEN" => Endpoint::QianWen,
-            _ => panic!("Unknown endpoint: {}", s)
+            _ => panic!("Unknown endpoint: {}", s),
         }
     }
 
@@ -46,7 +48,9 @@ impl Endpoint {
     const fn default_url(&self) -> &str {
         match self {
             Endpoint::OpenAI => "https://api.openai.com/v1/chat/completions",
-            Endpoint::QianWen => "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation",
+            Endpoint::QianWen => {
+                "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
+            }
         }
     }
 }

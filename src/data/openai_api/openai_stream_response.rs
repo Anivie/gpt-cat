@@ -1,4 +1,5 @@
 use std::time::{SystemTime, UNIX_EPOCH};
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -32,24 +33,21 @@ impl OpenAIStreamResponse {
         OpenAIStreamResponse {
             id: Some("chatcmpl-123".to_string()),
             object: Some("chat.completion.chunk".to_string()),
-            created: SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs(),
+            created: SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
             model: Some(model_name),
             system_fingerprint: Some("fp_44709d6fcb".to_string()),
-            choices: vec![
-                Choice {
-                    index: 0,
-                    delta: Delta {
-                        role: Some("assistant".to_string()),
-                        content: Some(answer.to_string())
-                    },
-                    logprobs:None,
-                    finish_reason:if end {
-                        Some("stop".to_string())
-                    }else {
-                        None
-                    }
-                }
-            ]
+            choices: vec![Choice {
+                index: 0,
+                delta: Delta {
+                    role: Some("assistant".to_string()),
+                    content: Some(answer.to_string()),
+                },
+                logprobs: None,
+                finish_reason: if end { Some("stop".to_string()) } else { None },
+            }],
         }
     }
 }

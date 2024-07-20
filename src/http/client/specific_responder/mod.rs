@@ -7,6 +7,7 @@
 //! format and send it to the client.
 
 use thiserror::Error;
+
 use crate::data::config::runtime_data::AccountVisitor;
 use crate::http::client::client_sender::channel_manager::{ChannelBufferManager, ClientSender};
 
@@ -29,9 +30,10 @@ pub(crate) enum ResponderError {
 
 /// The trait that defines the method to make the response to the client.
 pub trait SpecificResponder {
-    async fn make_response(&self,
-                           sender: &mut ClientSender,
-                           accessor: &AccountVisitor
+    async fn make_response(
+        &self,
+        sender: &mut ClientSender,
+        accessor: &AccountVisitor,
     ) -> Result<(), ResponderError>;
 }
 
@@ -43,7 +45,7 @@ trait ResponseParser {
     async fn parse_response(
         &mut self,
         sender: &mut ClientSender,
-        response: &[u8]
+        response: &[u8],
     ) -> Result<(), ResponderError>;
 
     async fn parse_end(&mut self, sender: &ClientSender) -> Result<(), ResponderError> {
@@ -51,9 +53,10 @@ trait ResponseParser {
             return Ok(());
         }
 
-        sender.push_buffer().await.map_err(|e| {
-            ResponderError::Response(e.to_string())
-        })?;
+        sender
+            .push_buffer()
+            .await
+            .map_err(|e| ResponderError::Response(e.to_string()))?;
 
         Ok(())
     }

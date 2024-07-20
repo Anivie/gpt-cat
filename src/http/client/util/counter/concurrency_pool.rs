@@ -6,10 +6,10 @@ use rand::Rng;
 use rayon::prelude::*;
 use tokio::sync::mpsc::Sender;
 use tokio::time::sleep;
+
 use crate::data::config::endpoint::Endpoint;
 use crate::data::config::runtime_data::AccountVisitor;
 use crate::http::client::util::counter::counter::Counter;
-
 
 /// The safe pool that use to manage the concurrency, we can promise that the concurrency
 /// will in the range of the concurrency_count
@@ -50,7 +50,8 @@ impl<T> SafePool<T> {
 
         let sender = {
             let counter = counter.clone();
-            let (sender, mut receiver) = tokio::sync::mpsc::channel::<()>(concurrency_count as usize);
+            let (sender, mut receiver) =
+                tokio::sync::mpsc::channel::<()>(concurrency_count as usize);
 
             tokio::spawn(async move {
                 let mut interval = tokio::time::interval(Duration::from_secs(1));
@@ -60,9 +61,7 @@ impl<T> SafePool<T> {
 
                     let tmp = counter
                         .par_iter()
-                        .filter(|&counter| {
-                            !counter.is_active()
-                        })
+                        .filter(|&counter| !counter.is_active())
                         .map(|counter| {
                             if counter.next_tick() {
                                 counter.tick();
@@ -131,7 +130,9 @@ impl<T> VecGettable for Vec<SafePool<T>> {
 
         loop {
             for (index, safe_pool) in self.iter().enumerate() {
-                if index != preference { continue; }
+                if index != preference {
+                    continue;
+                }
 
                 for counter in safe_pool.counter.iter() {
                     if !counter.is_active() {

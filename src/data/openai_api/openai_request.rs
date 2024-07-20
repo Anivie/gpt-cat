@@ -41,17 +41,17 @@ pub enum MessageContent {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(tag="type")]
+#[serde(tag = "type")]
 pub enum FileMessageContent {
-    #[serde(rename="text")]
+    #[serde(rename = "text")]
     Text { text: String },
-    #[serde(rename="image_url")]
-    ImageUrl { image_url: ImageUrl }
+    #[serde(rename = "image_url")]
+    ImageUrl { image_url: ImageUrl },
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ImageUrl {
-    url: String
+    url: String,
 }
 
 impl Default for MessageContent {
@@ -65,39 +65,34 @@ impl Deref for MessageContent {
 
     fn deref(&self) -> &Self::Target {
         match self {
-            MessageContent::Common(content) => {
-                content
-            }
-            MessageContent::File(f) => {
-                match f.first() {
-                    None => {
-                        panic!("No file content")
-                    }
-                    Some(x) => {
-                        match x {
-                            FileMessageContent::Text { text } => {
-                                text
-                            }
-                            FileMessageContent::ImageUrl { image_url } => {
-                                &image_url.url
-                            }
-                        }
-                    }
+            MessageContent::Common(content) => content,
+            MessageContent::File(f) => match f.first() {
+                None => {
+                    panic!("No file content")
                 }
-            }
+                Some(x) => match x {
+                    FileMessageContent::Text { text } => text,
+                    FileMessageContent::ImageUrl { image_url } => &image_url.url,
+                },
+            },
         }
     }
 }
 
 impl Display for Message {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Message: [role: {}, content: {:?}]", self.role, self.content)
+        write!(
+            f,
+            "Message: [role: {}, content: {:?}]",
+            self.role, self.content
+        )
     }
 }
 
 #[allow(dead_code)]
 pub enum MessageLocation {
-    FIRST, LAST
+    FIRST,
+    LAST,
 }
 
 pub trait MessageUtil {
@@ -105,9 +100,9 @@ pub trait MessageUtil {
     fn get_all_input(&self) -> InputMessageContent<'_>;
 }
 
-pub struct InputMessageContent<'a>{
+pub struct InputMessageContent<'a> {
     inner: &'a Vec<Message>,
-    slice: Vec<&'a str>
+    slice: Vec<&'a str>,
 }
 
 impl Display for InputMessageContent<'_> {
@@ -139,32 +134,27 @@ impl MessageUtil for Vec<Message> {
     fn get_user_input(&self, location: MessageLocation) -> Option<&str> {
         let option = self
             .par_iter()
-            .filter(|x| {
-                x.role == "user"
-            })
+            .filter(|x| x.role == "user")
             .collect::<Vec<_>>();
 
         let option = match location {
-            MessageLocation::FIRST => {
-                option.first()
-            }
-            MessageLocation::LAST => {
-                option.last()
-            }
+            MessageLocation::FIRST => option.first(),
+            MessageLocation::LAST => option.last(),
         };
 
         match option {
-            None => {None}
-            Some(&content) => {
-                Some(content.content.deref())
-            }
+            None => None,
+            Some(&content) => Some(content.content.deref()),
         }
     }
 
     fn get_all_input(&self) -> InputMessageContent<'_> {
         InputMessageContent {
             inner: self,
-            slice: self.par_iter().map(|x| x.content.deref()).collect::<Vec<_>>(),
+            slice: self
+                .par_iter()
+                .map(|x| x.content.deref())
+                .collect::<Vec<_>>(),
         }
     }
 }
@@ -184,11 +174,56 @@ impl FancyWaysObtainLength for Vec<Message> {
 
     #[inline]
     fn get_user_and_assistant_length(&self) -> usize {
-        self.par_iter().filter(|x| x.role == "user" || x.role == "assistant").count()
+        self.par_iter()
+            .filter(|x| x.role == "user" || x.role == "assistant")
+            .count()
     }
 
     #[inline]
     fn get_system_length(&self) -> usize {
         self.par_iter().filter(|x| x.role == "system").count()
     }
+}
+
+#[test]
+fn test_openai_requests() {
+    let json = r#"{
+	"model": "gpt-3.5-turbo",
+	"stream": true,
+	"frequency_penalty": 0,
+	"presence_penalty": 0,
+	"temperature": 0.6,
+	"top_p": 1,
+	"messages": [{
+		"content": "Tools\n\nYou can use these tools below:\n\n### Search Google via Serper\n\nPlugin for performing web searches using the Serper.dev API to access Google search results.\n\nThe APIs you can use:\n\n#### search-engine-serper____searchGoogle\n\nSearch Google and return top 10 results",
+		"role": "system"
+	}, {
+		"content": "搜索最新的政治新闻",
+		"role": "user"
+	}],
+	"tools": [{
+		"function": {
+			"description": "Search Google and return top 10 results",
+			"name": "search-engine-serper____searchGoogle",
+			"parameters": {
+				"properties": {
+					"q": {
+						"type": "string"
+					},
+					"gl": {
+						"type": "string"
+					},
+					"hl": {
+						"type": "string"
+					}
+				},
+				"required": ["q"],
+				"type": "object"
+			}
+		},
+		"type": "function"
+	}]
+}"#;
+
+    serde_json::from_str::<OpenAIRequest>(json).unwrap();
 }

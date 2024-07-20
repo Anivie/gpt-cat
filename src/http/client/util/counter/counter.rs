@@ -1,7 +1,8 @@
-use std::sync::atomic::{AtomicBool, AtomicU8};
 use std::sync::atomic::Ordering::Relaxed;
+use std::sync::atomic::{AtomicBool, AtomicU8};
 
 use rand::Rng;
+
 use crate::http::client::util::counter::SLEEP_RANGE;
 
 /// The counter for concurrency control

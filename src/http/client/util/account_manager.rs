@@ -8,7 +8,10 @@ use crate::data::database::entities::account_list;
 use crate::data::database::entities::prelude::AccountList;
 use crate::http::client::util::get_reqwest_client::get_client;
 
-pub async fn load_account_from_database(config: &Config, db: &DatabaseConnection) -> Vec<AccountVisitor> {
+pub async fn load_account_from_database(
+    config: &Config,
+    db: &DatabaseConnection,
+) -> Vec<AccountVisitor> {
     AccountList::find()
         .filter(account_list::Column::IsDisabled.eq(false))
         .all(db)

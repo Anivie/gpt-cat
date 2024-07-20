@@ -4,8 +4,8 @@ use std::io::BufReader;
 
 use dashmap::{DashMap, DashSet};
 use log::info;
-use crate::data::config::endpoint::Endpoint;
 
+use crate::data::config::endpoint::Endpoint;
 
 type ModelInfo = DashMap<Endpoint, DashSet<String>>;
 
@@ -34,7 +34,7 @@ impl Default for ModelManager {
 
         ModelManager {
             global_info: global,
-            info: config
+            info: config,
         }
     }
 }

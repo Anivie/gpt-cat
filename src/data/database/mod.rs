@@ -1,2 +1,2 @@
-pub mod entities;
 pub mod database_manager;
+pub mod entities;

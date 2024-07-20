@@ -30,7 +30,7 @@ pub struct ProxyConfig {
     pub scheme: String,
     pub address: String,
     pub name: String,
-    pub password: String
+    pub password: String,
 }
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
@@ -42,9 +42,10 @@ impl PartialEq for EndpointMap {
             return false;
         }
 
-        self.0.clone().into_iter().all(|(key, value)| {
-            other.0.get(&key).map_or(false, |v| v.deref() == &value)
-        })
+        self.0
+            .clone()
+            .into_iter()
+            .all(|(key, value)| other.0.get(&key).map_or(false, |v| v.deref() == &value))
     }
 }
 
