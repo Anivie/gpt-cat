@@ -92,7 +92,7 @@ impl SSEProcessor for RayonJsonProcessor {
             lines
         };
 
-        let mut lines = lines
+        let lines = lines
             .par_iter()
             .map(|&x| {
                 x.par_split(|x| *x == b'\n')
@@ -184,7 +184,7 @@ impl SSEProcessor for RayonJsonProcessor {
             lines
         };
 
-        let mut lines = lines
+        let lines = lines
             .par_iter()
             .map(|&x| {
                 x.par_split(|x| *x == b'\n')

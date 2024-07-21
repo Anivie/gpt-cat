@@ -23,6 +23,7 @@ pub trait SSEProcessor {
     );
 }
 
+#[allow(dead_code)]
 pub trait SSEStopIndicator {
     fn is_end(&self) -> bool;
 }
