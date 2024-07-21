@@ -22,3 +22,7 @@ pub trait SSEProcessor {
         Option<(Option<Vec<u8>>, Vec<u8>)>,
     );
 }
+
+pub trait SSEStopIndicator {
+    fn is_end(&self) -> bool;
+}
