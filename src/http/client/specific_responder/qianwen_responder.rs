@@ -1,5 +1,5 @@
+use std::str::FromStr;
 use reqwest::StatusCode;
-
 use crate::data::alibaba::qian_wen_request::{Input, Parameters, QianWenRequest};
 use crate::data::alibaba::qian_wen_response::QianWenResponse;
 use crate::data::config::runtime_data::AccountVisitor;
@@ -62,7 +62,8 @@ impl SpecificResponder for QianWenResponder {
         sender: &mut ClientSender,
         accessor: &AccountVisitor,
     ) -> Result<(), ResponderError> {
-        // header_map.insert("X-DashScope-SSE", HeaderValue::from_str("enable").unwrap());
+        static RESULT_FORMAT: String = String::from_str("message").expect("Unable to construct RESULT_FORMAT.");
+
         let stream = accessor
             .client
             .post(accessor.endpoint_url.clone())
@@ -81,7 +82,7 @@ impl SpecificResponder for QianWenResponder {
                 },
                 parameters: Parameters {
                     incremental_output: if sender.is_stream() { Some(true) } else { None },
-                    result_format: "message".to_string(),
+                    result_format: RESULT_FORMAT.clone(),
                 },
             })
             .send()
