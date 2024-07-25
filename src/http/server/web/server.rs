@@ -73,11 +73,10 @@ pub async fn main_chat(
     let mut sender = client_request.sender;
     let is_stream = sender.request.stream.unwrap_or(false);
 
-    spawn(async move {
-        info!("User {} start request......", user_id);
-        let response_data = data.try_request(&mut sender).await;
+    info!("User {} start request......", user_id);
 
-        if let Some(response_data) = response_data {
+    spawn(async move {
+        if let Some(response_data) = data.try_request(&mut sender).await {
             let after_context = ClientEndContext {
                 sender,
                 response_data,
@@ -122,20 +121,21 @@ async fn end(
         headers.insert(header::CONTENT_ENCODING, "identity".parse().unwrap());
         headers.insert(header::CACHE_CONTROL, "no-cache".parse().unwrap());
 
-        ResponseData::Sse((headers, Sse::new(stream)))
-    } else {
-        let mut back = String::default();
-        while let Some(message) = receiver.recv().await {
-            back = message;
-        }
-        let mut headers = HeaderMap::new();
-        headers.insert(header::CONTENT_TYPE, "application/json".parse().unwrap());
-        headers.insert(header::CONTENT_ENCODING, "identity".parse().unwrap());
-        headers.insert(
-            header::CACHE_CONTROL,
-            "no-cache, must-revalidate".parse().unwrap(),
-        );
-
-        ResponseData::Json((headers, back))
+        return ResponseData::Sse((headers, Sse::new(stream)));
     }
+
+    let mut back = String::default();
+    while let Some(message) = receiver.recv().await {
+        back = message;
+    }
+
+    let mut headers = HeaderMap::new();
+    headers.insert(header::CONTENT_TYPE, "application/json".parse().unwrap());
+    headers.insert(header::CONTENT_ENCODING, "identity".parse().unwrap());
+    headers.insert(
+        header::CACHE_CONTROL,
+        "no-cache, must-revalidate".parse().unwrap(),
+    );
+
+    ResponseData::Json((headers, back))
 }
