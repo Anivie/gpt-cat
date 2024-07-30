@@ -1,4 +1,5 @@
 #![feature(let_chains)]
+#![feature(const_trait_impl)]
 #![allow(unused_doc_comments)]
 #![cfg_attr(debug_assertions, allow(warnings))]
 
@@ -11,8 +12,8 @@ use axum::routing::post;
 use axum::Router;
 use axum_server::tls_rustls::RustlsConfig;
 use fast_log::consts::LogSize;
-use fast_log::plugin::file_split::RollingType;
-use fast_log::plugin::packer::LogPacker;
+use fast_log::plugin::file_split::{DateType, KeepType, Rolling, RollingType};
+use fast_log::plugin::packer::{LogPacker, LZ4Packer};
 use log::info;
 use parking_lot::lock_api::RwLock;
 use tokio::net::TcpListener;
