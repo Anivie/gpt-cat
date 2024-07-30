@@ -23,7 +23,7 @@ rustls = "0.23.12"
 rustls-pemfile = "2.1.2"
 
 log = "0.4.22"
-fast_log = { version = "1.6.16", features = ["lz4"] }
+fast_log = { version = "1.7.3", features = ["lz4"] }
 colored = "2.1.0"
 color-eyre = { version = "0.6.3", default-features = false }
 
@@ -31,12 +31,12 @@ parking_lot = { version = "0.12.3", features = ["send_guard"] }
 dashmap = { version = "6.0.0", features = ["inline", "serde"] }
 
 serde = { version = "1.0.204", features = ["derive"] }
-serde_json = "1.0.120"
+serde_json = "1.0.121"
 notify = "6.1.1"
 rayon = "1.10.0"
 
 uuid = { version = "1.10.0", features = ["v4"] }
-rand = "0.9.0-alpha.1"
+rand = "0.9.0-alpha.2"
 
 tiktoken-rs = "0.5.9"
 anyhow = "1.0.86"
@@ -65,7 +65,7 @@ version = "1.0.0-rc.7"
 features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"]
 
 [dependencies.tokio]
-version = "1.39.1"
+version = "1.39.2"
 features = ["full"]
 
 [dependencies.reqwest]
