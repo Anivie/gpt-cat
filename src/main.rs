@@ -39,7 +39,12 @@ fn enable_logging() {
         .level(log::LevelFilter::Info)
         .console()
         .chan_len(Some(100000))
-        .file_split("./logs/", LogSize::MB(1), RollingType::All, LogPacker {});
+        .file_split(
+            "./logs/",
+            Rolling::new(RollingType::BySize(LogSize::MB(1))),
+            KeepType::All,
+            LZ4Packer {},
+        );
     fast_log::init(config).unwrap();
 }
 

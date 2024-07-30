@@ -290,12 +290,7 @@ async fn process_command(global_data: &GlobalData, parts: Vec<&str>) -> bool {
 }
 
 fn generate_key() -> String {
-    let mut rng = rand::thread_rng();
-    let rand_string = std::iter::repeat(())
-        .map(|()| rng.sample(rand::distributions::Alphanumeric))
-        .take(50)
-        .collect::<Vec<_>>();
-    let mut rand_string = String::from_utf8(rand_string).unwrap();
-    rand_string.insert_str(0, "sk-");
-    rand_string
+    let base = Uuid::new_v4().to_string().replace("-", "");
+    let extra = Uuid::new_v4().to_string();
+    format!("sk-{}{}{}{}", base, &extra[0..8], &extra[9..13], &extra[19..23])
 }
