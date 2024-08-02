@@ -53,6 +53,7 @@ fn enable_logging() {
 async fn main() -> std::io::Result<()> {
     color_eyre::install().unwrap();
     enable_logging();
+    rustls::crypto::aws_lc_rs::default_provider().install_default().expect("Error installing default rustls provider");
 
     let data: &'static GlobalData = {
         // Load config from file
