@@ -41,6 +41,7 @@ impl CommandHandler for ManageAccountPool {
             let visitor = load_account_from_database(&global_data.config.read(), &global_data.data_base).await?;
             let mut pool = global_data.account_pool.write();
             *pool = visitor.to_vec_safe_pool(global_data.config.read().request_concurrency_count);
+            info!("Endpoint {} has been enabled, now {} accounts in pool.", endpoint, pool.len());
         }else {
             let mut pool = global_data.account_pool.write();
             pool.retain(|x| *x.get_endpoint() != endpoint);
