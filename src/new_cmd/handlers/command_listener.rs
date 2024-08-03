@@ -3,7 +3,7 @@ use std::sync::LazyLock;
 use std::time::Duration;
 
 use colored::Colorize;
-use log::info;
+use log::{error, info};
 use rayon::prelude::*;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::select;
@@ -22,13 +22,17 @@ pub async fn add_cmd_listener(global_data: &GlobalData) {
             command = reader.read_line(&mut buffer) => {
                 static HANDLER: LazyLock<Vec<CommandHandlerDispatcher>> = LazyLock::new(|| new_command_handler_dispatcher());
                 static HELP_MESSAGE: LazyLock<String> = LazyLock::new(|| {
-                    HANDLER
+                    let mut back = HANDLER
                         .par_iter()
                         .map(|x| {
                             let description = x.description().help_message();
-                            format!("{}\n", description)
+                            format!("{}\n\n", description)
                         })
-                        .collect::<String>()
+                        .collect::<String>();
+                    back.pop();
+                    back.pop();
+
+                    back
                 });
 
                 if let Ok(a) = command && a > 0 {
@@ -53,7 +57,9 @@ pub async fn add_cmd_listener(global_data: &GlobalData) {
                         if x.description().name.contains(&parts[0]) {
                             let mut args = parts.clone();
                             args.remove(0);
-                            x.execute(global_data, &args).await.expect("Failed to execute command");
+                            if let Err(err) = x.execute(global_data, &args).await {
+                                error!("Error when execute command: {}", err);
+                            }
                             running = true;
                             break;
                         }

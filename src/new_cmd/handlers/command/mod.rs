@@ -35,3 +35,6 @@ macro_rules! describe {
 
 pub(in crate::new_cmd::handlers) mod list_account;
 pub(in crate::new_cmd::handlers) mod add_user;
+pub(in crate::new_cmd::handlers) mod edit_balance;
+pub(in crate::new_cmd::handlers) mod search_balance;
+pub(in crate::new_cmd::handlers) mod search_user;

@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct DataBaseUser {
     pub id: i32,
     pub api_key: String,
