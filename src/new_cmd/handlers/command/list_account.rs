@@ -19,6 +19,15 @@ impl CommandHandler for ListAccount {
         let account = global_data.account_pool.read();
         let account = account.deref();
         info!("total {} accounts found.", account.len());
+
+        let accounts = sqlx::query!("SELECT * FROM account_list")
+            .fetch_all(&global_data.data_base)
+            .await?;
+
+        for account in accounts {
+            info!("account: {:?}", account);
+        }
+
         Ok(())
     }
 }
