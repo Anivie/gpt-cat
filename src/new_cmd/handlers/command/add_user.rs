@@ -1,6 +1,5 @@
 use log::info;
 use rust_decimal::Decimal;
-use sqlx_postgres::PgQueryResult;
 use uuid::Uuid;
 
 use crate::data::config::runtime_data::GlobalData;

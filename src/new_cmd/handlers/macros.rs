@@ -2,7 +2,7 @@ macro_rules! command_handler_dispatcher {
         ($($dispatcher:ident),*) => {
             use crate::new_cmd::handlers::dispatcher::{CommandHandler, CommandDescription};
 
-            pub(super) enum CommandHandlerDispatcher {
+            enum CommandHandlerDispatcher {
                 $(
                     $dispatcher($dispatcher),
                 )*
@@ -26,7 +26,7 @@ macro_rules! command_handler_dispatcher {
                 }
             }
 
-            pub(super) fn new_command_handler_dispatcher() -> Vec<CommandHandlerDispatcher> {
+            fn new_command_handler_dispatcher() -> Vec<CommandHandlerDispatcher> {
                 vec![
                     $(
                         CommandHandlerDispatcher::$dispatcher($dispatcher::default()),
