@@ -1,9 +1,5 @@
 use anyhow::anyhow;
-use sea_orm::ColumnTrait;
-use sea_orm::EntityTrait;
-use sea_orm::QueryFilter;
-
-use crate::data::database::entities::prelude::User;
+use crate::data::database::entity::user::DataBaseUser;
 use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerImpl};
 
 #[derive(Default, Clone)]
@@ -15,20 +11,29 @@ impl ClientJoinPreHandlerImpl for UserIDHandler {
         context: &mut ClientJoinContext<'a>,
     ) -> anyhow::Result<Option<String>> {
         let user_id = if let Some(auth) = &context.user_key {
-            let user = User::find()
+            /*let user = User::find()
                 .filter(crate::data::database::entities::user::Column::ApiKey.eq(auth))
                 .one(&context.global_data.data_base)
                 .await
-                .unwrap();
+                .unwrap();*/
+
+            let user: Result<DataBaseUser, sqlx::Error> = sqlx::query_as!(
+                DataBaseUser,
+                r#"SELECT * FROM "user" WHERE api_key = $1 LIMIT 1"#,
+                auth
+            )
+                .fetch_one(&context.global_data.data_base)
+                .await;
+
             match user {
-                None => {
+                Err(_) => {//todo handle error
                     // return Err(anyhow!("Invalid key: {}, please ensure that you have already put a key.", auth));
                     return Err(anyhow!(
                         "无效的Key: {}, 请输入正确的Key或检查拼写是否正确",
                         auth
                     ));
                 }
-                Some(user) => {
+                Ok(user) => {
                     if user.is_active {
                         user.id
                     } else {

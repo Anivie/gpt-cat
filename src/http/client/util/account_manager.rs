@@ -1,23 +1,24 @@
-use rayon::prelude::*;
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use sqlx::Pool;
+use sqlx_postgres::Postgres;
 
 use crate::data::config::config_file::Config;
 use crate::data::config::endpoint::Endpoint;
 use crate::data::config::runtime_data::AccountVisitor;
-use crate::data::database::entities::account_list;
-use crate::data::database::entities::prelude::AccountList;
+use crate::data::database::entity::data_base_account::DataBaseAccount;
 use crate::http::client::util::get_reqwest_client::get_client;
 
 pub async fn load_account_from_database(
     config: &Config,
-    db: &DatabaseConnection,
-) -> Vec<AccountVisitor> {
-    AccountList::find()
-        .filter(account_list::Column::IsDisabled.eq(false))
-        .all(db)
-        .await
-        .unwrap()
-        .into_par_iter()
+    db: &Pool<Postgres>,
+) -> anyhow::Result<Vec<AccountVisitor>> {
+    let row: Vec<DataBaseAccount> = sqlx::query_as!(
+        DataBaseAccount,
+        "SELECT * from account_list WHERE is_disabled = FALSE"
+    )
+        .fetch_all(db)
+        .await?;
+
+    let back = row.into_iter()
         .map(|account| {
             let endpoint = Endpoint::from_str(&account.endpoint);
             let client = get_client(&account.use_proxy, &config, &endpoint, &account.password);
@@ -32,5 +33,7 @@ pub async fn load_account_from_database(
                 client,
             }
         })
-        .collect::<Vec<AccountVisitor>>()
+        .collect::<Vec<AccountVisitor>>();
+
+    Ok(back)
 }

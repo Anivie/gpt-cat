@@ -24,7 +24,7 @@ use crate::cmd::hot_reload::enable_config_hot_reload;
 use crate::data::config::config_file::Config;
 use crate::data::config::model_price::ModelPriceMap;
 use crate::data::config::runtime_data::{GlobalData, ServerPipeline};
-use crate::data::database::database_manager::connect_to_database;
+use crate::data::database::database_manager::connect_to_database_sqlx;
 use crate::http::client::util::account_manager::load_account_from_database;
 use crate::http::client::util::counter::concurrency_pool::VecSafePool;
 use crate::http::server::web::server::main_chat;
@@ -34,6 +34,7 @@ mod data;
 #[macro_use]
 mod http;
 mod cmd;
+mod new_cmd;
 
 fn enable_logging() {
     let config = fast_log::config::Config::new()
@@ -50,7 +51,7 @@ fn enable_logging() {
 }
 
 #[tokio::main]
-async fn main() -> std::io::Result<()> {
+async fn main() -> anyhow::Result<()> {
     color_eyre::install().unwrap();
     enable_logging();
     rustls::crypto::aws_lc_rs::default_provider().install_default().expect("Error installing default rustls provider");
@@ -67,10 +68,10 @@ async fn main() -> std::io::Result<()> {
         let model = ModelPriceMap::default();
 
         // Connect to database
-        let db = connect_to_database(&config).await.unwrap();
+        let db = connect_to_database_sqlx(&config).await?;
 
         // Load account from database
-        let account = load_account_from_database(&config, &db).await;
+        let account = load_account_from_database(&config, &db).await?;
         info!("Loaded {} accounts from database.", account.len());
 
         let data = GlobalData {
@@ -85,7 +86,7 @@ async fn main() -> std::io::Result<()> {
     };
 
     tokio::spawn(async move {
-        cmd::add_cmd_listener(data).await;
+        new_cmd::handlers::command_listener::add_cmd_listener(data).await;
     });
 
     thread::spawn(move || {

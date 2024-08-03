@@ -1,30 +1,14 @@
 //! Command listener for this app.
 //! It will listen to stdin and execute commands.
 
-use std::ops::Deref;
-use std::time::Duration;
-
-use log::info;
-use sea_orm::ActiveValue::Set;
-use sea_orm::ColumnTrait;
-use sea_orm::{EntityTrait, QueryFilter};
-use tokio::io::{AsyncBufReadExt, BufReader};
-use tokio::select;
-use tokio::time::sleep;
 use uuid::Uuid;
-use crate::data::config::endpoint::Endpoint;
-use crate::data::config::runtime_data::{AccountVisitor, GlobalData};
-use crate::data::database::entities::prelude::{AccountList, ChatList, User, UserUsage};
-use crate::data::database::entities::{account_list, user, user_usage};
-use crate::http::client::util::counter::concurrency_pool::VecSafePool;
-use crate::http::client::util::get_reqwest_client::get_client;
 
 #[macro_use]
 mod utils;
 pub mod hot_reload;
 
 /// Register a command listener, this should be called in a different task.
-pub async fn add_cmd_listener(global_data: &GlobalData) {
+/*pub async fn add_cmd_listener(global_data: &GlobalData) {
     let mut reader = BufReader::new(tokio::io::stdin());
     let mut buffer = String::new();
     loop {
@@ -44,9 +28,9 @@ pub async fn add_cmd_listener(global_data: &GlobalData) {
             }
         }
     }
-}
+}*/
 
-async fn process_command(global_data: &GlobalData, parts: Vec<&str>) -> bool {
+/*async fn process_command(global_data: &GlobalData, parts: Vec<&str>) -> bool {
     define_commands! { parts,
         ["adu"] => {
             let key = generate_key();
@@ -286,10 +270,16 @@ async fn process_command(global_data: &GlobalData, parts: Vec<&str>) -> bool {
         } help "list user usages",
     }
     false
-}
+}*/
 
 fn generate_key() -> String {
     let base = Uuid::new_v4().to_string().replace("-", "");
     let extra = Uuid::new_v4().to_string();
-    format!("sk-{}{}{}{}", base, &extra[0..8], &extra[9..13], &extra[19..23])
+    format!(
+        "sk-{}{}{}{}",
+        base,
+        &extra[0..8],
+        &extra[9..13],
+        &extra[19..23]
+    )
 }

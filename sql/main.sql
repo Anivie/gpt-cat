@@ -7,6 +7,8 @@
 -- 5：可用账户列表account_list，其中包含自增的主键id，是否被禁用，用户名，密码，账户类型字段"Endpoint"
 -- 其中，当表三增加记录时，表二对应用户的已使用次数要自动增加，同时通过本次记录使用的输入、输出token和它们对应的单价，在usage中进行扣费。
 -- 当user表添加或删除用户时，user_usage应该自动增加或删除记录，当user_usage中的money字段小于等于0时user变为不可用状态。
+
+
 -- 创建用户表
 CREATE TABLE "user" (
                         id SERIAL PRIMARY KEY,

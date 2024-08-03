@@ -48,6 +48,13 @@ futures-util = "0.3.30"
 mime = "0.3.17"
 rust_decimal = "1.35.0"
 
+sqlx-postgres = { version = "0.8.0", features = ["json", "migrate"] }
+
+[dependencies.sqlx]
+version = "0.8.0"
+default-features = false
+features = ["runtime-tokio", "tls-rustls", "postgres", "macros", "time", "rust_decimal"]
+
 [dependencies.tower-http]
 version = "0.5.2"
 features = ["compression-full", "cors"]
@@ -59,10 +66,6 @@ features = ["tokio", "json", "macros"]
 [dependencies.axum-server]
 version = "0.7.1"
 features = ["tls-rustls"]
-
-[dependencies.sea-orm]
-version = "1.0.0"
-features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"]
 
 [dependencies.tokio]
 version = "1.39.2"

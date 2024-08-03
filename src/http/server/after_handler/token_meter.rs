@@ -2,11 +2,7 @@ use std::sync::{Arc, LazyLock};
 
 use color_eyre::owo_colors::OwoColorize;
 use log::{error, info};
-use sea_orm::ActiveValue::Set;
-use sea_orm::EntityTrait;
 use tiktoken_rs::{cl100k_base, o200k_base, CoreBPE};
-
-use crate::data::database::entities::prelude::UsageList;
 use crate::data::openai_api::openai_request::MessageUtil;
 use crate::http::client::client_sender::channel_manager::ChannelBufferManager;
 use crate::http::server::after_handler::{ClientEndAfterHandlerImpl, ClientEndContext};
@@ -59,21 +55,27 @@ impl ClientEndAfterHandlerImpl for TokenMeterHandler {
                 price.value()
             );
             let price = price.value().clone();
-            let list = crate::data::database::entities::usage_list::ActiveModel {
-                user_id: Set(Some(context.user_id)),
-                input_tokens: Set(user_token as i32),
-                output_tokens: Set(ai_token as i32),
-                input_token_price: Set(price.input_price),
-                output_token_price: Set(price.output_price),
-                ..Default::default()
-            };
-            let insert_result = UsageList::insert(list)
-                .exec(&context.data.data_base)
+
+            let insert_id = sqlx::query!(
+                "
+                    INSERT INTO
+                    usage_list (user_id, input_tokens, output_tokens, input_token_price, output_token_price)
+                    VALUES
+                    ($1, $2, $3, $4, $5)
+                ",
+                context.user_id,
+                user_token as i32,
+                ai_token as i32,
+                price.input_price,
+                price.output_price
+            )
+                .execute(&context.data.data_base)
                 .await
                 .map_err(|err| format!("Error when insert usage list: {}", err))?;
+
             info!(
-                "Insert usage last insert id: {}",
-                insert_result.last_insert_id
+                "Insert usage last insert id: {:?}",
+                insert_id
             );
         } else {
             error!("Model not found: {}", context.sender.request.model);

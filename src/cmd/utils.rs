@@ -1,5 +1,5 @@
-/// Macros to help define commands
-macro_rules! define_commands {
+//Macros to help define commands
+/*macro_rules! define_commands {
     ($parts:ident, $([$command:expr $(,$args:ident)*] => $action:block help $help:expr),* $(,)?) => {
         use colored::Colorize;
         use std::sync::LazyLock;
@@ -57,10 +57,10 @@ macro_rules! define_commands {
             }
         }
     };
-}
+}*/
 
-/// Macro to find a user id from an api key.
-macro_rules! find_user_id {
+//Macro to find a user id from an api key.
+/*macro_rules! find_user_id {
     ($api_key: expr, $database: expr) => {
         User::find()
             .filter(crate::data::database::entities::user::Column::ApiKey.eq($api_key.to_string()))
@@ -69,3 +69,4 @@ macro_rules! find_user_id {
             .unwrap()
     };
 }
+*/

@@ -1,6 +1,7 @@
 use parking_lot::RwLock;
 use reqwest::Client;
-use sea_orm::DatabaseConnection;
+use sqlx::Pool;
+use sqlx_postgres::Postgres;
 
 use crate::data::config::config_file::Config;
 use crate::data::config::endpoint::Endpoint;
@@ -35,7 +36,7 @@ pub struct AccountVisitor {
 /// - model_price: The model price map, which contains the price of the model.
 /// - model_info: The model manager, which contains the model info.
 pub struct GlobalData {
-    pub data_base: DatabaseConnection,
+    pub data_base: Pool<Postgres>,
     pub account_pool: RwLock<Vec<SafePool<AccountVisitor>>>,
     pub config: RwLock<Config>,
     pub model_price: RwLock<ModelPriceMap>,

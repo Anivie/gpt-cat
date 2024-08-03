@@ -3,12 +3,7 @@ use std::ops::Deref;
 use anyhow::anyhow;
 use log::info;
 use rayon::prelude::*;
-use sea_orm::ActiveValue::Set;
-use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter};
-
-use crate::data::database::entities;
-use crate::data::database::entities::prelude::{PrivateCommand, PublicCommand};
-use crate::data::database::entities::private_command;
+use crate::data::database::entity::user_command::{DataBasePrivateCommand, DataBasePublicCommand};
 use crate::data::openai_api::openai_request::Message;
 use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerImpl};
 
@@ -63,11 +58,18 @@ impl ClientJoinPreHandlerImpl for CommandHandler {
             info!("Try to find command: {}", message);
             match message {
                 "help" | "h" => {
-                    let public_commands = PublicCommand::find()
-                        .all(&context.global_data.data_base)
+                    let public_commands: Vec<DataBasePublicCommand> = sqlx::query_as!(DataBasePublicCommand, "SELECT * FROM public_command")
+                        .fetch_all(&context.global_data.data_base)
                         .await?;
-                    let private_commands = PrivateCommand::find()
-                        .all(&context.global_data.data_base)
+
+                    let user_id = context.user_id.ok_or(anyhow!("User id not found"))?;
+
+                    let private_commands: Vec<DataBasePrivateCommand> = sqlx::query_as!(
+                        DataBasePrivateCommand,
+                        "SELECT * FROM private_command WHERE user_id = $1",
+                        user_id
+                    )
+                        .fetch_all(&context.global_data.data_base)
                         .await?;
 
                     let map = public_commands
@@ -126,39 +128,70 @@ impl ClientJoinPreHandlerImpl for CommandHandler {
 
                     let messages = serde_json::to_string(&messages)?;
 
-                    let mut command = private_command::ActiveModel {
-                        user_id: Set(context.user_id),
-                        command: Set(command_name.clone()),
-                        describe: Set(command_describe),
-                        prompt: Set(messages),
-                        ..Default::default()
-                    };
-
-                    let exist_private_command = PrivateCommand::find()
-                        .filter(
-                            private_command::Column::UserId
-                                .eq(context.user_id)
-                                .and(private_command::Column::Command.eq(command_name.clone())),
-                        )
-                        .one(&context.global_data.data_base)
+                    sqlx::query!(
+                        "
+                            INSERT INTO
+                            private_command (user_id, command, describe, prompt)
+                            VALUES ($1, $2, $3, $4)
+                        ",
+                        context.user_id,
+                        command_name,
+                        command_describe,
+                        messages
+                    )
+                        .execute(&context.global_data.data_base)
                         .await?;
 
-                    return if let Some(exist_command) = exist_private_command {
-                        command.id = Set(exist_command.id);
-                        command.update(&context.global_data.data_base).await?;
+                    let exist_private_command = sqlx::query!(
+                        "SELECT * FROM private_command WHERE user_id = $1 AND command = $2",
+                        context.user_id,
+                        command_name
+                    )
+                        .fetch_one(&context.global_data.data_base)
+                        .await;
+
+                    return if let Ok(_) = exist_private_command {
+                        sqlx::query!(
+                            "
+                                UPDATE private_command
+                                SET describe = $1, prompt = $2
+                                WHERE user_id = $3 AND command = $4
+                            ",
+                            command_describe,
+                            messages,
+                            context.user_id,
+                            command_name
+                        )
+                            .execute(&context.global_data.data_base)
+                            .await?;
                         Err(anyhow!("Command: {} added.", command_name))
                     } else {
-                        command.insert(&context.global_data.data_base).await?;
+                        sqlx::query!(
+                            "
+                                INSERT INTO
+                                private_command (user_id, command, describe, prompt)
+                                VALUES ($1, $2, $3, $4)
+                            ",
+                            context.user_id,
+                            command_name,
+                            command_describe,
+                            messages
+                        )
+                            .execute(&context.global_data.data_base)
+                            .await?;
                         Err(anyhow!("Command: {} added.", command_name))
-                    };
+                    }
                 }
                 command => {
-                    let public_command = PublicCommand::find()
-                        .filter(entities::public_command::Column::Command.eq(command.to_string()))
-                        .one(&context.global_data.data_base)
-                        .await?;
+                    let public_command: Result<DataBasePublicCommand, sqlx::Error> = sqlx::query_as!(
+                        DataBasePublicCommand,
+                        "SELECT * FROM public_command WHERE command = $1 LIMIT 1",
+                        command
+                    )
+                        .fetch_one(&context.global_data.data_base)
+                        .await;
 
-                    if let Some(command) = public_command
+                    if let Ok(command) = public_command
                         && !command.is_disable
                     {
                         process_message!(command, context, message);
@@ -167,15 +200,24 @@ impl ClientJoinPreHandlerImpl for CommandHandler {
                             context.user_id, command.command
                         );
                     } else {
-                        let private_command = PrivateCommand::find()
+                        /*let private_command = PrivateCommand::find()
                             .filter(
                                 private_command::Column::Command
                                     .eq(command.to_string())
                                     .and(private_command::Column::UserId.eq(context.user_id)),
                             )
                             .one(&context.global_data.data_base)
-                            .await?;
-                        if let Some(command) = private_command
+                            .await?;*/
+                        let private_command: Result<DataBasePrivateCommand, sqlx::Error> = sqlx::query_as!(
+                            DataBasePrivateCommand,
+                            "SELECT * FROM private_command WHERE user_id = $1 AND command = $2 LIMIT 1",
+                            context.user_id,
+                            command
+                        )
+                            .fetch_one(&context.global_data.data_base)
+                            .await;
+
+                        if let Ok(command) = private_command
                             && !command.is_disable
                         {
                             process_message!(command, context, message);
