@@ -33,6 +33,7 @@ pub async fn add_cmd_listener(global_data: &GlobalData) {
 
                 if let Ok(a) = command && a > 0 {
                     let parts: Vec<&str> = buffer.trim().split_whitespace().collect();
+
                     if parts.is_empty() {
                         println!("{}", HELP_MESSAGE.deref());
                         buffer.clear();
@@ -46,7 +47,6 @@ pub async fn add_cmd_listener(global_data: &GlobalData) {
                             buffer.clear();
                             continue;
                     }
-                    println!("cat");
 
                     let mut running = false;
                     for x in HANDLER.iter() {
@@ -58,7 +58,6 @@ pub async fn add_cmd_listener(global_data: &GlobalData) {
                             break;
                         }
                     }
-                    println!("dog");
 
                     if !running {
                         info!("Command: '{}' not found.", parts[0].red());
