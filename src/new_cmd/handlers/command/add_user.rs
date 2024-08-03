@@ -12,8 +12,8 @@ impl CommandHandler for AddUser {
     fn description(&self) -> CommandDescription {
         describe! {
             ["add_user" | "au"] help "Add a new user",
-            ("api_key") => "The api key of the user, if not provided, a random api key will be generated.",
-            ("balance") => "The balance of the user, if not provided, 0 will be set.",
+            ("api_key") => "The api key of the user, if not provided, a random api key will be generated.";
+            ("balance") => "The balance of the user, if not provided, 0 will be set.";
         }
     }
 

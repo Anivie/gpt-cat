@@ -11,15 +11,31 @@ macro_rules! describe {
     (
         [$($command_name:tt)|*] help $help:expr,
         $($param:expr => $description:expr),*,
-        $(, ($optional_param:expr) => $optional_description:expr),*
+    ) => {
+        CommandDescription {
+            name: vec![$($command_name,)*],
+            help: $help,
+            param: Some(
+                vec![$(($param, true),)* ]
+            ),
+            param_description: Some(
+                vec![$($description,)* ]
+            ),
+        }
+    };
+
+    (
+        [$($command_name:tt)|*] help $help:expr,
+        $($param:expr => $description:expr),*,
+        $(($optional_param:expr) => $optional_description:expr);*;
     ) => {
         CommandDescription {
             name: vec![$($command_name,)*],
             help: $help,
             param: Some(
                 vec![
-                    $(($param, false),)*
-                    $(($optional_param, true),)*
+                    $(($param, true),)*
+                    $(($optional_param, false),)*
                 ]
             ),
             param_description: Some(
@@ -27,6 +43,22 @@ macro_rules! describe {
                     $($description,)*
                     $(($optional_description),)*
                 ]
+            ),
+        }
+    };
+
+    (
+        [$($command_name:tt)|*] help $help:expr,
+        $(($optional_param:expr) => $optional_description:expr);*;
+    ) => {
+        CommandDescription {
+            name: vec![$($command_name,)*],
+            help: $help,
+            param: Some(
+                vec![$(($optional_param, false),)* ]
+            ),
+            param_description: Some(
+                vec![$(($optional_description),)* ]
             ),
         }
     };
