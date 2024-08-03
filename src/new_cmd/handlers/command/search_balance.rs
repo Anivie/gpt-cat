@@ -1,6 +1,5 @@
 use log::info;
 use crate::data::config::runtime_data::GlobalData;
-use crate::data::database::entity::user::DataBaseUser;
 use crate::new_cmd::handlers::dispatcher::{CommandDescription, CommandHandler};
 
 #[derive(Default)]
