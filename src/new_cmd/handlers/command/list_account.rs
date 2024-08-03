@@ -10,11 +10,8 @@ pub(in crate::new_cmd::handlers) struct ListAccount;
 
 impl CommandHandler for ListAccount {
     fn description(&self) -> CommandDescription {
-        CommandDescription {
-            name: vec![ "list_account", "la" ],
-            help: "List all accounts.",
-            param: None,
-            param_description: None,
+        describe! {
+            ["list_account" | "la"] help "List all accounts"
         }
     }
 

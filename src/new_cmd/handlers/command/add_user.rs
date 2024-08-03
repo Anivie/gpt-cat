@@ -9,14 +9,10 @@ pub(in crate::new_cmd::handlers) struct AddUser;
 
 impl CommandHandler for AddUser {
     fn description(&self) -> CommandDescription {
-        CommandDescription {
-            name: vec!["add_user", "au"],
-            help: "Add a new user",
-            param: Some(vec![("api_key", false), ("balance", false)]),
-            param_description: Some(vec![
-                    "The api key of the user, if not provided, a random api key will be generated.",
-                    "The balance of the user, if not provided, 0 will be set."
-            ]),
+        describe! {
+            ["add_user" | "au"] help "Add a new user",
+            ("api_key") => "The api key of the user, if not provided, a random api key will be generated.",
+            ("balance") => "The balance of the user, if not provided, 0 will be set.",
         }
     }
 
