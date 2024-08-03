@@ -70,3 +70,4 @@ pub(in crate::new_cmd::handlers) mod add_user;
 pub(in crate::new_cmd::handlers) mod edit_balance;
 pub(in crate::new_cmd::handlers) mod search_balance;
 pub(in crate::new_cmd::handlers) mod search_user;
+pub(in crate::new_cmd::handlers) mod manage_account_pool;

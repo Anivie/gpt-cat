@@ -2,6 +2,7 @@ use crate::data::config::runtime_data::GlobalData;
 use crate::new_cmd::handlers::command::add_user::AddUser;
 use crate::new_cmd::handlers::command::edit_balance::EditUserBalance;
 use crate::new_cmd::handlers::command::list_account::ListAccount;
+use crate::new_cmd::handlers::command::manage_account_pool::ManageAccountPool;
 use crate::new_cmd::handlers::command::search_balance::SearchBalance;
 use crate::new_cmd::handlers::command::search_user::SearchUser;
 
@@ -17,5 +18,6 @@ command_handler_dispatcher! {
     AddUser,
     EditUserBalance,
     SearchBalance,
-    SearchUser
+    SearchUser,
+    ManageAccountPool
 }
