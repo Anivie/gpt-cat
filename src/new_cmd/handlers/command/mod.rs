@@ -1,3 +1,33 @@
+/// Generate a command description for each command, the macro will generate a CommandDescription struct
+/// with the name, help, param and param_description fields.
+///
+/// # Example
+/// ```rs
+/// describe! {
+///    ["list_account" | "la"] help "List all accounts"
+/// }
+/// ```
+///
+///
+///
+/// Or with parameters:
+/// ```rs
+/// describe! {
+///   ["edit_balance" | "eb"] help "Edit balance of a user",
+///  "api_key" => "The api key of the user",
+///  "balance" => "The new balance of the user",
+/// }
+/// ```
+///
+///
+/// Note that if a parameter is optional, you can wrap it with parentheses:
+/// ```rs
+/// describe! {
+///     ["add_user" | "au"] help "Add a new user",
+///     ("api_key") => "The api key of the user, if not provided, a random api key will be generated.";
+///     ("balance") => "The balance of the user, if not provided, 0 will be set.";
+/// }
+/// ```
 macro_rules! describe {
     ([$($command_name:tt)|*] help $help:expr) => {
         CommandDescription {
