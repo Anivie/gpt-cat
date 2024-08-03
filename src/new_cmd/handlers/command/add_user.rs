@@ -1,4 +1,6 @@
 use log::info;
+use rust_decimal::Decimal;
+use sqlx_postgres::PgQueryResult;
 use uuid::Uuid;
 
 use crate::data::config::runtime_data::GlobalData;
@@ -16,14 +18,35 @@ impl CommandHandler for AddUser {
         }
     }
 
-    async fn execute(&self, global_data: &GlobalData, _: &Vec<&str>) -> anyhow::Result<()> {
-        let key = generate_key();
-        let user = sqlx::query!(r#"INSERT INTO "user" (api_key) VALUES ($1)"#,key)
+    async fn execute(&self, global_data: &GlobalData, param: &Vec<&str>) -> anyhow::Result<()> {
+        let key = if let Some(&first) = param.first() {
+            if first.starts_with("sk-") {
+                first.to_string()
+            }else {
+                return Err(anyhow::anyhow!("Invalid api key: key must start with 'sk-'"));
+            }
+
+        }else {
+            generate_key()
+        };
+
+        sqlx::query!(r#"INSERT INTO "user" (api_key) VALUES ($1)"#, key)
             .execute(&global_data.data_base)
             .await?;
 
+        let user = sqlx::query!(r#"SELECT * FROM "user" WHERE api_key = $1"#, key)
+            .fetch_one(&global_data.data_base)
+            .await?;
+
+        if param.len() > 1 {
+            let balance = param[1].parse::<i64>()?;
+            sqlx::query!(r#"UPDATE "user_usage" SET total_purchased = $1 WHERE user_id = $2"#, Decimal::from(balance), user.id)
+                .execute(&global_data.data_base)
+                .await?;
+        }
+
         info!(
-            "User {:?} has been added, id: {:?}",
+            "User {:?} has been added, user: {:?}",
             key, user
         );
         Ok(())

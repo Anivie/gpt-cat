@@ -21,36 +21,44 @@ pub async fn add_cmd_listener(global_data: &GlobalData) {
         select! {
             command = reader.read_line(&mut buffer) => {
                 static HANDLER: LazyLock<Vec<CommandHandlerDispatcher>> = LazyLock::new(|| new_command_handler_dispatcher());
+                static HELP_MESSAGE: LazyLock<String> = LazyLock::new(|| {
+                    HANDLER
+                        .par_iter()
+                        .map(|x| {
+                            let description = x.description().help_message();
+                            format!("{}\n", description)
+                        })
+                        .collect::<String>()
+                });
 
                 if let Ok(a) = command && a > 0 {
                     let parts: Vec<&str> = buffer.trim().split_whitespace().collect();
-                    if let Some(&first) = parts.first() {
-                        if first.is_empty() || first == "help" || first == "h" {
-                            static HELP_MESSAGE: LazyLock<String> = LazyLock::new(|| {
-                                HANDLER
-                                    .par_iter()
-                                    .map(|x| {
-                                        let description = x.description().help_message();
-                                        format!("{}\n", description)
-                                    })
-                                    .collect::<String>()
-                            });
-
-                            println!("{}", HELP_MESSAGE.deref());
-
-                            continue;
-                        }
+                    if parts.is_empty() {
+                        println!("{}", HELP_MESSAGE.deref());
+                        buffer.clear();
+                        continue;
                     }
 
-                    let running = false;
+                    if let Some(&first) = parts.first() &&
+                        (first.is_empty() || first == "help" || first == "h")
+                    {
+                            println!("{}", HELP_MESSAGE.deref());
+                            buffer.clear();
+                            continue;
+                    }
+                    println!("cat");
+
+                    let mut running = false;
                     for x in HANDLER.iter() {
-                        /*if x.name().contains(&parts[0]) {
-                            parts.pop();
-                            x.execute(global_data, &parts).await.expect("Failed to execute command");
+                        if x.description().name.contains(&parts[0]) {
+                            let mut args = parts.clone();
+                            args.remove(0);
+                            x.execute(global_data, &args).await.expect("Failed to execute command");
                             running = true;
                             break;
-                        }*/
+                        }
                     }
+                    println!("dog");
 
                     if !running {
                         info!("Command: '{}' not found.", parts[0].red());
