@@ -5,8 +5,10 @@ use crate::new_cmd::handlers::command::list_account::ListAccount;
 mod command;
 pub mod command_listener;
 
-#[macro_use]
 mod dispatcher;
+
+#[macro_use]
+mod macros;
 
 command_handler_dispatcher! {
     ListAccount,

@@ -3,18 +3,19 @@ use std::ops::Deref;
 use log::info;
 
 use crate::data::config::runtime_data::GlobalData;
-use crate::new_cmd::handlers::dispatcher::CommandHandler;
+use crate::new_cmd::handlers::dispatcher::{CommandDescription, CommandHandler};
 
 #[derive(Default)]
 pub(in crate::new_cmd::handlers) struct ListAccount;
 
 impl CommandHandler for ListAccount {
-    fn name(&self) -> Vec<&str> {
-        vec!["la"]
-    }
-
-    fn help(&self) -> &str {
-        "List all accounts in account pool."
+    fn description(&self) -> CommandDescription {
+        CommandDescription {
+            name: vec![ "list_account", "la" ],
+            help: "List all accounts.",
+            param: None,
+            param_description: None,
+        }
     }
 
     async fn execute(&self, global_data: &GlobalData, _: &Vec<&str>) -> anyhow::Result<()> {

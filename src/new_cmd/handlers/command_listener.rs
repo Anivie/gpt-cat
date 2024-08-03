@@ -1,8 +1,10 @@
+use std::ops::Deref;
 use std::sync::LazyLock;
 use std::time::Duration;
 
 use colored::Colorize;
 use log::info;
+use rayon::prelude::*;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::select;
 use tokio::time::sleep;
@@ -21,19 +23,33 @@ pub async fn add_cmd_listener(global_data: &GlobalData) {
                 static HANDLER: LazyLock<Vec<CommandHandlerDispatcher>> = LazyLock::new(|| new_command_handler_dispatcher());
 
                 if let Ok(a) = command && a > 0 {
-                    let mut parts: Vec<&str> = buffer.trim().split_whitespace().collect();
-                    if let Some(&first) = parts.first() && first == "help" {
-                        continue;
+                    let parts: Vec<&str> = buffer.trim().split_whitespace().collect();
+                    if let Some(&first) = parts.first() {
+                        if first.is_empty() || first == "help" || first == "h" {
+                            static HELP_MESSAGE: LazyLock<String> = LazyLock::new(|| {
+                                HANDLER
+                                    .par_iter()
+                                    .map(|x| {
+                                        let description = x.description().help_message();
+                                        format!("{}\n", description)
+                                    })
+                                    .collect::<String>()
+                            });
+
+                            println!("{}", HELP_MESSAGE.deref());
+
+                            continue;
+                        }
                     }
 
-                    let mut running = false;
+                    let running = false;
                     for x in HANDLER.iter() {
-                        if x.name().contains(&parts[0]) {
+                        /*if x.name().contains(&parts[0]) {
                             parts.pop();
                             x.execute(global_data, &parts).await.expect("Failed to execute command");
                             running = true;
                             break;
-                        }
+                        }*/
                     }
 
                     if !running {

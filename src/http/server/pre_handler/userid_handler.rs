@@ -12,11 +12,6 @@ impl ClientJoinPreHandlerImpl for UserIDHandler {
         context: &mut ClientJoinContext<'a>,
     ) -> anyhow::Result<Option<String>> {
         let user_id = if let Some(auth) = &context.user_key {
-            /*let user = User::find()
-                .filter(crate::data::database::entities::user::Column::ApiKey.eq(auth))
-                .one(&context.global_data.data_base)
-                .await
-                .unwrap();*/
 
             let user: Result<DataBaseUser, sqlx::Error> = sqlx::query_as!(
                 DataBaseUser,
