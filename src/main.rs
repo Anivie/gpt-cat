@@ -20,7 +20,6 @@ use tokio::net::TcpListener;
 use tower_http::compression::CompressionLayer;
 use tower_http::cors::CorsLayer;
 
-use crate::cmd::hot_reload::enable_config_hot_reload;
 use crate::data::config::config_file::Config;
 use crate::data::config::model_price::ModelPriceMap;
 use crate::data::config::runtime_data::{GlobalData, ServerPipeline};
@@ -29,11 +28,11 @@ use crate::http::client::util::account_manager::load_account_from_database;
 use crate::http::client::util::counter::concurrency_pool::VecSafePool;
 use crate::http::server::{get_client_end_handler, get_client_join_handler};
 use crate::http::server::web::server::main_chat;
+use crate::new_cmd::hot_reload::enable_config_hot_reload;
 
 mod data;
 #[macro_use]
 mod http;
-mod cmd;
 mod new_cmd;
 
 fn enable_logging() {
