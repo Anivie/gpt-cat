@@ -1,5 +1,6 @@
 use sqlx::Pool;
 use sqlx_postgres::{PgPoolOptions, Postgres};
+
 use crate::data::config::config_file::Config;
 
 /// Connect to the database, I am use PostgreSQL in the debug environment.

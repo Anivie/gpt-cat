@@ -3,6 +3,7 @@ use std::ops::Deref;
 use anyhow::anyhow;
 use log::info;
 use rayon::prelude::*;
+
 use crate::data::database::entity::user_command::{DataBasePrivateCommand, DataBasePublicCommand};
 use crate::data::openai_api::openai_request::Message;
 use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerImpl};

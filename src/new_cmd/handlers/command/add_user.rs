@@ -1,8 +1,8 @@
-use crate::data::config::runtime_data::GlobalData;
-use crate::new_cmd::handlers::dispatcher::CommandHandler;
 use log::info;
 use uuid::Uuid;
 
+use crate::data::config::runtime_data::GlobalData;
+use crate::new_cmd::handlers::dispatcher::CommandHandler;
 
 #[derive(Default)]
 pub(in crate::new_cmd::handlers) struct AddUser;

@@ -4,9 +4,9 @@ use std::sync::Arc;
 use async_stream::stream;
 use axum::extract::State;
 use axum::http::{header, HeaderMap};
-use axum::response::sse::Event;
-use axum::response::{IntoResponse, Sse};
 use axum::Json;
+use axum::response::{IntoResponse, Sse};
+use axum::response::sse::Event;
 use futures::Stream;
 use log::info;
 use tokio::spawn;
@@ -14,11 +14,11 @@ use tokio::sync::mpsc::{channel, Receiver};
 
 use crate::data::config::runtime_data::ServerPipeline;
 use crate::data::openai_api::openai_request::OpenAIRequest;
+use crate::GlobalData;
 use crate::http::client::client_sender::channel_manager::{ChannelSender, ClientSender};
 use crate::http::server::after_handler::ClientEndContext;
 use crate::http::server::pre_handler::ClientJoinContext;
 use crate::http::server::web::enum_response::ResponseData;
-use crate::GlobalData;
 
 /// The main chat handler
 /// This handler will handle the main chat request

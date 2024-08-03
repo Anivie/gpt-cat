@@ -1,5 +1,6 @@
 use std::sync::LazyLock;
 use std::time::Duration;
+
 use colored::Colorize;
 use log::info;
 use tokio::io::{AsyncBufReadExt, BufReader};
@@ -9,7 +10,6 @@ use tokio::time::sleep;
 use crate::data::config::runtime_data::GlobalData;
 use crate::new_cmd::handlers::{CommandHandlerDispatcher, new_command_handler_dispatcher};
 use crate::new_cmd::handlers::dispatcher::CommandHandler;
-
 
 /// Register a command listener, this should be called in a different task.
 pub async fn add_cmd_listener(global_data: &GlobalData) {

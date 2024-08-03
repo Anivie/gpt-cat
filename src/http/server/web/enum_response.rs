@@ -1,8 +1,8 @@
 use std::convert::Infallible;
 
 use axum::http::HeaderMap;
-use axum::response::sse::Event;
 use axum::response::{IntoResponse, Response, Sse};
+use axum::response::sse::Event;
 use futures::Stream;
 
 /// The enum for the response data

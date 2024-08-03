@@ -8,8 +8,8 @@ use std::io::BufReader;
 use std::net::SocketAddr;
 use std::thread;
 
-use axum::routing::post;
 use axum::Router;
+use axum::routing::post;
 use axum_server::tls_rustls::RustlsConfig;
 use fast_log::consts::LogSize;
 use fast_log::plugin::file_split::{KeepType, Rolling, RollingType};
@@ -27,8 +27,8 @@ use crate::data::config::runtime_data::{GlobalData, ServerPipeline};
 use crate::data::database::database_manager::connect_to_database_sqlx;
 use crate::http::client::util::account_manager::load_account_from_database;
 use crate::http::client::util::counter::concurrency_pool::VecSafePool;
-use crate::http::server::web::server::main_chat;
 use crate::http::server::{get_client_end_handler, get_client_join_handler};
+use crate::http::server::web::server::main_chat;
 
 mod data;
 #[macro_use]
