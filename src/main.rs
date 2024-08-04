@@ -1,5 +1,4 @@
 #![feature(let_chains)]
-#![feature(const_trait_impl)]
 #![allow(unused_doc_comments)]
 #![cfg_attr(debug_assertions, allow(warnings))]
 
