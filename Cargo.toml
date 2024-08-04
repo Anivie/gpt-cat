@@ -26,6 +26,7 @@ log = "0.4.22"
 fast_log = { version = "1.7.3", features = ["lz4"] }
 colored = "2.1.0"
 color-eyre = { version = "0.6.3", default-features = false }
+rustyline = "14.0.0"
 
 parking_lot = { version = "0.12.3", features = ["send_guard"] }
 dashmap = { version = "6.0.0", features = ["inline", "serde"] }
@@ -48,12 +49,14 @@ futures-util = "0.3.30"
 mime = "0.3.17"
 rust_decimal = "1.35.0"
 
-sqlx-postgres = { version = "0.8.0", features = ["json", "migrate"] }
-
 [dependencies.sqlx]
 version = "0.8.0"
 default-features = false
 features = ["runtime-tokio", "tls-rustls", "postgres", "macros", "time", "rust_decimal"]
+
+[dependencies.sqlx-postgres]
+version = "0.8.0"
+features = ["json", "migrate"]
 
 [dependencies.tower-http]
 version = "0.5.2"

@@ -6,7 +6,6 @@
 use std::fs::File;
 use std::io::BufReader;
 use std::net::SocketAddr;
-use std::thread;
 
 use axum::Router;
 use axum::routing::post;
@@ -17,6 +16,7 @@ use fast_log::plugin::packer::LZ4Packer;
 use log::info;
 use parking_lot::lock_api::RwLock;
 use tokio::net::TcpListener;
+use tokio::task::spawn_blocking;
 use tower_http::compression::CompressionLayer;
 use tower_http::cors::CorsLayer;
 
@@ -84,11 +84,11 @@ async fn main() -> anyhow::Result<()> {
         Box::leak(Box::new(data))
     };
 
-    tokio::spawn(async move {
-        new_cmd::handlers::command_listener::add_cmd_listener(data).await;
+    spawn_blocking(move || {
+        new_cmd::handlers::command_listener::add_cmd_listener(data);
     });
 
-    thread::spawn(move || {
+    spawn_blocking(move || {
         enable_config_hot_reload(data).unwrap();
     });
 
