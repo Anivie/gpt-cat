@@ -122,8 +122,13 @@ async fn main() -> anyhow::Result<()> {
     });
 
     if enable_https {
+        let (cert_path, key_path) = {
+            let config = data.config.read();
+            (config.http_config.tls_cert_path.clone(), config.http_config.tls_key_path.clone())
+        };
+
         tokio::spawn(async move {
-            let rustls = RustlsConfig::from_pem_file("./ssl/fullchain.pem", "./ssl/key.pem").await.unwrap();
+            let rustls = RustlsConfig::from_pem_file(cert_path.as_str(), key_path.as_str()).await.unwrap();
             axum_server::bind_rustls(SocketAddr::from((https_address, https_port)), rustls)
                 .serve(service)
                 .await

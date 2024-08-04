@@ -7,9 +7,11 @@ use crate::data::config::entity::endpoint::Endpoint;
 
 const fn default_number_can_retries() -> u32 { 3 }
 const fn default_request_concurrency_count() -> u32 { 10 }
-fn default_address() -> String { "0.0.0.0".to_string() }
 const fn default_http_address() -> u16 { 7117 }
 const fn default_https_address() -> u16 { 11711 }
+fn default_address() -> String { "0.0.0.0".to_string() }
+fn default_pem_path() -> String { "./ssl/fullchain.pem".to_string() }
+fn default_key_path() -> String { "./ssl/key.pem".to_string() }
 
 /// The config file of the server.
 /// This will be read from ./config/config.json
@@ -51,6 +53,11 @@ pub struct HttpServerConfig {
     pub https_address: String,
     #[serde(default = "default_https_address")]
     pub https_port: u16,
+
+    #[serde(default = "default_pem_path")]
+    pub tls_cert_path: String,
+    #[serde(default = "default_key_path")]
+    pub tls_key_path: String,
 }
 
 /// The proxy config that can be used in each endpoint key.

@@ -33,6 +33,12 @@ pub fn get_config() -> anyhow::Result<Config> {
             "HTTPS_PORT" => {
                 config.http_config.https_port = value.parse()?;
             }
+            "TLS_CERT_PATH" => {
+                config.http_config.tls_cert_path = value.parse()?;
+            }
+            "TLS_KEY_PATH" => {
+                config.http_config.tls_key_path = value.parse()?;
+            }
             _ => {}
         }
     }
