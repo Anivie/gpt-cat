@@ -3,8 +3,6 @@
 #![allow(unused_doc_comments)]
 #![cfg_attr(debug_assertions, allow(warnings))]
 
-use std::fs::File;
-use std::io::BufReader;
 use std::net::{IpAddr, SocketAddr};
 use std::str::FromStr;
 use axum::Router;
@@ -21,7 +19,6 @@ use tokio::task::spawn_blocking;
 use tower_http::compression::CompressionLayer;
 use tower_http::cors::CorsLayer;
 
-use data::config::entity::config_file::Config;
 use data::config::entity::model_price::ModelPriceMap;
 use data::config::entity::runtime_data::{GlobalData, ServerPipeline};
 use crate::data::config::config_helper::get_config;
