@@ -24,7 +24,6 @@ impl CommandHandler for AddUser {
             }else {
                 return Err(anyhow::anyhow!("Invalid api key: key must start with 'sk-'"));
             }
-
         }else {
             generate_key()
         };
