@@ -75,8 +75,8 @@ impl ClientEndAfterHandlerImpl for TokenMeterHandler {
                 .map_err(|err| format!("Error when insert usage list: {}", err))?;
 
             info!(
-                "Insert usage last insert id: {:?}",
-                insert_id
+                "Insert usage last insert id: {:?}, current endpoint: {}",
+                insert_id, context.response_data.use_endpoint
             );
         } else {
             error!("Model not found: {}", context.sender.request.model);
