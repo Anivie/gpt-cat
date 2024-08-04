@@ -43,11 +43,11 @@ macro_rules! process_stream {
 /// Which can avoid the dynamic dispatch and make the code more efficient
 macro_rules! impl_specific_responder {
         ($($endpoint:ident :: $variant:ident with $responder:ident),*) => {
-        use crate::data::config::runtime_data::AccountVisitor;
+        use crate::data::config::entity::runtime_data::AccountVisitor;
 
         use crate::http::client::specific_responder::*;
         use crate::http::client::client_sender::channel_manager::ClientSender;
-        use crate::data::config::endpoint::Endpoint;
+        use crate::data::config::entity::endpoint::Endpoint;
 
         pub enum ResponderDispatcher {
             $(

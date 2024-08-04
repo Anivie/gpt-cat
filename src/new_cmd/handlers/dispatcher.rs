@@ -1,4 +1,4 @@
-use crate::data::config::runtime_data::GlobalData;
+use crate::data::config::entity::runtime_data::GlobalData;
 
 pub(super) struct CommandDescription {
     pub name: Vec<&'static str>,

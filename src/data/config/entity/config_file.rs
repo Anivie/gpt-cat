@@ -3,7 +3,13 @@ use std::ops::Deref;
 use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 
-use crate::data::config::endpoint::Endpoint;
+use crate::data::config::entity::endpoint::Endpoint;
+
+const fn default_number_can_retries() -> u32 { 3 }
+const fn default_request_concurrency_count() -> u32 { 10 }
+fn default_address() -> String { "0.0.0.0".to_string() }
+const fn default_http_address() -> u16 { 7117 }
+const fn default_https_address() -> u16 { 11711 }
 
 /// The config file of the server.
 /// This will be read from ./config/config.json
@@ -16,12 +22,35 @@ use crate::data::config::endpoint::Endpoint;
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Config {
     pub endpoint: EndpointMap,
+
+    #[serde(default)]
     pub database_url: String,
 
+    #[serde(default = "default_number_can_retries")]
     pub number_can_retries: u32,
+    #[serde(default = "default_request_concurrency_count")]
     pub request_concurrency_count: u32,
 
+    #[serde(flatten)]
+    pub http_config: HttpServerConfig,
+
     pub proxy: Option<Vec<ProxyConfig>>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct HttpServerConfig {
+    #[serde(default)]
+    pub enable_https: bool,
+
+    #[serde(default = "default_address")]
+    pub http_address: String,
+    #[serde(default = "default_http_address")]
+    pub http_port: u16,
+
+    #[serde(default = "default_address")]
+    pub https_address: String,
+    #[serde(default = "default_https_address")]
+    pub https_port: u16,
 }
 
 /// The proxy config that can be used in each endpoint key.

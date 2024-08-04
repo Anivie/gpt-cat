@@ -1,4 +1,4 @@
-use crate::data::config::runtime_data::GlobalData;
+use crate::data::config::entity::runtime_data::GlobalData;
 use crate::new_cmd::handlers::command::add_user::AddUser;
 use crate::new_cmd::handlers::command::edit_balance::EditUserBalance;
 use crate::new_cmd::handlers::command::list_account::ListAccount;

@@ -7,10 +7,10 @@ use colored::Colorize;
 use log::{error, info};
 use notify::{PollWatcher, RecursiveMode, Watcher};
 
-use crate::data::config::config_file::Config;
-use crate::data::config::model_manager::ModelManager;
-use crate::data::config::model_price::ModelPriceMap;
-use crate::data::config::runtime_data::GlobalData;
+use crate::data::config::entity::config_file::Config;
+use crate::data::config::entity::model_manager::ModelManager;
+use crate::data::config::entity::model_price::ModelPriceMap;
+use crate::data::config::entity::runtime_data::GlobalData;
 
 pub fn enable_config_hot_reload(global_data: &GlobalData) -> notify::Result<()> {
     info!("{}", "Start watching config file.".to_string().green());

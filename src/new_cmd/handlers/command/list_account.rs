@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use log::info;
 
-use crate::data::config::runtime_data::GlobalData;
+use crate::data::config::entity::runtime_data::GlobalData;
 use crate::new_cmd::handlers::dispatcher::{CommandDescription, CommandHandler};
 
 #[derive(Default)]

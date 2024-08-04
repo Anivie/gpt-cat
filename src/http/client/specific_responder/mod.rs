@@ -8,7 +8,7 @@
 
 use thiserror::Error;
 
-use crate::data::config::runtime_data::AccountVisitor;
+use crate::data::config::entity::runtime_data::AccountVisitor;
 use crate::http::client::client_sender::channel_manager::{ChannelBufferManager, ClientSender};
 
 #[macro_use]

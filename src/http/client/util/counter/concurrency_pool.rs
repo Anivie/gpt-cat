@@ -7,8 +7,8 @@ use rayon::prelude::*;
 use tokio::sync::mpsc::Sender;
 use tokio::time::sleep;
 
-use crate::data::config::endpoint::Endpoint;
-use crate::data::config::runtime_data::AccountVisitor;
+use crate::data::config::entity::endpoint::Endpoint;
+use crate::data::config::entity::runtime_data::AccountVisitor;
 use crate::http::client::util::counter::counter::Counter;
 
 /// The safe pool that use to manage the concurrency, we can promise that the concurrency

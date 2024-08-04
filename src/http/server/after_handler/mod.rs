@@ -3,7 +3,7 @@ use std::sync::Arc;
 use tokio::spawn;
 use tokio::task::JoinHandle;
 
-use crate::data::config::runtime_data::GlobalData;
+use crate::data::config::entity::runtime_data::GlobalData;
 use crate::http::client::client::ResponseData;
 use crate::http::client::client_sender::channel_manager::ClientSender;
 use crate::http::server::ClientEndAfterHandle;

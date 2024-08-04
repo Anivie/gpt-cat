@@ -4,8 +4,8 @@ use log::info;
 use reqwest::{Client, Proxy};
 use reqwest::header::{HeaderMap, HeaderValue};
 
-use crate::data::config::config_file::Config;
-use crate::data::config::endpoint::Endpoint;
+use crate::data::config::entity::config_file::Config;
+use crate::data::config::entity::endpoint::Endpoint;
 
 pub fn get_client(
     proxy_config: &Option<String>,

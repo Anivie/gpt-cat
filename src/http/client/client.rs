@@ -3,8 +3,8 @@ use std::ops::Deref;
 use colored::Colorize;
 use log::{error, info};
 
-use crate::data::config::endpoint::Endpoint;
-use crate::data::config::runtime_data::{AccountVisitor, GlobalData};
+use crate::data::config::entity::endpoint::Endpoint;
+use crate::data::config::entity::runtime_data::{AccountVisitor, GlobalData};
 use crate::data::openai_api::openai_request::{MessageLocation, MessageUtil};
 use crate::http::client::client_sender::channel_manager::{
     ChannelSender, ClientSender, ResponsiveError,

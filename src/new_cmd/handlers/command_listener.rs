@@ -10,7 +10,7 @@ use rustyline::DefaultEditor;
 use rustyline::error::ReadlineError;
 use tokio::spawn;
 
-use crate::data::config::runtime_data::GlobalData;
+use crate::data::config::entity::runtime_data::GlobalData;
 use crate::new_cmd::handlers::{CommandHandlerDispatcher, new_command_handler_dispatcher};
 use crate::new_cmd::handlers::dispatcher::CommandHandler;
 

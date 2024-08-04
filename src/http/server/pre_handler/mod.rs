@@ -1,7 +1,7 @@
 use axum::http::HeaderMap;
 use log::error;
 
-use crate::data::config::runtime_data::GlobalData;
+use crate::data::config::entity::runtime_data::GlobalData;
 use crate::http::client::client_sender::channel_manager::{
     ChannelSender, ClientSender, ResponsiveError,
 };

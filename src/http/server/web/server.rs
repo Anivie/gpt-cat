@@ -12,7 +12,7 @@ use log::info;
 use tokio::spawn;
 use tokio::sync::mpsc::{channel, Receiver};
 
-use crate::data::config::runtime_data::ServerPipeline;
+use crate::data::config::entity::runtime_data::ServerPipeline;
 use crate::data::openai_api::openai_request::OpenAIRequest;
 use crate::GlobalData;
 use crate::http::client::client_sender::channel_manager::{ChannelSender, ClientSender};

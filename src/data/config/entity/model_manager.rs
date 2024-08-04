@@ -5,7 +5,7 @@ use std::io::BufReader;
 use dashmap::{DashMap, DashSet};
 use log::info;
 
-use crate::data::config::endpoint::Endpoint;
+use crate::data::config::entity::endpoint::Endpoint;
 
 type ModelInfo = DashMap<Endpoint, DashSet<String>>;
 

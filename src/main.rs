@@ -5,8 +5,8 @@
 
 use std::fs::File;
 use std::io::BufReader;
-use std::net::SocketAddr;
-
+use std::net::{IpAddr, SocketAddr};
+use std::str::FromStr;
 use axum::Router;
 use axum::routing::post;
 use axum_server::tls_rustls::RustlsConfig;
@@ -15,14 +15,16 @@ use fast_log::plugin::file_split::{KeepType, Rolling, RollingType};
 use fast_log::plugin::packer::LZ4Packer;
 use log::info;
 use parking_lot::lock_api::RwLock;
+use rustls::crypto::aws_lc_rs;
 use tokio::net::TcpListener;
 use tokio::task::spawn_blocking;
 use tower_http::compression::CompressionLayer;
 use tower_http::cors::CorsLayer;
 
-use crate::data::config::config_file::Config;
-use crate::data::config::model_price::ModelPriceMap;
-use crate::data::config::runtime_data::{GlobalData, ServerPipeline};
+use data::config::entity::config_file::Config;
+use data::config::entity::model_price::ModelPriceMap;
+use data::config::entity::runtime_data::{GlobalData, ServerPipeline};
+use crate::data::config::config_helper::get_config;
 use crate::data::database::database_manager::connect_to_database_sqlx;
 use crate::http::client::util::account_manager::load_account_from_database;
 use crate::http::client::util::counter::concurrency_pool::VecSafePool;
@@ -53,17 +55,13 @@ fn enable_logging() {
 async fn main() -> anyhow::Result<()> {
     color_eyre::install().unwrap();
     enable_logging();
-    rustls::crypto::aws_lc_rs::default_provider().install_default().expect("Error installing default rustls provider");
+    aws_lc_rs::default_provider().install_default().expect("Error installing default rustls provider");
 
     let data: &'static GlobalData = {
         // Load config from file
-        let config = {
-            let file = File::open("./config/config.json").expect("Unable to open config file.");
-            let config = BufReader::new(file);
-            let config: Config = serde_json::from_reader(config).expect("Unable to read json");
-            config
-        };
+        let config = get_config()?;
 
+        // Load model price from file
         let model = ModelPriceMap::default();
 
         // Connect to database
@@ -105,18 +103,33 @@ async fn main() -> anyhow::Result<()> {
         .layer(CompressionLayer::new());
     let service = app.into_make_service();
 
+    let (http_address, https_address, http_port, https_port, enable_https) = {
+        let config = data.config.read();
+        let http_address = IpAddr::from_str(config.http_config.http_address.as_str())?;
+        let https_address = IpAddr::from_str(config.http_config.https_address.as_str())?;
+        let http_port = config.http_config.http_port;
+        let https_port = config.http_config.https_port;
+        let enable_https = config.http_config.enable_https;
+        (http_address, https_address, http_port, https_port, enable_https)
+    };
+
     let service_http = service.clone();
     tokio::spawn(async move {
-        let listener = TcpListener::bind(SocketAddr::from(([0, 0, 0, 0], 7117)))
+        let listener = TcpListener::bind(SocketAddr::from((http_address, http_port)))
             .await
             .unwrap();
         axum::serve(listener, service_http).await.unwrap();
     });
 
-    let rustls = RustlsConfig::from_pem_file("./ssl/fullchain.pem", "./ssl/key.pem").await?;
-    axum_server::bind_rustls(SocketAddr::from(([0, 0, 0, 0], 11711)), rustls)
-        .serve(service)
-        .await?;
+    if enable_https {
+        tokio::spawn(async move {
+            let rustls = RustlsConfig::from_pem_file("./ssl/fullchain.pem", "./ssl/key.pem").await.unwrap();
+            axum_server::bind_rustls(SocketAddr::from((https_address, https_port)), rustls)
+                .serve(service)
+                .await
+                .unwrap();
+        });
+    }
 
     Ok(())
 }

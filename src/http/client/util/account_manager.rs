@@ -1,9 +1,9 @@
 use sqlx::Pool;
 use sqlx_postgres::Postgres;
 
-use crate::data::config::config_file::Config;
-use crate::data::config::endpoint::Endpoint;
-use crate::data::config::runtime_data::AccountVisitor;
+use crate::data::config::entity::config_file::Config;
+use crate::data::config::entity::endpoint::Endpoint;
+use crate::data::config::entity::runtime_data::AccountVisitor;
 use crate::data::database::entity::data_base_account::DataBaseAccount;
 use crate::http::client::util::get_reqwest_client::get_client;
 
