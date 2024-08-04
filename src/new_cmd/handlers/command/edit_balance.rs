@@ -1,7 +1,8 @@
-use crate::data::config::runtime_data::GlobalData;
-use crate::new_cmd::handlers::dispatcher::{CommandDescription, CommandHandler};
 use log::info;
 use rust_decimal::Decimal;
+
+use crate::data::config::runtime_data::GlobalData;
+use crate::new_cmd::handlers::dispatcher::{CommandDescription, CommandHandler};
 
 #[derive(Default)]
 pub(in crate::new_cmd::handlers) struct EditUserBalance;

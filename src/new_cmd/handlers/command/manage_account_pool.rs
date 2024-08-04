@@ -1,4 +1,5 @@
 use log::info;
+
 use crate::data::config::endpoint::Endpoint;
 use crate::data::config::runtime_data::GlobalData;
 use crate::http::client::util::account_manager::load_account_from_database;
