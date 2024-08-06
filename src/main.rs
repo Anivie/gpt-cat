@@ -128,9 +128,8 @@ async fn main() -> anyhow::Result<()> {
 
     info!("HTTP server listening on: {}:{}", http_address, http_port);
     let listener = TcpListener::bind(SocketAddr::from((http_address, http_port)))
-        .await
-        .unwrap();
-    axum::serve(listener, service).await.unwrap();
+        .await?;
+    axum::serve(listener, service).await?;
 
     Ok(())
 }
