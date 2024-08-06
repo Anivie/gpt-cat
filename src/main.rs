@@ -109,28 +109,28 @@ async fn main() -> anyhow::Result<()> {
         (http_address, https_address, http_port, https_port, enable_https)
     };
 
-    let service_http = service.clone();
-    tokio::spawn(async move {
-        let listener = TcpListener::bind(SocketAddr::from((http_address, http_port)))
-            .await
-            .unwrap();
-        axum::serve(listener, service_http).await.unwrap();
-    });
-
     if enable_https {
         let (cert_path, key_path) = {
             let config = data.config.read();
             (config.http_config.tls_cert_path.clone(), config.http_config.tls_key_path.clone())
         };
 
+        let service_https = service.clone();
         tokio::spawn(async move {
             let rustls = RustlsConfig::from_pem_file(cert_path.as_str(), key_path.as_str()).await.unwrap();
+            info!("HTTPS server listening on: {}:{}", https_address, https_port);
             axum_server::bind_rustls(SocketAddr::from((https_address, https_port)), rustls)
-                .serve(service)
+                .serve(service_https)
                 .await
                 .unwrap();
         });
     }
+
+    info!("HTTP server listening on: {}:{}", http_address, http_port);
+    let listener = TcpListener::bind(SocketAddr::from((http_address, http_port)))
+        .await
+        .unwrap();
+    axum::serve(listener, service).await.unwrap();
 
     Ok(())
 }
