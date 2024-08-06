@@ -79,9 +79,7 @@ pub fn add_cmd_listener(global_data: &'static GlobalData) {
                 info!("shutting down now.");
                 std::process::exit(0);
             },
-            Err(err) => {
-                error!("Unsupport command: {}", err);
-            }
+            Err(_) => {}
         }
     }
 }

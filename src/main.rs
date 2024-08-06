@@ -55,13 +55,13 @@ async fn main() -> anyhow::Result<()> {
 
     let data: &'static GlobalData = {
         // Load config from file
-        let config = get_config()?;
+        let config = get_config().expect("Error loading config");
 
         // Load model price from file
         let model = ModelPriceMap::default();
 
         // Connect to database
-        let db = connect_to_database_sqlx(&config).await.expect("Error connecting to database.");
+        let db = connect_to_database_sqlx(&config).await.expect("Error connecting to database");
 
         // Load account from database
         let account = load_account_from_database(&config, &db).await?;
