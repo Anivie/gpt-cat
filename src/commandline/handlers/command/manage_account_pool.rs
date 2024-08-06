@@ -4,10 +4,10 @@ use crate::data::config::entity::endpoint::Endpoint;
 use crate::data::config::entity::runtime_data::GlobalData;
 use crate::http::client::util::account_manager::load_account_from_database;
 use crate::http::client::util::counter::concurrency_pool::VecSafePool;
-use crate::new_cmd::handlers::dispatcher::{CommandDescription, CommandHandler};
+use crate::commandline::handlers::dispatcher::{CommandDescription, CommandHandler};
 
 #[derive(Default)]
-pub(in crate::new_cmd::handlers) struct ManageAccountPool;
+pub(in crate::commandline::handlers) struct ManageAccountPool;
 
 impl CommandHandler for ManageAccountPool {
     fn description(&self) -> CommandDescription {

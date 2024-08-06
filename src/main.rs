@@ -26,12 +26,12 @@ use crate::http::client::util::account_manager::load_account_from_database;
 use crate::http::client::util::counter::concurrency_pool::VecSafePool;
 use crate::http::server::{get_client_end_handler, get_client_join_handler};
 use crate::http::server::web::server::main_chat;
-use crate::new_cmd::hot_reload::enable_config_hot_reload;
+use crate::commandline::hot_reload::enable_config_hot_reload;
 
 mod data;
 #[macro_use]
 mod http;
-mod new_cmd;
+mod commandline;
 
 fn enable_logging() {
     let config = fast_log::config::Config::new()
@@ -61,7 +61,7 @@ async fn main() -> anyhow::Result<()> {
         let model = ModelPriceMap::default();
 
         // Connect to database
-        let db = connect_to_database_sqlx(&config).await?;
+        let db = connect_to_database_sqlx(&config).await.expect("Error connecting to database.");
 
         // Load account from database
         let account = load_account_from_database(&config, &db).await?;
@@ -79,7 +79,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     spawn_blocking(move || {
-        new_cmd::handlers::command_listener::add_cmd_listener(data);
+        commandline::handlers::command_listener::add_cmd_listener(data);
     });
 
     spawn_blocking(move || {

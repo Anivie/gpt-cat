@@ -1,15 +1,15 @@
 use log::info;
 
 use crate::data::config::entity::runtime_data::GlobalData;
-use crate::new_cmd::handlers::dispatcher::{CommandDescription, CommandHandler};
+use crate::commandline::handlers::dispatcher::{CommandDescription, CommandHandler};
 
 #[derive(Default)]
-pub(in crate::new_cmd::handlers) struct SearchUser;
+pub(in crate::commandline::handlers) struct SearchBalance;
 
-impl CommandHandler for SearchUser {
+impl CommandHandler for SearchBalance {
     fn description(&self) -> CommandDescription {
         describe! {
-            ["search_user" | "su"] help "Search user by api key",
+            ["search_balance" | "sb"] help "Search balance of a user",
             "api_key" => "The api key of the user",
         }
     }
@@ -34,13 +34,14 @@ impl CommandHandler for SearchUser {
         .fetch_one(&global_data.data_base)
         .await?;
 
-        let usage = sqlx::query!(
+        let balance = sqlx::query!(
             r#"SELECT * FROM "user_usage" WHERE user_id = $1"#,
             user.id
-        ).fetch_one(&global_data.data_base)
-            .await?;
+        )
+        .fetch_one(&global_data.data_base)
+        .await?;
 
-        info!("User {:?} has been found, usage: {:?}", user, usage);
+        info!("User {:?} has balance: {}.", key, balance.total_purchased);
         Ok(())
     }
 }

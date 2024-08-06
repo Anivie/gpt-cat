@@ -1,0 +1,44 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM public_command",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "command",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "describe",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "prompt",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "is_disable",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "228fd0bbe2adc69f6374ce9a6c24955772a15d769a594bca955f3c83a557fed0"
+}

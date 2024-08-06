@@ -1,0 +1,46 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM public_command WHERE command = $1 LIMIT 1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "command",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "describe",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "prompt",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "is_disable",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "38ec66582971343b1ec81df84239acb4f09510390340d7526234d0690613c7e0"
+}

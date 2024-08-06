@@ -3,10 +3,10 @@ use std::ops::Deref;
 use log::info;
 
 use crate::data::config::entity::runtime_data::GlobalData;
-use crate::new_cmd::handlers::dispatcher::{CommandDescription, CommandHandler};
+use crate::commandline::handlers::dispatcher::{CommandDescription, CommandHandler};
 
 #[derive(Default)]
-pub(in crate::new_cmd::handlers) struct ListAccount;
+pub(in crate::commandline::handlers) struct ListAccount;
 
 impl CommandHandler for ListAccount {
     fn description(&self) -> CommandDescription {

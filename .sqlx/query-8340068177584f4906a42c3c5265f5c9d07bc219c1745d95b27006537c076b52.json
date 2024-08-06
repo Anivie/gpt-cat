@@ -1,0 +1,53 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM private_command WHERE user_id = $1 AND command = $2 LIMIT 1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "user_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "command",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "describe",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "prompt",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "is_disable",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      true,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "8340068177584f4906a42c3c5265f5c9d07bc219c1745d95b27006537c076b52"
+}

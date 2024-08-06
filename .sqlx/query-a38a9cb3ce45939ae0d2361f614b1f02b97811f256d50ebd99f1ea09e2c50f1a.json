@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                                INSERT INTO\n                                private_command (user_id, command, describe, prompt)\n                                VALUES ($1, $2, $3, $4)\n                            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Varchar",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a38a9cb3ce45939ae0d2361f614b1f02b97811f256d50ebd99f1ea09e2c50f1a"
+}

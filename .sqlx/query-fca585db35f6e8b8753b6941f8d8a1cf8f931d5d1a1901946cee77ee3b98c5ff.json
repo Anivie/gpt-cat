@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE \"account_list\" SET is_disabled = $1 WHERE endpoint = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Bool",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "fca585db35f6e8b8753b6941f8d8a1cf8f931d5d1a1901946cee77ee3b98c5ff"
+}

@@ -1,6 +1,6 @@
 macro_rules! command_handler_dispatcher {
         ($($dispatcher:ident),*) => {
-            use crate::new_cmd::handlers::dispatcher::{CommandHandler, CommandDescription};
+            use crate::commandline::handlers::dispatcher::{CommandHandler, CommandDescription};
 
             enum CommandHandlerDispatcher {
                 $(

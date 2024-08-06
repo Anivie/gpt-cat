@@ -1,0 +1,46 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM \"user_usage\" WHERE user_id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "usage_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "user_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "total_input_tokens",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 3,
+        "name": "total_output_tokens",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 4,
+        "name": "total_purchased",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "ce881f4726907bd1b51f2944cb78d579f419f1820490e01c04f92ce0b130490f"
+}

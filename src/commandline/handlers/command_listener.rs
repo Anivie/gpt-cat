@@ -11,8 +11,8 @@ use rustyline::error::ReadlineError;
 use tokio::spawn;
 
 use crate::data::config::entity::runtime_data::GlobalData;
-use crate::new_cmd::handlers::{CommandHandlerDispatcher, new_command_handler_dispatcher};
-use crate::new_cmd::handlers::dispatcher::CommandHandler;
+use crate::commandline::handlers::{CommandHandlerDispatcher, new_command_handler_dispatcher};
+use crate::commandline::handlers::dispatcher::CommandHandler;
 
 /// Register a command listener, this should be called in a different task.
 pub fn add_cmd_listener(global_data: &'static GlobalData) {

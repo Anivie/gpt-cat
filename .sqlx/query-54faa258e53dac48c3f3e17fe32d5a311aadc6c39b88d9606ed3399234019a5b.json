@@ -1,0 +1,50 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM account_list",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "is_disabled",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 2,
+        "name": "use_proxy",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "username",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "password",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "endpoint",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "54faa258e53dac48c3f3e17fe32d5a311aadc6c39b88d9606ed3399234019a5b"
+}

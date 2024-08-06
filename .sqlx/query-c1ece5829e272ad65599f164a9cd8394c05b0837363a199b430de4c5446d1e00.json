@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM \"user\" WHERE api_key = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "api_key",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "is_active",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "c1ece5829e272ad65599f164a9cd8394c05b0837363a199b430de4c5446d1e00"
+}

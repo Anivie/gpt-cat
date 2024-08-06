@@ -1,16 +1,18 @@
 use log::info;
+use rust_decimal::Decimal;
 
 use crate::data::config::entity::runtime_data::GlobalData;
-use crate::new_cmd::handlers::dispatcher::{CommandDescription, CommandHandler};
+use crate::commandline::handlers::dispatcher::{CommandDescription, CommandHandler};
 
 #[derive(Default)]
-pub(in crate::new_cmd::handlers) struct SearchBalance;
+pub(in crate::commandline::handlers) struct EditUserBalance;
 
-impl CommandHandler for SearchBalance {
+impl CommandHandler for EditUserBalance {
     fn description(&self) -> CommandDescription {
         describe! {
-            ["search_balance" | "sb"] help "Search balance of a user",
+            ["edit_balance" | "eb"] help "Edit balance of a user",
             "api_key" => "The api key of the user",
+            "balance" => "The new balance of the user",
         }
     }
 
@@ -27,6 +29,12 @@ impl CommandHandler for SearchBalance {
             return Err(anyhow::anyhow!("Missing api key"));
         };
 
+        let balance = if let Some(&balance) = args.get(1) {
+            balance.parse::<i64>()?
+        } else {
+            return Err(anyhow::anyhow!("Missing balance"));
+        };
+
         let user = sqlx::query!(
             r#"SELECT * FROM "user" WHERE api_key = $1"#,
             key
@@ -34,14 +42,22 @@ impl CommandHandler for SearchBalance {
         .fetch_one(&global_data.data_base)
         .await?;
 
-        let balance = sqlx::query!(
+        let origin_balance = sqlx::query!(
             r#"SELECT * FROM "user_usage" WHERE user_id = $1"#,
             user.id
         )
         .fetch_one(&global_data.data_base)
         .await?;
 
-        info!("User {:?} has balance: {}.", key, balance.total_purchased);
+        sqlx::query!(
+            r#"UPDATE "user_usage" SET total_purchased = $1 WHERE user_id = $2"#,
+            Decimal::from(balance),
+            user.id
+        )
+        .execute(&global_data.data_base)
+        .await?;
+
+        info!("User {:?} balance has been updated, origin: {}, user: {:?}", key, origin_balance.total_purchased, user);
         Ok(())
     }
 }
