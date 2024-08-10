@@ -14,7 +14,7 @@ jobs:
         include:
           - build: linux
             os: ubuntu-latest
-            target: x86_64-unknown-linux-musl
+            target: x86_64-unknown-linux-gnu
     
     steps:
       - name: Clone repository
@@ -44,7 +44,7 @@ jobs:
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             mv "target/${{ matrix.target }}/release/$binary_name.exe" "$dirname"
           else
-            mv "target/${{ matrix.target }}/release/$binary_name" "$dirname"
+            mv "target/release/$binary_name" "$dirname"
           fi
       
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
