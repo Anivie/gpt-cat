@@ -201,14 +201,6 @@ impl ClientJoinPreHandlerImpl for CommandHandler {
                             context.user_id, command.command
                         );
                     } else {
-                        /*let private_command = PrivateCommand::find()
-                            .filter(
-                                private_command::Column::Command
-                                    .eq(command.to_string())
-                                    .and(private_command::Column::UserId.eq(context.user_id)),
-                            )
-                            .one(&context.global_data.data_base)
-                            .await?;*/
                         let private_command: Result<DataBasePrivateCommand, sqlx::Error> = sqlx::query_as!(
                             DataBasePrivateCommand,
                             "SELECT * FROM private_command WHERE user_id = $1 AND command = $2 LIMIT 1",
