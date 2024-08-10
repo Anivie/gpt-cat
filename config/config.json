@@ -1,0 +1,10 @@
+{
+  "database_url": "postgresql://manager:0lQb8TMQOnKHYP12N5pB@postgres:5432/gpt-cat",
+  "endpoint": {
+    "OpenAI": "https://api.openai.com/v1/chat/completions",
+    "QianWen": "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
+  },
+  "enable_https": true,
+  "number_can_retries": 2,
+  "request_concurrency_count": 2
+}

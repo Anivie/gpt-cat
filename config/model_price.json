@@ -1,0 +1,26 @@
+{
+  "qwen-long": {
+    "input_price": "0.0005",
+    "output_price": "0.002"
+  },
+  "gpt-4o": {
+    "input_price": "0.0075",
+    "output_price": "0.0225"
+  },
+  "qwen-max": {
+    "input_price": "0.000004",
+    "output_price": "0.000012"
+  },
+  "gpt-4-turbo": {
+    "input_price": "0.00004",
+    "output_price": "0.00012"
+  },
+  "gpt-3.5-turbo-0613": {
+    "input_price": "0.000001",
+    "output_price": "0.000003"
+  },
+  "gpt-3.5-turbo-0125": {
+    "input_price": "0.000001",
+    "output_price": "0.000003"
+  }
+}
