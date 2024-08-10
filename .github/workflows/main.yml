@@ -24,8 +24,9 @@ jobs:
         uses: dtolnay/rust-toolchain@nightly
 
       - name: Install dependencies
-        run: sudo apt update \
-             sudo apt install -y nasm cmake
+        run: |
+          sudo apt update 
+          sudo apt install -y nasm cmake
 
       - name: Compile
       - run: cargo build --verbose --release
