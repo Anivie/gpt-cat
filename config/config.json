@@ -1,5 +1,5 @@
 {
-  "database_url": "postgresql://manager:0lQb8TMQOnKHYP12N5pB@postgres:5432/gpt-cat",
+  "database_url": "postgresql://manager:managercats@postgres:5432/gpt-cat",
   "endpoint": {
     "OpenAI": "https://api.openai.com/v1/chat/completions",
     "QianWen": "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"

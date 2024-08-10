@@ -1,0 +1,7 @@
+FROM postgres:latest
+
+ENV POSTGRES_DB=gpt-cat
+ENV POSTGRES_USER=manager
+ENV POSTGRES_PASSWORD=managercats
+
+COPY ./sql/init.sql /docker-entrypoint-initdb.d/
