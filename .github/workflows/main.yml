@@ -3,7 +3,6 @@ name: Compile and Publish to Docker
 on:
   push:
     tags:
-      # 通过正则匹配一个版本，比如0.0.1
       - "[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
@@ -62,6 +61,7 @@ jobs:
             ${{ env.ASSET }}
 
       - name: Login in to docker hub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_REGISTRY_USER }}
           password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
