@@ -4,7 +4,7 @@
     "OpenAI": "https://api.openai.com/v1/chat/completions",
     "QianWen": "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
   },
-  "enable_https": true,
+  "enable_https": false,
   "number_can_retries": 2,
   "request_concurrency_count": 2
 }
