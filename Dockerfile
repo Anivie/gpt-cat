@@ -3,10 +3,6 @@ FROM ubuntu:latest
 # 创建一个工作目录
 WORKDIR /app
 
-RUN ls -l
-RUN ls -l ./target
-RUN ls -l ./target/release
-
 # 复制应用代码到工作目录
 COPY ./target/release/gpt-cat /app
 COPY ./config/config.json /app/config/

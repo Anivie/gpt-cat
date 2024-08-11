@@ -75,6 +75,7 @@ jobs:
 
       - name: Echo debug
         run: |
+          pwd
           ls -l
           ls -l ./target
           ls -l ./target/release
