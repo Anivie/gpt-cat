@@ -73,6 +73,12 @@ jobs:
           username: ${{ secrets.DOCKER_REGISTRY_USER }}
           password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
 
+      - name: Echo debug
+        run: |
+          ls -l
+          ls -l ./target
+          ls -l ./target/release
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
