@@ -35,6 +35,9 @@ jobs:
         shell: bash
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
+      - name: echo version
+        run: ll
+
       - name: Build archive
         shell: bash
         run: |
@@ -60,6 +63,9 @@ jobs:
         with:
           files: |
             ${{ env.ASSET }}
+
+      - name: echo version
+        run: ll
 
       - name: Login in to docker hub
         uses: docker/login-action@v3
