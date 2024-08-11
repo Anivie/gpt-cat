@@ -4,7 +4,7 @@ FROM ubuntu:latest
 WORKDIR /app
 
 # 复制应用代码到工作目录
-COPY /home/runner/work/gpt-cat/gpt-cat/target/release/gpt-cat /app
+COPY ./target/release/gpt-cat /app
 COPY ./config/config.json /app/config/
 COPY ./config/model_price.json /app/config/
 COPY ./config/model.json /app/config/
