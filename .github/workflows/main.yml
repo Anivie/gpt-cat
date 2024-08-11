@@ -83,11 +83,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
+          context: .
           push: true
           tags: anivie/gpt-cat:latest
-
-      - name: Echo debug
-        run: |
-          ls -l
-          ls -l ./target
-          ls -l ./target/release
