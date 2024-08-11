@@ -75,7 +75,7 @@ jobs:
 
       - name: Echo debug
         run: |
-          pwd
+          ls /home/runner/work/gpt-cat/gpt-cat/target/release/gpt-cat
           ls -l
           ls -l ./target
           ls -l ./target/release
