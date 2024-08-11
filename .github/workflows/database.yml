@@ -32,6 +32,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile.database
+          file: ./Dockerfile_database
           push: true
           tags: anivie/gpt-cat-database:latest
