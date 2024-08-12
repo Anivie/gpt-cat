@@ -2,7 +2,6 @@
 #![allow(unused_doc_comments)]
 #![cfg_attr(debug_assertions, allow(warnings))]
 
-use std::future::Future;
 use std::net::{IpAddr, SocketAddr};
 use std::path::Path;
 use std::str::FromStr;
@@ -15,7 +14,6 @@ use fast_log::plugin::packer::LZ4Packer;
 use log::info;
 use parking_lot::lock_api::RwLock;
 use rustls::crypto::aws_lc_rs;
-use rustyline::KeyCode::F;
 use tokio::net::TcpListener;
 use tokio::task::spawn_blocking;
 use tower_http::compression::CompressionLayer;
