@@ -18,9 +18,6 @@ pub fn get_config() -> anyhow::Result<Config> {
             "REQUEST_CONCURRENCY_COUNT" => {
                 config.request_concurrency_count = value.parse()?;
             }
-            "ENABLE_HTTPS" => {
-                config.http_config.enable_https = value.parse()?;
-            }
             "HTTP_ADDRESS" => {
                 config.http_config.http_address = value;
             }

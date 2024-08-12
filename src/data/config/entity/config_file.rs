@@ -41,9 +41,6 @@ pub struct Config {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HttpServerConfig {
-    #[serde(default)]
-    pub enable_https: bool,
-
     #[serde(default = "default_address")]
     pub http_address: String,
     #[serde(default = "default_http_address")]

@@ -105,7 +105,7 @@ async fn main() -> anyhow::Result<()> {
         let https_address = IpAddr::from_str(config.http_config.https_address.as_str())?;
         let http_port = config.http_config.http_port;
         let https_port = config.http_config.https_port;
-        let enable_https = config.http_config.enable_https;
+        let enable_https = std::path::Path::new("./ssl").exists();
         (http_address, https_address, http_port, https_port, enable_https)
     };
 

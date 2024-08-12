@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: anivie/gpt-cat-database
+    restart: always
+    volumes:
+      - ./data:/var/lib/postgresql/data
+  cat:
+    image: anivie/gpt-cat
+    restart: always
+    ports:
+      - 7117:7117
