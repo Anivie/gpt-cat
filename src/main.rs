@@ -2,7 +2,9 @@
 #![allow(unused_doc_comments)]
 #![cfg_attr(debug_assertions, allow(warnings))]
 
+use std::future::Future;
 use std::net::{IpAddr, SocketAddr};
+use std::path::Path;
 use std::str::FromStr;
 use axum::Router;
 use axum::routing::post;
@@ -13,6 +15,7 @@ use fast_log::plugin::packer::LZ4Packer;
 use log::info;
 use parking_lot::lock_api::RwLock;
 use rustls::crypto::aws_lc_rs;
+use rustyline::KeyCode::F;
 use tokio::net::TcpListener;
 use tokio::task::spawn_blocking;
 use tower_http::compression::CompressionLayer;
@@ -105,7 +108,9 @@ async fn main() -> anyhow::Result<()> {
         let https_address = IpAddr::from_str(config.http_config.https_address.as_str())?;
         let http_port = config.http_config.http_port;
         let https_port = config.http_config.https_port;
-        let enable_https = std::path::Path::new("./ssl").exists();
+        let enable_https = Path::new(config.http_config.tls_cert_path.as_str())
+            .parent()
+            .map_or(false, |p| p.exists());
         (http_address, https_address, http_port, https_port, enable_https)
     };
 
