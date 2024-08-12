@@ -38,7 +38,12 @@ GPT-Cat支持多种后端，您可以自由添加您的后端，并通过适配�
 
 ----
 ## 快速开始
-todo
+- 安装[Docker Compose](https://docs.docker.com/compose/install/)
+- 下载Compose[配置文件](./docker-compose.yaml)
+- 配置[环境变量](./src/data/config/config_helper.rs)
+- (启用HTTPS) 将包含`fullchain.pem`和`key.pem`的`ssl`文件夹挂载到`/app/`目录下
+，检测到`ssl`文件夹后，GPT-Cat会自动启用HTTPS
+- 运行`docker compose up`启动服务
 
 ## 二次开发
 ### 添加后端
