@@ -69,7 +69,7 @@ macro_rules! impl_specific_responder {
 
                 let buffer = sender.get_buffer();
                 let err: Option<Result<(), ResponderError>> = if let Ok(_) = &back && buffer.is_empty() {
-                    Some(Err(ResponderError::Request("Request success, but a empty.".to_string())))
+                    Some(Err(ResponderError::Request("Request success, but a empty".to_string())))
                 }else {
                     None
                 };
