@@ -71,7 +71,7 @@ version = "0.7.1"
 features = ["tls-rustls"]
 
 [dependencies.tokio]
-version = "1.39.2"
+version = "1.39.3"
 features = ["full"]
 
 [dependencies.reqwest]
