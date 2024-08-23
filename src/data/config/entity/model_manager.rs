@@ -1,6 +1,5 @@
 use std::fs::File;
 use std::io::BufReader;
-use futures_util::stream::iter;
 use hashbrown::{HashMap, HashSet};
 use log::info;
 
