@@ -1,13 +1,12 @@
-use std::collections::HashSet;
 use std::fs::File;
 use std::io::BufReader;
-
-use dashmap::{DashMap, DashSet};
+use futures_util::stream::iter;
+use hashbrown::{HashMap, HashSet};
 use log::info;
 
 use crate::data::config::entity::endpoint::Endpoint;
 
-type ModelInfo = DashMap<Endpoint, DashSet<String>>;
+type ModelInfo = HashMap<Endpoint, HashSet<String>>;
 
 /// The manager of the model, because we need to know which model is available for each endpoint,
 /// so we need to store the model info in memory.
@@ -26,8 +25,8 @@ impl Default for ModelManager {
         let config: ModelInfo = serde_json::from_reader(config).expect("Unable to read json");
 
         let mut global = HashSet::new();
-        for value in config.iter() {
-            for model in value.value().iter() {
+        for (_, value) in config.iter() {
+            for model in value.iter() {
                 global.insert(model.to_string());
             }
         }

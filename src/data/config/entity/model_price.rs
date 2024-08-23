@@ -1,8 +1,7 @@
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::Deref;
-
-use dashmap::DashMap;
+use hashbrown::HashMap;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
@@ -14,7 +13,7 @@ type ModelName = String;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ModelPriceMap {
     #[serde(flatten)]
-    inner: DashMap<ModelName, ModelPriceValue>,
+    inner: HashMap<ModelName, ModelPriceValue>,
 }
 
 /// The value of the model price.
@@ -28,7 +27,7 @@ pub struct ModelPriceValue {
 }
 
 impl Deref for ModelPriceMap {
-    type Target = DashMap<ModelName, ModelPriceValue>;
+    type Target = HashMap<ModelName, ModelPriceValue>;
 
     fn deref(&self) -> &Self::Target {
         &self.inner

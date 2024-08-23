@@ -53,9 +53,9 @@ impl ClientEndAfterHandlerImpl for TokenMeterHandler {
             info!(
                 "model: {}, price: {:?}",
                 context.sender.request.model,
-                price.value()
+                price
             );
-            let price = price.value().clone();
+            let price = price.clone();
 
             let insert_id = sqlx::query!(
                 "

@@ -29,7 +29,7 @@ color-eyre = { version = "0.6.3", default-features = false }
 rustyline = "14.0.0"
 
 parking_lot = { version = "0.12.3", features = ["send_guard"] }
-dashmap = { version = "6.0.0", features = ["inline", "serde"] }
+hashbrown = { version = "0.14.5", features = ["rayon", "serde"] }
 
 serde = { version = "1.0.208", features = ["derive"] }
 serde_json = "1.0.125"
@@ -47,7 +47,7 @@ futures = "0.3.30"
 futures-util = "0.3.30"
 
 mime = "0.3.17"
-rust_decimal = "1.35.0"
+rust_decimal = "1.36.0"
 
 [dependencies.sqlx]
 version = "0.8.0"
@@ -75,6 +75,6 @@ version = "1.39.3"
 features = ["full"]
 
 [dependencies.reqwest]
-version = "0.12.5"
+version = "0.12.7"
 default-features = false
 features = ["gzip", "deflate", "brotli", "json", "stream", "socks", "rustls-tls"]

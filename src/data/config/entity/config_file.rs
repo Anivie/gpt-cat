@@ -1,6 +1,5 @@
 use std::ops::Deref;
-
-use dashmap::DashMap;
+use hashbrown::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::data::config::entity::endpoint::Endpoint;
@@ -67,7 +66,7 @@ pub struct ProxyConfig {
 }
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
-pub struct EndpointMap(DashMap<Endpoint, String>);
+pub struct EndpointMap(HashMap<Endpoint, String>);
 
 impl PartialEq for EndpointMap {
     fn eq(&self, other: &Self) -> bool {
@@ -83,7 +82,7 @@ impl PartialEq for EndpointMap {
 }
 
 impl Deref for EndpointMap {
-    type Target = DashMap<Endpoint, String>;
+    type Target = HashMap<Endpoint, String>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
