@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-use log::error;
+use log::warn;
 use serde::{Deserialize, Serialize};
 
 use crate::data::config::entity::config_file::Config;
@@ -23,7 +23,7 @@ impl Endpoint {
         match back {
             Some(back) => back.clone(),
             None => {
-                error!("Endpoint {} not found in config, use default url.", self);
+                warn!("Endpoint {} not found in config, use default url.", self);
                 self.default_url().to_string()
             }
         }

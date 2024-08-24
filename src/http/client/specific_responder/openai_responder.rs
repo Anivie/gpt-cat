@@ -24,25 +24,29 @@ impl ResponseParser for OpenAIResponderParser {
         if sender.request.is_stream() {
             match serde_json::from_slice::<OpenAIStreamResponse>(response) {
                 Err(err) => {
-                    return Err(ResponderError::Request(format!(
+                    return Err(ResponderError::Response(format!(
                         "Error when parse response from serde: {}, origin text: {}",
                         err,
                         String::from_utf8_lossy(response)
                     )));
                 }
 
-                Ok(response) => {
-                    if let Some(choice) = response.choices.first()
+                Ok(ok) => {
+                    if let Some(choice) = ok.choices.first()
                         && let Some(content) = &choice.delta.content
                     {
                         sender.append_buffer(content.as_str());
-                        sender
-                            .send_text(
-                                content,
-                                response.choices[0].finish_reason == Some("stop".to_string()),
-                            )
-                            .await
-                            .map_err(|e| ResponderError::Response(e.to_string()))?;
+                    }
+
+                    if !ok.choices.is_empty() {
+                        sender.not_empty();
+                    }
+                    
+                    if let Err(e) = sender.send_json(String::from_utf8_lossy(response).as_ref()).await {
+                        return Err(ResponderError::Response(format!(
+                            "Error when send response to client: {}",
+                            e
+                        )));
                     }
                 }
             }
@@ -52,7 +56,7 @@ impl ResponseParser for OpenAIResponderParser {
 
         match serde_json::from_slice::<OpenAISyncResponse>(response) {
             Err(err) => {
-                return Err(ResponderError::Request(format!(
+                return Err(ResponderError::Response(format!(
                     "Error when parse response from serde: {}, origin text: {}",
                     err,
                     String::from_utf8_lossy(response)

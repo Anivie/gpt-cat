@@ -60,15 +60,13 @@ macro_rules! impl_specific_responder {
                                    sender: &mut ClientSender,
                                    accessor: &AccountVisitor,
             ) -> Result<(), ResponderError> {
-                use crate::http::client::client_sender::channel_manager::ChannelBufferManager;
                 let back = match self {
                     $(
                         ResponderDispatcher::$responder(responder) => responder.make_response(sender, accessor).await,
                     )*
                 };
 
-                let buffer = sender.get_buffer();
-                let err: Option<Result<(), ResponderError>> = if let Ok(_) = &back && buffer.is_empty() {
+                let err: Option<Result<(), ResponderError>> = if let Ok(_) = &back && sender.is_empty() {
                     Some(Err(ResponderError::Request("Request success, but a empty".to_string())))
                 }else {
                     None

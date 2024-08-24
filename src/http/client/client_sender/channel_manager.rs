@@ -33,6 +33,7 @@ pub struct ClientSender {
     inner: ClientSenderInner,
     error_message: Vec<ResponsiveError>,
     buffer: String,
+    is_empty: bool,
 
     pub stopped: bool,
     pub request: OpenAIRequest,
@@ -43,6 +44,7 @@ impl ClientSender {
         Self {
             inner,
             request,
+            is_empty: true,
             stopped: false,
             buffer: String::new(),
             error_message: Vec::new(),
@@ -51,6 +53,14 @@ impl ClientSender {
 
     pub fn is_stream(&self) -> bool {
         self.request.stream.unwrap_or(false)
+    }
+    
+    pub fn is_empty(&self) -> bool {
+        self.is_empty && self.buffer.is_empty()
+    }
+    
+    pub fn not_empty(&mut self) {
+        self.is_empty = false;
     }
 }
 
@@ -89,6 +99,7 @@ impl Deref for ClientSender {
 /// The client is also responsible for handling the messages that are sent to it.
 pub trait ChannelSender {
     async fn send_text(&self, response: &str, end: bool) -> Result<(), SendError<String>>;
+    async fn send_json(&self, response: &str) -> Result<(), SendError<String>>;
     async fn send_error(&self) -> Result<(), SendError<String>>;
     fn append_error(&mut self, error_message: ResponsiveError);
 }
@@ -106,6 +117,10 @@ impl ChannelSender for ClientSender {
     #[inline]
     async fn send_text(&self, response: &str, end: bool) -> Result<(), SendError<String>> {
         self.to_json(&self.request, response, end).await
+    }
+
+    async fn send_json(&self, response: &str) -> Result<(), SendError<String>> {
+        self.send(response.to_string()).await
     }
 
     async fn send_error(&self) -> Result<(), SendError<String>> {
