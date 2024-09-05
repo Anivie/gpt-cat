@@ -16,7 +16,7 @@ time = "0.3.36"
 thiserror = "1.0.63"
 
 async-stream = "0.3.5"
-tokio-util = "0.7.11"
+tokio-util = "0.7.12"
 
 bytes = "1.7.1"
 rustls = "0.23.12"
@@ -32,7 +32,7 @@ parking_lot = { version = "0.12.3", features = ["send_guard"] }
 hashbrown = { version = "0.14.5", features = ["rayon", "serde"] }
 
 serde = { version = "1.0.209", features = ["derive"] }
-serde_json = "1.0.127"
+serde_json = "1.0.128"
 notify = "6.1.1"
 rayon = "1.10.0"
 
@@ -50,12 +50,12 @@ mime = "0.3.17"
 rust_decimal = "1.36.0"
 
 [dependencies.sqlx]
-version = "0.8.1"
+version = "0.8.2"
 default-features = false
 features = ["runtime-tokio", "tls-rustls", "postgres", "macros", "time", "rust_decimal"]
 
 [dependencies.sqlx-postgres]
-version = "0.8.1"
+version = "0.8.2"
 features = ["json", "migrate"]
 
 [dependencies.tower-http]
@@ -71,7 +71,7 @@ version = "0.7.1"
 features = ["tls-rustls"]
 
 [dependencies.tokio]
-version = "1.39.3"
+version = "1.40.0"
 features = ["full"]
 
 [dependencies.reqwest]
