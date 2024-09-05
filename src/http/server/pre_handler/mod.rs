@@ -74,7 +74,7 @@ impl ClientJoinHandlers {
     pub async fn client_join<'a>(
         &'a self,
         mut context: ClientJoinContext<'a>,
-    ) -> ClientJoinContext {
+    ) -> ClientJoinContext<'a> {
         for handler in self.handlers.iter() {
             match handler.client_join(&mut context).await {
                 Ok(Some(message)) => {
