@@ -2,13 +2,13 @@ use std::fmt::{Display, Formatter};
 
 use log::warn;
 use serde::{Deserialize, Serialize};
-
+use strum::EnumIter;
 use crate::data::config::entity::config_file::Config;
 
 /// Supported endpoint of this server, default have OpenAI and QianWen endpoint.
 /// This app is fully type safe, so you can add a new endpoint here,
 /// and then rustc will tell you what you need to do.
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize, EnumIter)]
 pub enum Endpoint {
     OpenAI,
     QianWen,

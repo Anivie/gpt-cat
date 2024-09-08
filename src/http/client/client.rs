@@ -43,6 +43,7 @@ impl GlobalData {
                 return None;
             }
         };
+        info!("Use of model: {}", sender.request.model);
 
         let (mut retry_count, mut account_count) = {
             let guard = self.config.read();

@@ -1,7 +1,6 @@
 use std::fs::File;
 use std::io::BufReader;
 use hashbrown::{HashMap, HashSet};
-use log::info;
 
 use crate::data::config::entity::endpoint::Endpoint;
 
@@ -40,11 +39,7 @@ impl Default for ModelManager {
 impl ModelManager {
     /// Check if the model is available for the endpoint.
     pub fn check_available(&self, endpoint: &Endpoint, model: &str) -> bool {
-        let back = self.info.get(endpoint).unwrap().contains(model);
-        if back {
-            info!("Use of model: {}", model);
-        }
-        back
+        self.info.get(endpoint).unwrap().contains(model)
     }
 
     /// Check if the model is available for any endpoint.
