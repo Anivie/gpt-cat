@@ -188,7 +188,7 @@ dependencies = [
 [[package]]
 name = "axum"
 version = "0.7.5"
-source = "git+https://github.com/tokio-rs/axum.git#4f3999c20f26f27c6b3513884d90e783352d1f8e"
+source = "git+https://github.com/tokio-rs/axum.git#1ac617a1b540e8523347f5ee889d65cad9a45ec4"
 dependencies = [
  "async-trait",
  "axum-core",
@@ -222,7 +222,7 @@ dependencies = [
 [[package]]
 name = "axum-core"
 version = "0.4.3"
-source = "git+https://github.com/tokio-rs/axum.git#4f3999c20f26f27c6b3513884d90e783352d1f8e"
+source = "git+https://github.com/tokio-rs/axum.git#1ac617a1b540e8523347f5ee889d65cad9a45ec4"
 dependencies = [
  "async-trait",
  "bytes",
@@ -242,7 +242,7 @@ dependencies = [
 [[package]]
 name = "axum-macros"
 version = "0.4.1"
-source = "git+https://github.com/tokio-rs/axum.git#4f3999c20f26f27c6b3513884d90e783352d1f8e"
+source = "git+https://github.com/tokio-rs/axum.git#1ac617a1b540e8523347f5ee889d65cad9a45ec4"
 dependencies = [
  "proc-macro2",
  "quote",
