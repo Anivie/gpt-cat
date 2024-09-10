@@ -45,9 +45,9 @@ impl GlobalData {
         };
         info!("Use of model: {}", sender.request.model);
 
-        let (mut retry_count, mut account_count) = {
+        let mut account_count = {
             let guard = self.config.read();
-            (guard.number_can_retries, guard.number_can_retries)
+            guard.number_can_retries
         };
 
         info!(
@@ -63,7 +63,7 @@ impl GlobalData {
 
         loop {
             match account.responder.make_response(sender, *account).await {
-                Err(e) => match e {
+                Err(err) => match err {
                     ResponderError::Request(err) => {
                         sender.append_error(ResponsiveError {
                             component: "代理器核心".to_string(),
@@ -73,7 +73,7 @@ impl GlobalData {
                         });
                         error!(
                             "Error when make request on {}: {}, try again with count {}.",
-                            account.endpoint, err, retry_count
+                            account.endpoint, err, account_count
                         );
                     }
                     ResponderError::Response(err) => {
@@ -87,38 +87,14 @@ impl GlobalData {
                         });
                     }
                 },
-                Ok(_) => {
-                    break Some(ResponseData {
-                        account_id: account.account_id,
-                        use_endpoint: account.endpoint.clone(),
-                    });
-                }
+                Ok(_) => break Some(ResponseData {
+                    account_id: account.account_id,
+                    use_endpoint: account.endpoint.clone(),
+                }),
             }
 
-            if account_count > 0 {
-                account = match Self::get_account(sender, &self, account_pool.deref()).await {
-                    Ok(ok) => ok,
-                    Err(err) => {
-                        sender.append_error(ResponsiveError {
-                            component: "上游账户池".to_string(),
-                            reason: "获取上游失败".to_string(),
-                            message: "无法从账户池中读取上游账户信息信息".to_string(),
-                            suggestion: Some(
-                                "当前账户池无法响应您的请求，请联系我们或稍候重试。".to_string(),
-                            ),
-                        });
-                        error!("Error when get account visitor: {}", err);
-                        return None;
-                    }
-                };
-
-                account_count -= 1;
-                continue;
-            }
-
-            if retry_count > 0 {
-                retry_count -= 1;
-            } else {
+            account_count -= 1;
+            if account_count <= 0 {
                 sender.append_error(ResponsiveError {
                     component: "代理器核心".to_string(),
                     reason: "请求失败".to_string(),
@@ -138,6 +114,22 @@ impl GlobalData {
                     use_endpoint: account.endpoint.clone(),
                 });
             }
+
+            account = match Self::get_account(sender, &self, account_pool.deref()).await {
+                Ok(ok) => ok,
+                Err(err) => {
+                    sender.append_error(ResponsiveError {
+                        component: "上游账户池".to_string(),
+                        reason: "获取上游失败".to_string(),
+                        message: "无法从账户池中读取上游账户信息信息".to_string(),
+                        suggestion: Some(
+                            "当前账户池无法响应您的请求，请联系我们或稍候重试。".to_string(),
+                        ),
+                    });
+                    error!("Error when get account visitor: {}", err);
+                    return None;
+                }
+            };
         }
     }
 
