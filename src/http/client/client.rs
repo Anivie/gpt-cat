@@ -129,7 +129,7 @@ impl GlobalData {
                     error!("Error when get account visitor: {}", err);
                     return None;
                 }
-            };
+            }
         }
     }
 
