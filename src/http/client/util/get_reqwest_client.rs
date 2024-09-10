@@ -14,7 +14,7 @@ pub fn get_client(
     token: &str,
 ) -> Client {
     let client = Client::builder()
-        .read_timeout(Duration::from_secs(30))
+        .read_timeout(Duration::from_secs(config.request_timeout))
         .default_headers(match endpoint {
             Endpoint::QianWen => qian_wen_chat_header_map(token),
             _ => openai_chat_header_map(token),

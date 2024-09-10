@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::data::config::entity::endpoint::Endpoint;
 
 const fn default_number_can_retries() -> u32 { 3 }
+const fn default_request_timeout() -> u64 { 30 }
 const fn default_request_concurrency_count() -> u32 { 10 }
 const fn default_http_address() -> u16 { 7117 }
 const fn default_https_address() -> u16 { 11711 }
@@ -31,6 +32,8 @@ pub struct Config {
     pub number_can_retries: u32,
     #[serde(default = "default_request_concurrency_count")]
     pub request_concurrency_count: u32,
+    #[serde(default = "default_request_timeout")]
+    pub request_timeout: u64,
 
     #[serde(flatten)]
     pub http_config: HttpServerConfig,
