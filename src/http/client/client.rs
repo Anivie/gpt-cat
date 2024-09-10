@@ -142,9 +142,10 @@ impl GlobalData {
         let model_info = data.model_info.read();
 
         loop {
-            let account = pool.get_safe_object().await;
-            if model_info.check_available(&account.endpoint, &sender.request.model) {
-                return Ok(account);
+            if let Some(account) = pool.get_safe_object().await {
+                if model_info.check_available(&account.endpoint, &sender.request.model) {
+                    return Ok(account);
+                }
             }
 
             if try_count >= 30 {

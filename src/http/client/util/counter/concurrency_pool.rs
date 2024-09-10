@@ -2,7 +2,8 @@ use std::ops::Deref;
 use std::sync::Arc;
 use std::time::Duration;
 
-use rand::Rng;
+use rand::rngs::OsRng;
+use rand::TryRngCore;
 use rayon::prelude::*;
 use tokio::sync::mpsc::Sender;
 use tokio::time::sleep;
@@ -114,43 +115,40 @@ impl<T> VecSafePool for Vec<T> {
 pub trait VecGettable {
     type Output;
 
-    async fn get_safe_object(&self) -> SafeObject<&Self::Output>;
+    async fn get_safe_object(&self) -> Option<SafeObject<&Self::Output>>;
 }
 
 impl<T> VecGettable for Vec<SafePool<T>> {
     type Output = T;
 
-    async fn get_safe_object(&self) -> SafeObject<&Self::Output> {
+    async fn get_safe_object(&self) -> Option<SafeObject<&Self::Output>> {
         //添加偏置条件，防止在并发情况下，每次都是第一个对象被选中
         let preference = if self.len() == 1 {
             0
         } else {
-            rand::thread_rng().gen_range(0..self.len())
+            OsRng.try_next_u64().ok().map(|x| x as usize % self.len()).unwrap_or(0)
         };
 
-        loop {
-            for (index, safe_pool) in self.iter().enumerate() {
-                if index != preference {
+        for _ in 0..30 {
+            let safe_pool = self.get(preference)?;
+            for counter in safe_pool.counter.iter() {
+                if !counter.is_active() {
                     continue;
                 }
 
-                for counter in safe_pool.counter.iter() {
-                    if !counter.is_active() {
-                        continue;
-                    }
+                counter.lock();
+                safe_pool.sender.send(()).await.unwrap();
 
-                    counter.lock();
-                    safe_pool.sender.send(()).await.unwrap();
-
-                    return SafeObject {
-                        inner: &safe_pool.inner,
-                        counter,
-                    };
-                }
+                return Some(SafeObject {
+                    inner: &safe_pool.inner,
+                    counter,
+                });
             }
 
             sleep(Duration::from_secs(1)).await;
         }
+
+        None
     }
 }
 
