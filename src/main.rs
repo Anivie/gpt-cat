@@ -129,6 +129,7 @@ async fn main() -> anyhow::Result<()> {
             .with_no_client_auth()
             .with_single_cert(cert_chain, key)?;
 
+        info!("HTTPS server listening on: {}:{}", https_address, https_port);
         server.bind_rustls(format!("{}:{}", https_address, https_port), config)?
     }else {
         server
