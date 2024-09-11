@@ -1,6 +1,6 @@
+use crate::data::config::entity::config_file::Config;
 use std::fs::File;
 use std::io::BufReader;
-use crate::data::config::entity::config_file::Config;
 
 pub fn get_config() -> anyhow::Result<Config> {
     let file = File::open("./config/config.json").expect("Unable to open config file.");

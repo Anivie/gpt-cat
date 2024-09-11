@@ -1,9 +1,9 @@
-use anyhow::anyhow;
 use crate::commandline::handlers::dispatcher::{CommandDescription, CommandHandler};
+use crate::data::config::entity::endpoint::Endpoint;
 use crate::data::config::entity::runtime_data::GlobalData;
+use anyhow::anyhow;
 use anyhow::Result;
 use strum::IntoEnumIterator;
-use crate::data::config::entity::endpoint::Endpoint;
 
 #[derive(Default)]
 pub(in crate::commandline::handlers) struct ListModel;

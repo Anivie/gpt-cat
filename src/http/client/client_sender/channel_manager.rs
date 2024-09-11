@@ -1,7 +1,7 @@
-use std::ops::Deref;
-
+use anyhow::Result;
 use log::error;
-use tokio::sync::mpsc::error::SendError;
+use ntex::util::Bytes;
+use tokio::spawn;
 use tokio::sync::mpsc::Sender;
 
 use crate::data::openai_api::openai_request::OpenAIRequest;
@@ -20,7 +20,7 @@ pub struct ResponsiveError {
     pub suggestion: Option<String>,
 }
 
-pub type ClientSenderInner = Sender<String>;
+pub type ClientSenderInner = Sender<Bytes>;
 
 /// This struct represents a channel that is used to communicate with the client.
 /// # Fields
@@ -68,7 +68,7 @@ impl ClientSender {
 /// The channel buffer is used to store messages that are sent to the client.
 pub trait ChannelBufferManager {
     fn append_buffer(&mut self, buffer: &str);
-    async fn push_buffer(&self) -> Result<(), SendError<String>>;
+    async fn push_buffer(&self) -> Result<()>;
     fn get_buffer(&self) -> &str;
 }
 
@@ -77,7 +77,7 @@ impl ChannelBufferManager for ClientSender {
         self.buffer.push_str(buffer)
     }
 
-    async fn push_buffer(&self) -> Result<(), SendError<String>> {
+    async fn push_buffer(&self) -> Result<()> {
         self.send_text(self.buffer.as_str(), true).await
     }
 
@@ -86,10 +86,14 @@ impl ChannelBufferManager for ClientSender {
     }
 }
 
-impl Deref for ClientSender {
-    type Target = ClientSenderInner;
-    fn deref(&self) -> &Self::Target {
-        &self.inner
+impl Drop for ClientSender {
+    fn drop(&mut self) {
+        if self.is_stream() && !self.inner.is_closed() {
+            let sender = self.inner.clone();
+            spawn(async move {
+                sender.send(Bytes::from("data: [DONE]\n\n")).await.unwrap();
+            });
+        }
     }
 }
 
@@ -98,9 +102,10 @@ impl Deref for ClientSender {
 /// The messages can be text messages, JSON messages, or error messages.
 /// The client is also responsible for handling the messages that are sent to it.
 pub trait ChannelSender {
-    async fn send_text(&self, response: &str, end: bool) -> Result<(), SendError<String>>;
-    async fn send_json(&self, response: &str) -> Result<(), SendError<String>>;
-    async fn send_error(&self) -> Result<(), SendError<String>>;
+    async fn send(&self, buffer: Vec<u8>) -> Result<()>;
+    async fn send_text(&self, response: &str, end: bool) -> Result<()>;
+    async fn send_json(&self, response: &str) -> Result<()>;
+    async fn send_error(&self) -> Result<()>;
     fn append_error(&mut self, error_message: ResponsiveError);
 }
 
@@ -110,20 +115,32 @@ trait ChannelSenderUtil {
         request: &OpenAIRequest,
         response: &str,
         end: bool,
-    ) -> Result<(), SendError<String>>;
+    ) -> Result<()>;
 }
 
 impl ChannelSender for ClientSender {
+    async fn send(&self, mut buffer: Vec<u8>) -> Result<()> {
+        if self.is_stream() {
+            let mut vec = b"data: ".to_vec();
+            vec.append(&mut buffer);
+            vec.push(b'\n');
+            vec.push(b'\n');
+            Ok(self.inner.send(Bytes::from(vec)).await?)
+        }else {
+            Ok(self.inner.send(Bytes::from(buffer)).await?)
+        }
+    }
+
     #[inline]
-    async fn send_text(&self, response: &str, end: bool) -> Result<(), SendError<String>> {
+    async fn send_text(&self, response: &str, end: bool) -> Result<()> {
         self.to_json(&self.request, response, end).await
     }
 
-    async fn send_json(&self, response: &str) -> Result<(), SendError<String>> {
-        self.send(response.to_string()).await
+    async fn send_json(&self, response: &str) -> Result<()> {
+        Ok(self.send(response.as_bytes().to_vec()).await?)
     }
 
-    async fn send_error(&self) -> Result<(), SendError<String>> {
+    async fn send_error(&self) -> Result<()> {
         if self.error_message.is_empty() {
             return Ok(());
         }
@@ -174,7 +191,7 @@ impl ChannelSenderUtil for ClientSender {
         request: &OpenAIRequest,
         response: &str,
         end: bool,
-    ) -> Result<(), SendError<String>> {
+    ) -> Result<()> {
         let json = if request.is_stream() {
             serde_json::to_string(&OpenAIStreamResponse::new(
                 request.model.clone(),
@@ -190,15 +207,16 @@ impl ChannelSenderUtil for ClientSender {
         };
 
         match json {
-            Ok(message) => self.send(message).await,
+            Ok(message) => {
+                Ok(self.send(message.into_bytes()).await?)
+            },
             Err(err) => {
-                error!(
+                let err = format!(
                     "Success to get response, but serde json make an error: {:?}",
                     err
                 );
-                let mut tmp = Vec::new();
-                tmp.extend(err.to_string().as_bytes());
-                self.send(String::from_utf8(tmp).unwrap()).await
+                error!("{}", err);
+                Ok(self.send(err.into_bytes()).await?)
             }
         }
     }

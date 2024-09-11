@@ -50,6 +50,8 @@ futures-util = "0.3.30"
 mime = "0.3.17"
 rust_decimal = "1.36.0"
 
+ntex-cors = "2.0.0"
+
 [dependencies.sqlx]
 version = "0.8.2"
 default-features = false
@@ -59,17 +61,9 @@ features = ["runtime-tokio", "tls-rustls", "postgres", "macros", "time", "rust_d
 version = "0.8.2"
 features = ["json", "migrate"]
 
-[dependencies.tower-http]
-version = "0.5.2"
-features = ["compression-full", "cors"]
-
-[dependencies.axum]
-git = "https://github.com/tokio-rs/axum.git"
-features = ["tokio", "json", "macros"]
-
-[dependencies.axum-server]
-version = "0.7.1"
-features = ["tls-rustls"]
+[dependencies.ntex]
+version = "2.4.0"
+features = ["tokio", "tls-rustls", "rustls", "compress"]
 
 [dependencies.tokio]
 version = "1.40.0"

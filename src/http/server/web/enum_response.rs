@@ -1,27 +1,51 @@
-use std::convert::Infallible;
-
-use axum::http::HeaderMap;
-use axum::response::{IntoResponse, Response, Sse};
-use axum::response::sse::Event;
 use futures::Stream;
+use ntex::http::header::ContentEncoding;
+use ntex::http::Response;
+use ntex::util::Bytes;
+use ntex::web::{BodyEncoding, Error, HttpResponse};
+use std::ops::Deref;
+use std::pin::Pin;
+use std::task::{Context, Poll};
+use tokio::sync::mpsc::Receiver;
 
-/// The enum for the response data
-/// The response data can be SSE or a json, so
-/// we can respond either SSE or a json when
-/// client request the stream or block mode.
-pub enum ResponseData<T: Stream<Item = Result<Event, Infallible>> + Send + 'static> {
-    Sse((HeaderMap, Sse<T>)),
-    Json((HeaderMap, String)),
+struct Client(Receiver<Bytes>);
+
+impl Stream for Client {
+    type Item = Result<Bytes, Error>;
+
+    fn poll_next(
+        mut self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+    ) -> Poll<Option<Self::Item>> {
+        match Pin::new(&mut self.0).poll_recv(cx) {
+            Poll::Ready(Some(v)) => Poll::Ready(Some(Ok(v))),
+            Poll::Ready(None) => Poll::Ready(None),
+            Poll::Pending => Poll::Pending,
+        }
+    }
 }
 
-/// Implement the IntoResponse trait for the ResponseData
-impl<T: Stream<Item = Result<Event, Infallible>> + Send + 'static> IntoResponse
-    for ResponseData<T>
-{
-    fn into_response(self) -> Response {
-        match self {
-            ResponseData::Sse(sse) => sse.into_response(),
-            ResponseData::Json(json) => json.into_response(),
+pub(super) async fn end(
+    mut receiver: Receiver<Bytes>,
+    is_stream: bool,
+) -> Response {
+    if is_stream {
+        HttpResponse::Ok()
+            .encoding(ContentEncoding::Identity)
+            .content_type("text/event-stream")
+            .header("Cache-Control", "no-cache")
+            .keep_alive()
+            .streaming(Client(receiver))
+    }else {
+        let mut back = String::default();
+        while let Some(message) = receiver.recv().await {
+            back = String::from_utf8_lossy(message.deref()).to_string();
         }
+
+        HttpResponse::Ok()
+            .content_type("application/json")
+            .encoding(ContentEncoding::Identity)
+            .header("Cache-Control", "no-cache, must-revalidate")
+            .body(back)
     }
 }

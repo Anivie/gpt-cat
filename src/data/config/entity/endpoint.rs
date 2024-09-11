@@ -1,9 +1,9 @@
 use std::fmt::{Display, Formatter};
 
+use crate::data::config::entity::config_file::Config;
 use log::warn;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
-use crate::data::config::entity::config_file::Config;
 
 /// Supported endpoint of this server, default have OpenAI and QianWen endpoint.
 /// This app is fully type safe, so you can add a new endpoint here,

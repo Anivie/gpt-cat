@@ -2,32 +2,33 @@
 #![allow(unused_doc_comments)]
 #![cfg_attr(debug_assertions, allow(warnings))]
 
-use std::net::{IpAddr, SocketAddr};
-use std::path::Path;
-use std::str::FromStr;
-use axum::Router;
-use axum::routing::post;
-use axum_server::tls_rustls::RustlsConfig;
-use fast_log::consts::LogSize;
-use fast_log::plugin::file_split::{KeepType, Rolling, RollingType};
-use fast_log::plugin::packer::LZ4Packer;
-use log::info;
-use parking_lot::lock_api::RwLock;
-use rustls::crypto::aws_lc_rs;
-use tokio::net::TcpListener;
-use tokio::task::spawn_blocking;
-use tower_http::compression::CompressionLayer;
-use tower_http::cors::CorsLayer;
-
-use data::config::entity::model_price::ModelPriceMap;
-use data::config::entity::runtime_data::{GlobalData, ServerPipeline};
+use crate::commandline::hot_reload::enable_config_hot_reload;
 use crate::data::config::config_helper::get_config;
 use crate::data::database::database_manager::connect_to_database_sqlx;
 use crate::http::client::util::account_manager::load_account_from_database;
 use crate::http::client::util::counter::concurrency_pool::VecSafePool;
-use crate::http::server::{get_client_end_handler, get_client_join_handler};
 use crate::http::server::web::server::main_chat;
-use crate::commandline::hot_reload::enable_config_hot_reload;
+use crate::http::server::{get_client_end_handler, get_client_join_handler};
+use anyhow::anyhow;
+use data::config::entity::model_price::ModelPriceMap;
+use data::config::entity::runtime_data::{GlobalData, ServerPipeline};
+use fast_log::consts::LogSize;
+use fast_log::plugin::file_split::{KeepType, Rolling, RollingType};
+use fast_log::plugin::packer::LZ4Packer;
+use log::info;
+use ntex::web::middleware::Compress;
+use ntex::web::{server, App};
+use ntex_cors::Cors;
+use parking_lot::lock_api::RwLock;
+use rustls::crypto::aws_lc_rs;
+use rustls::ServerConfig;
+use rustls_pemfile::certs;
+use std::fs::File;
+use std::io::BufReader;
+use std::net::IpAddr;
+use std::path::Path;
+use std::str::FromStr;
+use tokio::task::spawn_blocking;
 
 mod data;
 #[macro_use]
@@ -48,7 +49,7 @@ fn enable_logging() {
     fast_log::init(config).unwrap();
 }
 
-#[tokio::main]
+#[ntex::main]
 async fn main() -> anyhow::Result<()> {
     color_eyre::install().unwrap();
     enable_logging();
@@ -93,13 +94,6 @@ async fn main() -> anyhow::Result<()> {
     };
     let server_pipeline: &'static ServerPipeline = Box::leak(Box::new(server_pipeline));
 
-    let app = Router::new()
-        .route("/v1/chat/completions", post(main_chat))
-        .with_state((data, server_pipeline))
-        .layer(CorsLayer::permissive())
-        .layer(CompressionLayer::new());
-    let service = app.into_make_service();
-
     let (http_address, https_address, http_port, https_port, enable_https) = {
         let config = data.config.read();
         let http_address = IpAddr::from_str(config.http_config.http_address.as_str())?;
@@ -118,21 +112,42 @@ async fn main() -> anyhow::Result<()> {
             (config.http_config.tls_cert_path.clone(), config.http_config.tls_key_path.clone())
         };
 
-        let service_https = service.clone();
+        let key_file = &mut BufReader::new(File::open(key_path)?);
+        let key = rustls_pemfile::private_key(key_file)?.ok_or(anyhow!("No private key found"))?;
+        let cert_file = &mut BufReader::new(File::open(cert_path)?);
+        let cert_chain = certs(cert_file).map(|r| r.unwrap()).collect();
+        let config = ServerConfig::builder()
+            .with_no_client_auth()
+            .with_single_cert(cert_chain, key)?;
+
         tokio::spawn(async move {
-            let rustls = RustlsConfig::from_pem_file(cert_path.as_str(), key_path.as_str()).await.unwrap();
             info!("HTTPS server listening on: {}:{}", https_address, https_port);
-            axum_server::bind_rustls(SocketAddr::from((https_address, https_port)), rustls)
-                .serve(service_https)
+            server(move || {
+                App::new()
+                    .service(main_chat)
+                    .state((data, server_pipeline))
+                    .wrap(Compress::default())
+                    .wrap(Cors::new().finish())
+            })
+                .bind_rustls(format!("{}:{}", https_address, https_port), config)
+                .unwrap()
+                .run()
                 .await
                 .unwrap();
         });
     }
 
     info!("HTTP server listening on: {}:{}", http_address, http_port);
-    let listener = TcpListener::bind(SocketAddr::from((http_address, http_port)))
+    server(move || {
+        App::new()
+            .service(main_chat)
+            .state((data, server_pipeline))
+            .wrap(Compress::default())
+            .wrap(Cors::new().finish())
+    })
+        .bind((http_address, http_port))?
+        .run()
         .await?;
-    axum::serve(listener, service).await?;
 
     Ok(())
 }

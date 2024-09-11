@@ -2,8 +2,8 @@ use std::ops::Deref;
 
 use log::info;
 
-use crate::data::config::entity::runtime_data::GlobalData;
 use crate::commandline::handlers::dispatcher::{CommandDescription, CommandHandler};
+use crate::data::config::entity::runtime_data::GlobalData;
 
 #[derive(Default)]
 pub(in crate::commandline::handlers) struct ListAccount;

@@ -6,13 +6,13 @@ use std::time::Duration;
 use colored::Colorize;
 use log::{error, info};
 use rayon::prelude::*;
-use rustyline::DefaultEditor;
 use rustyline::error::ReadlineError;
+use rustyline::DefaultEditor;
 use tokio::spawn;
 
-use crate::data::config::entity::runtime_data::GlobalData;
-use crate::commandline::handlers::{CommandHandlerDispatcher, new_command_handler_dispatcher};
 use crate::commandline::handlers::dispatcher::CommandHandler;
+use crate::commandline::handlers::{new_command_handler_dispatcher, CommandHandlerDispatcher};
+use crate::data::config::entity::runtime_data::GlobalData;
 
 /// Register a command listener, this should be called in a different task.
 pub fn add_cmd_listener(global_data: &'static GlobalData) {

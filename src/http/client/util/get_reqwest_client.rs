@@ -1,8 +1,8 @@
 use std::time::Duration;
 
 use log::info;
-use reqwest::{Client, Proxy};
 use reqwest::header::{HeaderMap, HeaderValue};
+use reqwest::{Client, Proxy};
 
 use crate::data::config::entity::config_file::Config;
 use crate::data::config::entity::endpoint::Endpoint;

@@ -2,8 +2,8 @@ use log::info;
 use rust_decimal::Decimal;
 use uuid::Uuid;
 
-use crate::data::config::entity::runtime_data::GlobalData;
 use crate::commandline::handlers::dispatcher::{CommandDescription, CommandHandler};
+use crate::data::config::entity::runtime_data::GlobalData;
 
 #[derive(Default)]
 pub(in crate::commandline::handlers) struct AddUser;

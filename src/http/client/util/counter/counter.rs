@@ -1,5 +1,5 @@
-use std::sync::atomic::{AtomicBool, AtomicU8};
 use std::sync::atomic::Ordering::Relaxed;
+use std::sync::atomic::{AtomicBool, AtomicU8};
 
 use rand::Rng;
 

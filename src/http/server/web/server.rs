@@ -1,24 +1,20 @@
-use std::convert::Infallible;
-use std::sync::Arc;
-
-use async_stream::stream;
-use axum::extract::State;
-use axum::http::{header, HeaderMap};
-use axum::Json;
-use axum::response::{IntoResponse, Sse};
-use axum::response::sse::Event;
-use futures::Stream;
 use log::info;
+use ntex::util::Bytes;
+use ntex::web;
+use ntex::web::types::{Json, State};
+use ntex::web::{HttpRequest, Responder};
+use std::ops::Deref;
+use std::sync::Arc;
 use tokio::spawn;
-use tokio::sync::mpsc::{channel, Receiver};
+use tokio::sync::mpsc::channel;
 
 use crate::data::config::entity::runtime_data::ServerPipeline;
 use crate::data::openai_api::openai_request::OpenAIRequest;
-use crate::GlobalData;
 use crate::http::client::client_sender::channel_manager::{ChannelSender, ClientSender};
 use crate::http::server::after_handler::ClientEndContext;
 use crate::http::server::pre_handler::ClientJoinContext;
-use crate::http::server::web::enum_response::ResponseData;
+use crate::http::server::web::enum_response::end;
+use crate::GlobalData;
 
 /// The main chat handler
 /// This handler will handle the main chat request
@@ -47,19 +43,21 @@ use crate::http::server::web::enum_response::ResponseData;
 /// # Returns
 /// The response data either an SSE or a json, depends on the request is a
 /// stream or not
+#[web::post("/v1/chat/completions")]
 pub async fn main_chat(
-    headers: HeaderMap,
-    State((data, pipeline)): State<(&'static GlobalData, &'static ServerPipeline)>,
-    Json(client_request): Json<OpenAIRequest>,
-) -> impl IntoResponse {
-    let (sender, receiver) = channel::<String>(10);
-    let sender = ClientSender::new(sender, client_request);
+    request: HttpRequest,
+    state: State<(&'static GlobalData, &'static ServerPipeline)>,
+    client_request: Json<OpenAIRequest>,
+) -> impl Responder {
+    let &(data, pipeline) = state.deref();
+    let (sender, receiver) = channel::<Bytes>(10);
+    let sender = ClientSender::new(sender, client_request.into_inner());
 
     let pre_handler_context = ClientJoinContext {
         sender,
         user_key: None,
         user_id: None,
-        request_header: &headers,
+        request_header: &request.head().headers,
         global_data: data,
     };
 
@@ -103,39 +101,4 @@ pub async fn main_chat(
     });
 
     end(receiver, is_stream).await
-}
-
-async fn end(
-    mut receiver: Receiver<String>,
-    is_stream: bool,
-) -> ResponseData<impl Stream<Item = Result<Event, Infallible>>> {
-    if is_stream {
-        let stream = stream! {
-            while let Some(message) = receiver.recv().await {
-                yield Ok(Event::default().data(message));
-            }
-        };
-
-        let mut headers = HeaderMap::new();
-        headers.insert(header::CONTENT_TYPE, "text/event-stream".parse().unwrap());
-        headers.insert(header::CONTENT_ENCODING, "identity".parse().unwrap());
-        headers.insert(header::CACHE_CONTROL, "no-cache".parse().unwrap());
-
-        return ResponseData::Sse((headers, Sse::new(stream)));
-    }
-
-    let mut back = String::default();
-    while let Some(message) = receiver.recv().await {
-        back = message;
-    }
-
-    let mut headers = HeaderMap::new();
-    headers.insert(header::CONTENT_TYPE, "application/json".parse().unwrap());
-    headers.insert(header::CONTENT_ENCODING, "identity".parse().unwrap());
-    headers.insert(
-        header::CACHE_CONTROL,
-        "no-cache, must-revalidate".parse().unwrap(),
-    );
-
-    ResponseData::Json((headers, back))
 }

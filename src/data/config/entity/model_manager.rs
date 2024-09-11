@@ -1,6 +1,6 @@
+use hashbrown::{HashMap, HashSet};
 use std::fs::File;
 use std::io::BufReader;
-use hashbrown::{HashMap, HashSet};
 
 use crate::data::config::entity::endpoint::Endpoint;
 
