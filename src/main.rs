@@ -106,7 +106,16 @@ async fn main() -> anyhow::Result<()> {
         (http_address, https_address, http_port, https_port, enable_https)
     };
 
-    if enable_https {
+    info!("HTTP server listening on: {}:{}", http_address, http_port);
+    let server = server(move || {
+        App::new()
+            .service(main_chat)
+            .state((data, server_pipeline))
+            .wrap(Compress::default())
+            .wrap(Cors::new().finish())
+    }).bind((http_address, http_port))?;
+
+    let server = if enable_https {
         let (cert_path, key_path) = {
             let config = data.config.read();
             (config.http_config.tls_cert_path.clone(), config.http_config.tls_key_path.clone())
@@ -120,34 +129,12 @@ async fn main() -> anyhow::Result<()> {
             .with_no_client_auth()
             .with_single_cert(cert_chain, key)?;
 
-        tokio::spawn(async move {
-            info!("HTTPS server listening on: {}:{}", https_address, https_port);
-            server(move || {
-                App::new()
-                    .service(main_chat)
-                    .state((data, server_pipeline))
-                    .wrap(Compress::default())
-                    .wrap(Cors::new().finish())
-            })
-                .bind_rustls(format!("{}:{}", https_address, https_port), config)
-                .unwrap()
-                .run()
-                .await
-                .unwrap();
-        });
-    }
+        server.bind_rustls(format!("{}:{}", https_address, https_port), config)?
+    }else {
+        server
+    };
 
-    info!("HTTP server listening on: {}:{}", http_address, http_port);
-    server(move || {
-        App::new()
-            .service(main_chat)
-            .state((data, server_pipeline))
-            .wrap(Compress::default())
-            .wrap(Cors::new().finish())
-    })
-        .bind((http_address, http_port))?
-        .run()
-        .await?;
+    server.run().await?;
 
     Ok(())
 }
