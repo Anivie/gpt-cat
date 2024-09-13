@@ -20,16 +20,11 @@
       },
       {
         "ordinal": 3,
-        "name": "username",
+        "name": "api_key",
         "type_info": "Varchar"
       },
       {
         "ordinal": 4,
-        "name": "password",
-        "type_info": "Varchar"
-      },
-      {
-        "ordinal": 5,
         "name": "endpoint",
         "type_info": "Varchar"
       }
@@ -40,7 +35,6 @@
     "nullable": [
       false,
       false,
-      true,
       true,
       false,
       false

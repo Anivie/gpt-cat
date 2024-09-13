@@ -41,8 +41,7 @@ CREATE TABLE account_list (
                               id SERIAL PRIMARY KEY,
                               is_disabled BOOLEAN NOT NULL DEFAULT FALSE,
                               use_proxy VARCHAR(255),
-                              username VARCHAR(255),
-                              password VARCHAR(255) NOT NULL,
+                              api_key VARCHAR(255) NOT NULL,
                               endpoint VARCHAR(255) NOT NULL
 );
 
