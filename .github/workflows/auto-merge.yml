@@ -1,11 +1,12 @@
-name: auto-merge
+name: Auto approve
 
-on: pull_request
+on: pull_request_target
 
 jobs:
-  auto-merge:
+  auto-approve:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    if: github.actor == 'dependabot[bot]'
     steps:
-      - uses: ahmadnassri/action-dependabot-auto-merge@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: hmarr/auto-approve-action@v4

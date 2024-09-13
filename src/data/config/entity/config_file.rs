@@ -5,7 +5,7 @@ use std::ops::Deref;
 use crate::data::config::entity::endpoint::Endpoint;
 
 const fn default_number_can_retries() -> u32 { 3 }
-const fn default_request_timeout() -> u64 { 5 }
+const fn default_request_timeout() -> u64 { 15 }
 const fn default_request_concurrency_count() -> u32 { 10 }
 const fn default_http_address() -> u16 { 7117 }
 const fn default_https_address() -> u16 { 11711 }
