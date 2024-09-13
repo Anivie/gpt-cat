@@ -16,8 +16,7 @@ pub async fn load_account_from_database(
     let row: Vec<DataBaseAccount> = sqlx::query_as!(
         DataBaseAccount,
         "SELECT * from account_list WHERE is_disabled = FALSE"
-    ).fetch_all(db)
-        .await?;
+    ).fetch_all(db).await?;
 
     let back = row
         .into_par_iter()
@@ -25,13 +24,12 @@ pub async fn load_account_from_database(
             let endpoint = Endpoint::from_str(&account.endpoint);
             let client = get_client(&account.use_proxy, &config, &endpoint, &account.api_key);
             AccountVisitor {
-                endpoint: endpoint.clone(),
-
                 account_id: account.id,
                 endpoint_url: endpoint.to_url(config),
 
                 responder: endpoint.specific_responder_dispatcher(),
 
+                endpoint,
                 client,
             }
         })
