@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::data::openai_api::openai_request::Message;
+use crate::data::http_api::openai::openai_request::Message;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct QianWenRequest {

@@ -1,12 +1,11 @@
+use crate::data::http_api::openai::openai_request::OpenAIRequest;
+use crate::data::http_api::openai::openai_stream_response::OpenAIStreamResponse;
+use crate::data::http_api::openai::openai_sync_response::OpenAISyncResponse;
 use anyhow::Result;
 use log::error;
 use ntex::util::Bytes;
 use tokio::spawn;
 use tokio::sync::mpsc::Sender;
-
-use crate::data::openai_api::openai_request::OpenAIRequest;
-use crate::data::openai_api::openai_stream_response::OpenAIStreamResponse;
-use crate::data::openai_api::openai_sync_response::OpenAISyncResponse;
 
 /// This struct represents an error that occurred while processing a request.
 /// It contains information about the component that caused the error, the reason for the error,

@@ -1,8 +1,8 @@
 use reqwest::StatusCode;
 
 use crate::data::config::entity::runtime_data::AccountVisitor;
-use crate::data::openai_api::openai_stream_response::OpenAIStreamResponse;
-use crate::data::openai_api::openai_sync_response::OpenAISyncResponse;
+use crate::data::http_api::openai::openai_stream_response::OpenAIStreamResponse;
+use crate::data::http_api::openai::openai_sync_response::OpenAISyncResponse;
 use crate::http::client::client_sender::channel_manager::{
     ChannelBufferManager, ChannelSender, ClientSender,
 };

@@ -1,4 +1,4 @@
-use crate::data::openai_api::openai_request::{MessageLocation, MessageUtil};
+use crate::data::http_api::openai::openai_request::{MessageLocation, MessageUtil};
 use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerImpl};
 
 #[derive(Default, Clone)]

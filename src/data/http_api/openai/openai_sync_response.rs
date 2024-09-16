@@ -45,11 +45,11 @@ impl OpenAISyncResponse {
                 .as_secs(),
             model: Some(model_name),
             system_fingerprint: Some("fp_44709d6fcb".to_string()),
-            choices: vec![crate::data::openai_api::openai_sync_response::Choice {
+            choices: vec![crate::data::http_api::openai::openai_sync_response::Choice {
                 index: 0,
                 logprobs: None,
                 finish_reason: if end { Some("stop".to_string()) } else { None },
-                message: crate::data::openai_api::openai_sync_response::Message {
+                message: crate::data::http_api::openai::openai_sync_response::Message {
                     role: "assistant".to_string(),
                     content: answer.to_string(),
                 },

@@ -9,7 +9,7 @@ use tokio::spawn;
 use tokio::sync::mpsc::channel;
 
 use crate::data::config::entity::runtime_data::ServerPipeline;
-use crate::data::openai_api::openai_request::OpenAIRequest;
+use crate::data::http_api::openai::openai_request::OpenAIRequest;
 use crate::http::client::client_sender::channel_manager::{ChannelSender, ClientSender};
 use crate::http::server::after_handler::ClientEndContext;
 use crate::http::server::pre_handler::ClientJoinContext;
