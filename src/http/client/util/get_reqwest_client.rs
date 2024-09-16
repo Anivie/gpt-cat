@@ -30,7 +30,7 @@ pub fn get_client(
             .as_ref()
             .expect("Proxy config is not set.")
             .get(proxy_server_name)
-            .expect("Proxy server is not found.");
+            .expect(format!("Proxy server {} is not set.", proxy_server_name).as_str());
 
         let address = format!(
             "{}://{}:{}@{}",
