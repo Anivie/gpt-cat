@@ -23,20 +23,21 @@ pub fn get_client(
         .brotli(true)
         .deflate(true);
 
-    let client = if let Some(proxy_server_name) = proxy_config
-        && !proxy_server_name.is_empty()
-        && let Some(proxy) = &config.proxy
+    let client = if let Some(proxy_server_name) = proxy_config &&
+        !proxy_server_name.is_empty()
     {
-        let proxy = proxy
-            .iter()
-            .filter(|x| x.name == *proxy_server_name)
-            .next()
-            .unwrap();
+        let proxy = config.proxy
+            .as_ref()
+            .expect("Proxy config is not set.")
+            .get(proxy_server_name)
+            .expect("Proxy server is not found.");
+
         let address = format!(
             "{}://{}:{}@{}",
-            proxy.scheme, proxy.name, proxy.password, proxy.address
+            proxy.scheme, proxy_server_name, proxy.password, proxy.address
         );
-        info!("Create client with proxy: {}", proxy.name);
+        info!("Create client with proxy: {}", proxy_server_name);
+
         client.proxy(Proxy::all(address).unwrap())
     } else {
         client

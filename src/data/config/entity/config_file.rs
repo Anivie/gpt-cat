@@ -38,7 +38,7 @@ pub struct Config {
     #[serde(flatten)]
     pub http_config: HttpServerConfig,
 
-    pub proxy: Option<Vec<ProxyConfig>>,
+    pub proxy: Option<HashMap<String, ProxyConfig>>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -64,7 +64,6 @@ pub struct HttpServerConfig {
 pub struct ProxyConfig {
     pub scheme: String,
     pub address: String,
-    pub name: String,
     pub password: String,
 }
 
