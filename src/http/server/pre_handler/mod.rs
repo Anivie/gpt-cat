@@ -1,7 +1,5 @@
 use crate::data::config::entity::runtime_data::GlobalData;
-use crate::http::client::client_sender::channel_manager::{
-    ChannelSender, ClientSender,
-};
+use crate::http::client::client_sender::channel_manager::ClientSender;
 use anyhow::Result;
 use ntex::http::HeaderMap;
 

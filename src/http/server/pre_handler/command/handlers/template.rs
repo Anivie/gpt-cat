@@ -7,8 +7,6 @@ use crate::http::server::pre_handler::{ClientJoinContext, PreHandlerResult};
 use anyhow::anyhow;
 use anyhow::Result;
 use log::{error, info};
-use rayon::prelude::*;
-use std::ops::Deref;
 
 #[derive(Default)]
 pub struct TemplateHandler;
