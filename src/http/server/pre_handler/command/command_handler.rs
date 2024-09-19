@@ -6,6 +6,7 @@ use anyhow::Result;
 use rayon::prelude::*;
 use std::ops::Deref;
 use std::sync::LazyLock;
+use log::info;
 
 #[derive(Default, Clone)]
 pub struct CommandJoinPreHandler;
@@ -39,6 +40,7 @@ impl ClientJoinPreHandlerImpl for CommandJoinPreHandler {
         if let Some(message) = message {
             let args: Vec<&str> = message.split_whitespace().collect();
             let command = args[0].trim_start_matches('/');
+            info!("User {:?} use command: {}", context.user_id, command);
 
             if command == "help" {
                 context.sender.send_text(HELP_MESSAGE.deref(), true).await?;

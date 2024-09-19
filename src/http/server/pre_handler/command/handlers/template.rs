@@ -6,7 +6,7 @@ use crate::http::server::pre_handler::command::handlers::CommandHandler;
 use crate::http::server::pre_handler::{ClientJoinContext, PreHandlerResult};
 use anyhow::anyhow;
 use anyhow::Result;
-use log::error;
+use log::{error, info};
 use rayon::prelude::*;
 use std::ops::Deref;
 
@@ -60,6 +60,7 @@ impl CommandHandler for TemplateHandler {
             parse_template(context, public_command.prompt.as_str())?
         };
 
+        info!("User {:?} used template {}", context.user_id, name);
         context.sender.request.messages = prompt_messages;
         Ok(PreHandlerResult::Pass)
     }
