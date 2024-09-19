@@ -1,6 +1,6 @@
-use anyhow::anyhow;
+use anyhow::{anyhow, Result};
 
-use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerImpl};
+use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerImpl, PreHandlerResult};
 
 #[derive(Default, Clone)]
 pub(crate) struct ModelFilterHandler;
@@ -9,7 +9,7 @@ impl ClientJoinPreHandlerImpl for ModelFilterHandler {
     async fn client_join<'a>(
         &'a self,
         context: &mut ClientJoinContext<'a>,
-    ) -> anyhow::Result<Option<String>> {
+    ) -> Result<PreHandlerResult> {
         let model_info = context.global_data.model_info.read();
         let model_price = context.global_data.model_price.read();
 
@@ -28,6 +28,6 @@ impl ClientJoinPreHandlerImpl for ModelFilterHandler {
         }
 
         drop(model_info);
-        Ok(None)
+        Ok(PreHandlerResult::Pass)
     }
 }

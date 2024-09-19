@@ -1,5 +1,5 @@
 use crate::data::http_api::openai::openai_request::{MessageLocation, MessageUtil};
-use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerImpl};
+use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerImpl, PreHandlerResult};
 
 #[derive(Default, Clone)]
 pub(crate) struct TitleCatchHandler;
@@ -8,7 +8,7 @@ impl ClientJoinPreHandlerImpl for TitleCatchHandler {
     async fn client_join<'a>(
         &'a self,
         context: &mut ClientJoinContext<'a>,
-    ) -> anyhow::Result<Option<String>> {
+    ) -> anyhow::Result<PreHandlerResult> {
         if let Some(message) = context
             .sender
             .request
@@ -23,6 +23,6 @@ impl ClientJoinPreHandlerImpl for TitleCatchHandler {
             }
         }
 
-        Ok(None)
+        Ok(PreHandlerResult::Pass)
     }
 }

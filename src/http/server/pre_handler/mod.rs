@@ -1,49 +1,18 @@
 use crate::data::config::entity::runtime_data::GlobalData;
 use crate::http::client::client_sender::channel_manager::{
-    ChannelSender, ClientSender, ResponsiveError,
+    ChannelSender, ClientSender,
 };
-use crate::http::server::ClientJoinPreHandler;
-use log::error;
+use anyhow::Result;
 use ntex::http::HeaderMap;
 
-pub(super) mod command_handler;
+#[macro_use]
+mod macros;
+pub mod dispatcher;
 pub(super) mod model_filter;
 pub(super) mod title_catcher;
 pub(super) mod user_key_handler;
 pub(super) mod userid_handler;
-
-macro_rules! impl_client_join_handler {
-    ($($variant:ident),*) => {
-        use crate::http::server::pre_handler::ClientJoinPreHandlerImpl;
-        use crate::http::server::pre_handler::ClientJoinHandlers;
-        use crate::http::server::pre_handler::ClientJoinContext;
-
-        #[derive(Clone)]
-        pub enum ClientJoinPreHandler {
-            $(
-                $variant($variant),
-            )*
-        }
-
-        impl ClientJoinPreHandlerImpl for ClientJoinPreHandler {
-            async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> anyhow::Result<Option<String>> {
-                match self {
-                    $(
-                        ClientJoinPreHandler::$variant(handler) => handler.client_join(context).await,
-                    )*
-                }
-            }
-        }
-
-        pub fn get_client_join_handler() -> ClientJoinHandlers {
-            ClientJoinHandlers::new(vec![
-                $(
-                    ClientJoinPreHandler::$variant($variant::default()),
-                )*
-            ])
-        }
-    }
-}
+pub(super) mod command;
 
 #[allow(dead_code)]
 pub struct ClientJoinContext<'a> {
@@ -54,47 +23,14 @@ pub struct ClientJoinContext<'a> {
     pub global_data: &'static GlobalData,
 }
 
+pub enum PreHandlerResult {
+    Return,
+    Pass,
+}
+
 pub trait ClientJoinPreHandlerImpl {
     async fn client_join<'a>(
         &'a self,
         context: &mut ClientJoinContext<'a>,
-    ) -> anyhow::Result<Option<String>>;
-}
-
-pub struct ClientJoinHandlers {
-    handlers: Vec<ClientJoinPreHandler>,
-}
-
-impl ClientJoinHandlers {
-    pub fn new(inner: Vec<ClientJoinPreHandler>) -> Self {
-        Self { handlers: inner }
-    }
-
-    pub async fn client_join<'a>(
-        &'a self,
-        mut context: ClientJoinContext<'a>,
-    ) -> ClientJoinContext<'a> {
-        for handler in self.handlers.iter() {
-            match handler.client_join(&mut context).await {
-                Ok(Some(message)) => {
-                    context.sender.send_text(&message, false).await.unwrap();
-                    context.sender.stopped = true;
-                    break;
-                }
-                Err(error) => {
-                    context.sender.append_error(ResponsiveError {
-                        component: "预处理器".to_string(),
-                        reason: "阻止了您的会话".to_string(),
-                        message: error.to_string(),
-                        suggestion: None,
-                    });
-                    error!("ClientJoinHandlers: {}", error.to_string());
-                    break;
-                }
-                _ => {}
-            }
-        }
-
-        context
-    }
+    ) -> Result<PreHandlerResult>;
 }

@@ -1,7 +1,7 @@
 use anyhow::anyhow;
 
 use crate::data::database::entity::user::DataBaseUser;
-use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerImpl};
+use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerImpl, PreHandlerResult};
 
 #[derive(Default, Clone)]
 pub(crate) struct UserIDHandler;
@@ -10,7 +10,7 @@ impl ClientJoinPreHandlerImpl for UserIDHandler {
     async fn client_join<'a>(
         &'a self,
         context: &mut ClientJoinContext<'a>,
-    ) -> anyhow::Result<Option<String>> {
+    ) -> anyhow::Result<PreHandlerResult> {
         let user_id = if let Some(auth) = &context.user_key {
 
             let user: Result<DataBaseUser, sqlx::Error> = sqlx::query_as!(
@@ -46,6 +46,6 @@ impl ClientJoinPreHandlerImpl for UserIDHandler {
         };
 
         context.user_id.replace(user_id);
-        Ok(None)
+        Ok(PreHandlerResult::Pass)
     }
 }

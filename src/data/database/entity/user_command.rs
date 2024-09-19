@@ -1,4 +1,3 @@
-
 pub struct DataBasePublicCommand {
     pub id: i32,
     pub command: String,

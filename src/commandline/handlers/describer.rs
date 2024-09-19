@@ -1,16 +1,16 @@
 use crate::data::config::entity::runtime_data::GlobalData;
 
-pub(super) struct CommandDescription {
+pub(super) trait CommandHandler {
+    fn description(&self) -> CommandDescription;
+    async fn execute(&self, global_data: &GlobalData, args: &Vec<&str>) -> anyhow::Result<()>;
+}
+
+pub struct CommandDescription {
     pub name: Vec<&'static str>,
     pub help: &'static str,
 
     pub param: Option<Vec<(&'static str, bool)>>,
     pub param_description: Option<Vec<&'static str>>,
-}
-
-pub(super) trait CommandHandler {
-    fn description(&self) -> CommandDescription;
-    async fn execute(&self, global_data: &GlobalData, args: &Vec<&str>) -> anyhow::Result<()>;
 }
 
 impl CommandDescription {

@@ -130,7 +130,6 @@ impl ChannelSender for ClientSender {
         }
     }
 
-    #[inline]
     async fn send_text(&self, response: &str, end: bool) -> Result<()> {
         self.to_json(&self.request, response, end).await
     }

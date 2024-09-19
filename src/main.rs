@@ -31,7 +31,6 @@ use std::str::FromStr;
 use tokio::task::spawn_blocking;
 
 mod data;
-#[macro_use]
 mod http;
 mod commandline;
 

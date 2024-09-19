@@ -4,7 +4,7 @@
 use std::sync::Arc;
 
 use crate::http::server::after_handler::token_meter::TokenMeterHandler;
-use crate::http::server::pre_handler::command_handler::CommandHandler;
+use crate::http::server::pre_handler::command::command_handler::CommandJoinPreHandler;
 use crate::http::server::pre_handler::model_filter::ModelFilterHandler;
 use crate::http::server::pre_handler::title_catcher::TitleCatchHandler;
 use crate::http::server::pre_handler::user_key_handler::UserKeyHandler;
@@ -31,7 +31,7 @@ impl_client_join_handler![
     UserKeyHandler,
     UserIDHandler,
     TitleCatchHandler,
-    CommandHandler
+    CommandJoinPreHandler
 ];
 
 /// Define the after-handler pipeline, because the after-handler is

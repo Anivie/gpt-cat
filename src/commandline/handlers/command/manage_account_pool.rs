@@ -1,6 +1,6 @@
 use log::info;
 
-use crate::commandline::handlers::dispatcher::{CommandDescription, CommandHandler};
+use crate::commandline::handlers::describer::{CommandDescription, CommandHandler};
 use crate::data::config::entity::endpoint::Endpoint;
 use crate::data::config::entity::runtime_data::GlobalData;
 use crate::http::client::util::account_manager::load_account_from_database;

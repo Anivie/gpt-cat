@@ -1,6 +1,6 @@
 use anyhow::anyhow;
 
-use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerImpl};
+use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerImpl, PreHandlerResult};
 
 #[derive(Default, Clone)]
 pub(crate) struct UserKeyHandler;
@@ -9,7 +9,7 @@ impl ClientJoinPreHandlerImpl for UserKeyHandler {
     async fn client_join<'a>(
         &'a self,
         context: &mut ClientJoinContext<'a>,
-    ) -> anyhow::Result<Option<String>> {
+    ) -> anyhow::Result<PreHandlerResult> {
         let auth = if let Some(auth) = context.request_header.get("Authorization")
             && let Ok(auth) = auth.to_str()
         {
@@ -19,6 +19,6 @@ impl ClientJoinPreHandlerImpl for UserKeyHandler {
         };
 
         context.user_key.replace(auth);
-        Ok(None)
+        Ok(PreHandlerResult::Pass)
     }
 }

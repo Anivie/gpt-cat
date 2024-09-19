@@ -10,7 +10,7 @@ use crate::data::config::entity::model_price::ModelPriceMap;
 use crate::http::client::util::counter::concurrency_pool::SafePool;
 use crate::http::client::ResponderDispatcher;
 use crate::http::server::after_handler::ClientEndHandlers;
-use crate::http::server::pre_handler::ClientJoinHandlers;
+use crate::http::server::pre_handler::dispatcher::pre_handler_dispatcher::ClientJoinHandlers;
 
 /// The visitor of the account, which contains the information of the account.
 /// It will be used in the account pool, which is used to store the account information.

@@ -7,12 +7,12 @@ use crate::commandline::handlers::command::search_balance::SearchBalance;
 use crate::commandline::handlers::command::search_user::SearchUser;
 use crate::data::config::entity::runtime_data::GlobalData;
 
-pub mod command_listener;
-mod command;
-mod dispatcher;
-
 #[macro_use]
-mod macros;
+pub mod macros;
+
+pub mod command_listener;
+pub mod describer;
+mod command;
 
 command_handler_dispatcher! {
     ListAccount,

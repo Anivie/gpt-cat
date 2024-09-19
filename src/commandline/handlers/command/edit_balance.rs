@@ -1,7 +1,7 @@
 use log::info;
 use rust_decimal::Decimal;
 
-use crate::commandline::handlers::dispatcher::{CommandDescription, CommandHandler};
+use crate::commandline::handlers::describer::{CommandDescription, CommandHandler};
 use crate::data::config::entity::runtime_data::GlobalData;
 
 #[derive(Default)]
