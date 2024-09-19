@@ -3,9 +3,9 @@ use crate::http::server::pre_handler::command::handlers::CommandHandler;
 use crate::http::server::pre_handler::command::{new_command_handler_dispatcher, CommandHandlerDispatcher};
 use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerImpl, PreHandlerResult};
 use anyhow::Result;
-use rayon::prelude::*;
 use std::ops::Deref;
 use std::sync::LazyLock;
+use hashbrown::HashMap;
 use log::info;
 
 #[derive(Default, Clone)]
@@ -14,9 +14,19 @@ pub struct CommandJoinPreHandler;
 impl ClientJoinPreHandlerImpl for CommandJoinPreHandler {
     async fn client_join<'a>(&'a self, context: &mut ClientJoinContext<'a>) -> Result<PreHandlerResult> {
         static HANDLER: LazyLock<Vec<CommandHandlerDispatcher>> = LazyLock::new(|| new_command_handler_dispatcher());
+        static HANDLER_MAP: LazyLock<HashMap<&'static str, &CommandHandlerDispatcher>> = LazyLock::new(|| {
+            let mut map = HashMap::new();
+            for handler in HANDLER.iter() {
+                let description = handler.description();
+                for &x in description.name.iter() {
+                    map.insert(x, handler);
+                }
+            }
+            map
+        });
         static HELP_MESSAGE: LazyLock<String> = LazyLock::new(|| {
             let mut back = HANDLER
-                .par_iter()
+                .iter()
                 .map(|x| {
                     let description = x.description().help_message();
                     format!("{}\n\n", description)
@@ -48,12 +58,7 @@ impl ClientJoinPreHandlerImpl for CommandJoinPreHandler {
             }
 
             let args: Vec<&str> = args.iter().skip(1).map(|x| x.trim()).collect();
-            let handler = HANDLER
-                .par_iter()
-                .find_first(|x| {
-                    x.description().name.contains(&command)
-                })
-                .ok_or(anyhow::anyhow!("Command not found."))?;
+            let handler = HANDLER_MAP.get(command).ok_or(anyhow::anyhow!("Command not found."))?;
 
             handler.execute(context, &args).await
         }else {
