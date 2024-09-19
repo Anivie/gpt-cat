@@ -30,7 +30,7 @@ impl ClientJoinPreHandlerImpl for CommandJoinPreHandler {
             for handler in handlers {
                 help_message.push_str(&handler.description().help_messages());
             }
-            help_message.push_str("### 📚 [help, h]：显示帮助页面\n- **command** _(可选)_：指定命令以获取更详细的帮助\n\n---\n");
+            help_message.push_str("### 📚 [help, h]：显示帮助页面\n- **command** _(可选)_：指定命令以获取更详细的帮助(仍在施工)\n\n---\n");
             help_message.push_str("\n希望这份帮助页面能让你快速上手！💡 如果有任何疑问，随时可以输入 `help` 命令获取帮助哦！🚀\n");
             help_message
         });
@@ -49,7 +49,7 @@ impl ClientJoinPreHandlerImpl for CommandJoinPreHandler {
             let command = args[0].trim_start_matches('/');
             info!("User {:?} use command: {}", context.user_id, command);
 
-            if command == "help" {
+            if command == "help" || command == "h" {
                 context.sender.send_text(HELP_MESSAGE.deref(), true).await?;
                 return Ok(PreHandlerResult::Return);
             }
