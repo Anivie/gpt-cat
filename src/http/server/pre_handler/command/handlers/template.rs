@@ -31,7 +31,7 @@ impl CommandHandler for TemplateHandler {
             .fetch_one(&context.global_data.data_base)
             .await;
 
-        let prompt_messages = if let Err(sqlx::Error::RowNotFound) = public_command {
+        if let Err(sqlx::Error::RowNotFound) = public_command {
             let private_command: Result<DataBasePrivateCommand, sqlx::Error> = sqlx::query_as!(
                             DataBasePrivateCommand,
                             "SELECT * FROM private_command WHERE user_id = $1 AND command = $2 LIMIT 1",
@@ -50,32 +50,38 @@ impl CommandHandler for TemplateHandler {
                 anyhow!("Error when fetching command!")
             })?;
 
-            parse_template(context, private_command.prompt.as_str())?
+            parse_template(context, private_command.prompt.as_str())?;
         }else {
             let public_command = public_command.map_err(|e| {
                 error!("Error when fetching command: {:?}", e);
                 anyhow!("Error when fetching command!")
             })?;
 
-            parse_template(context, public_command.prompt.as_str())?
-        };
+            parse_template(context, public_command.prompt.as_str())?;
+        }
 
         info!("User {:?} used template {}", context.user_id, name);
-        context.sender.request.messages = prompt_messages;
         Ok(PreHandlerResult::Pass)
     }
 }
 
-fn parse_template(context: &mut ClientJoinContext, command: &str) -> Result<Vec<Message>> {
-    let mut prompt_messages = serde_json::from_str::<Vec<Message>>(command)?;
-    let message = context
-        .sender
-        .request
-        .messages
-        .clone()
-        .into_par_iter()
-        .filter(|x| !x.content.starts_with("/t") && !x.content.starts_with("/template"))
-        .collect::<Vec<_>>();
-    prompt_messages.extend(message);
-    Ok(prompt_messages)
+fn parse_template(context: &mut ClientJoinContext, command: &str) -> Result<()> {
+    let index = context.sender.request.messages
+        .iter()
+        .enumerate()
+        .filter(|(_, x)| x.content.starts_with("/t") || x.content.starts_with("/template"))
+        .map(|(index, _)| index)
+        .next()
+        .ok_or(anyhow!("No message to append to"))?;
+    context.sender.request.messages.remove(index);
+
+    let mut prompt_messages = serde_json::from_str::<Vec<Message>>(command)
+        .map_err(|e| anyhow!("Error when parsing template: {:?}", e))?;
+
+    for _ in 0..prompt_messages.len() {
+        let message = prompt_messages.pop().unwrap();
+        context.sender.request.messages.insert(0, message);
+    }
+
+    Ok(())
 }
