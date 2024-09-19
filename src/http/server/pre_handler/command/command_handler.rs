@@ -25,17 +25,14 @@ impl ClientJoinPreHandlerImpl for CommandJoinPreHandler {
             map
         });
         static HELP_MESSAGE: LazyLock<String> = LazyLock::new(|| {
-            let mut back = HANDLER
-                .iter()
-                .map(|x| {
-                    let description = x.description().help_message();
-                    format!("{}\n\n", description)
-                })
-                .collect::<String>();
-            back.pop();
-            back.pop();
-
-            back
+            let mut help_message = String::from("# 🤖 命令帮助\n\n欢迎使用交互式命令！以下是一些可用的命令以及如何使用它们：\n\n## 📢 基本命令\n\n");
+            let handlers = HANDLER.deref();
+            for handler in handlers {
+                help_message.push_str(&handler.description().help_messages());
+            }
+            help_message.push_str("### 📚 [help, h]：显示帮助页面\n- **command** _(可选)_：指定命令以获取更详细的帮助\n\n---\n");
+            help_message.push_str("\n希望这份帮助页面能让你快速上手！💡 如果有任何疑问，随时可以输入 `help` 命令获取帮助哦！🚀\n");
+            help_message
         });
 
         let message = context

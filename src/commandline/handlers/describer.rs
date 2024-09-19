@@ -14,7 +14,7 @@ pub struct CommandDescription {
 }
 
 impl CommandDescription {
-    pub fn help_message(&self) -> String {
+    pub(super) fn help_message(&self) -> String {
         let command_names = self.name.join(",");
         let mut help_msg = format!("[{}]: {}", command_names, self.help);
 
