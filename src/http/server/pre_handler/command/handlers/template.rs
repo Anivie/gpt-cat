@@ -44,14 +44,14 @@ impl CommandHandler for TemplateHandler {
             }
 
             let private_command = private_command.map_err(|e| {
-                error!("Error when fetching command: {:?}", e);
+                error!("Error when fetching private command: {:?}", e);
                 anyhow!("Error when fetching command!")
             })?;
 
             parse_template(context, private_command.prompt.as_str())?;
         }else {
             let public_command = public_command.map_err(|e| {
-                error!("Error when fetching command: {:?}", e);
+                error!("Error when fetching public command: {:?}", e);
                 anyhow!("Error when fetching command!")
             })?;
 
@@ -70,11 +70,14 @@ fn parse_template(context: &mut ClientJoinContext, command: &str) -> Result<()> 
         .filter(|(_, x)| x.content.starts_with("/t") || x.content.starts_with("/template"))
         .map(|(index, _)| index)
         .next()
-        .ok_or(anyhow!("No message to append to"))?;
+        .ok_or(anyhow!("Could not find command in message list!"))?;
     context.sender.request.messages.remove(index);
 
     let mut prompt_messages = serde_json::from_str::<Vec<Message>>(command)
-        .map_err(|e| anyhow!("Error when parsing template: {:?}", e))?;
+        .map_err(|e| {
+            error!("Error when parsing template: {:?}", e);
+            anyhow!("Error when parsing template!")
+        })?;
 
     for _ in 0..prompt_messages.len() {
         let message = prompt_messages.pop().unwrap();
