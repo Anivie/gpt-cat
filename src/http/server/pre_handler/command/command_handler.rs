@@ -42,7 +42,7 @@ impl ClientJoinPreHandlerImpl for CommandJoinPreHandler {
             .iter()
             .filter(|&x| (x.role == "system" || x.role == "user") && x.content.starts_with('/'))
             .map(|x| x.content.clone())
-            .next();
+            .last();
 
         if let Some(message) = message {
             let args: Vec<&str> = message.split_whitespace().collect();

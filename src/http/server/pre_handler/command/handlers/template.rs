@@ -92,14 +92,14 @@ impl CommandHandler for TemplateHandler {
                 anyhow!("Error when fetching command!")
             })?;
 
-            parse_template(context, private_command.prompt.as_str())?;
+            apply_template(context, private_command.prompt.as_str())?;
         }else {
             let public_command = public_command.map_err(|e| {
                 error!("Error when fetching public command: {:?}", e);
                 anyhow!("Error when fetching command!")
             })?;
 
-            parse_template(context, public_command.prompt.as_str())?;
+            apply_template(context, public_command.prompt.as_str())?;
         }
 
         info!("User {:?} used template {}", context.user_id, template_name);
@@ -107,7 +107,7 @@ impl CommandHandler for TemplateHandler {
     }
 }
 
-fn parse_template(context: &mut ClientJoinContext, command: &str) -> Result<()> {
+fn apply_template(context: &mut ClientJoinContext, command: &str) -> Result<()> {
     let index = context.sender.request.messages
         .iter()
         .enumerate()
@@ -125,7 +125,7 @@ fn parse_template(context: &mut ClientJoinContext, command: &str) -> Result<()> 
 
     for _ in 0..prompt_messages.len() {
         let message = prompt_messages.pop().unwrap();
-        context.sender.request.messages.insert(0, message);
+        context.sender.request.messages.insert(index, message);
     }
 
     Ok(())
