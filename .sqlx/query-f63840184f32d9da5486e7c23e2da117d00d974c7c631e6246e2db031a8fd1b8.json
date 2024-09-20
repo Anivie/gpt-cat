@@ -1,11 +1,11 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM private_command WHERE user_id = $1 AND command = $2",
+  "query": "\n            SELECT * FROM user_usage WHERE user_id = $1 LIMIT 1\n            ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "id",
+        "name": "usage_id",
         "type_info": "Int4"
       },
       {
@@ -15,29 +15,23 @@
       },
       {
         "ordinal": 2,
-        "name": "command",
-        "type_info": "Varchar"
+        "name": "total_input_tokens",
+        "type_info": "Int8"
       },
       {
         "ordinal": 3,
-        "name": "describe",
-        "type_info": "Text"
+        "name": "total_output_tokens",
+        "type_info": "Int8"
       },
       {
         "ordinal": 4,
-        "name": "prompt",
-        "type_info": "Text"
-      },
-      {
-        "ordinal": 5,
-        "name": "is_disable",
-        "type_info": "Bool"
+        "name": "total_purchased",
+        "type_info": "Numeric"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4",
-        "Text"
+        "Int4"
       ]
     },
     "nullable": [
@@ -45,9 +39,8 @@
       true,
       false,
       false,
-      false,
       false
     ]
   },
-  "hash": "e7628edddb2256fd36628a86cd10da7934e9a1c943089fe0b09e4e04e089e3a1"
+  "hash": "f63840184f32d9da5486e7c23e2da117d00d974c7c631e6246e2db031a8fd1b8"
 }

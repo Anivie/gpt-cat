@@ -1,3 +1,4 @@
+use crate::http::server::pre_handler::command::handlers::balance_inquiry::BalanceInquiryHandler;
 use crate::http::server::pre_handler::command::handlers::say_hi::SayHi;
 use crate::http::server::pre_handler::command::handlers::template::TemplateHandler;
 
@@ -7,6 +8,7 @@ mod handlers;
 
 command_handler_dispatcher! [
     SayHi,
+    BalanceInquiryHandler,
     TemplateHandler
 ];
 
