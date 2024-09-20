@@ -7,24 +7,68 @@ use crate::http::server::pre_handler::{ClientJoinContext, PreHandlerResult};
 use anyhow::anyhow;
 use anyhow::Result;
 use log::{error, info};
+use crate::http::client::client_sender::channel_manager::ChannelSender;
 
 #[derive(Default)]
 pub struct TemplateHandler;
+
+async fn generate_help_message(context: &mut ClientJoinContext<'_>) -> Result<String> {
+    let public_commands: Vec<DataBasePublicCommand> = sqlx::query_as!(
+            DataBasePublicCommand,
+            "SELECT * FROM public_command"
+        )
+        .fetch_all(&context.global_data.data_base)
+        .await?;
+
+    let private_commands: Vec<DataBasePrivateCommand> = sqlx::query_as!(
+            DataBasePrivateCommand,
+            "SELECT * FROM private_command WHERE user_id = $1",
+            context.user_id
+        )
+        .fetch_all(&context.global_data.data_base)
+        .await?;
+
+    let mut help_message = String::from("# 🛠️ 帮助页面\n\n欢迎使用本平台！以下是您可以使用的一些模板，分为公共模板和私有模板：\n\n## 🌐 全局模板\n\n| 📋 名称          | 📝 描述\t\t      |\n|------------------|----------------------------------|\n");
+
+    for command in public_commands {
+        help_message.push_str(&format!("|`{}`|{}|\n", command.command, command.describe));
+    }
+
+    help_message.push_str("\n## 🔒 私有模板\n\n只有经过授权的用户可以使用这些命令：\n\n| 📋 名称\t  | 📝 描述\t\t        |\n|---------------------|------------------------------------|\n");
+
+    for command in private_commands {
+        help_message.push_str(&format!("|`{}`|{}|\n", command.command, command.describe));
+    }
+
+    help_message.push_str("\n---\n\n**提示：**\n- 使用模板时，请确保正确拼写并添加必要的参数。\n- 如果您需要更多帮助或指导，请随时使用`help`命令获取详细信息！\n");
+
+    Ok(help_message)
+}
 
 impl CommandHandler for TemplateHandler {
     fn description(&self) -> CommandDescription {
         describe! {
             ["template" | "t"] help "A template command.",
-            "template name" => "The name of the template you want to use.",
+            "template name" => "The name of the template you want to use.\nUse `help` to get a list of available templates.",
         }
     }
 
     async fn execute(&self, context: &mut ClientJoinContext<'_>, args: &Vec<&str>) -> Result<PreHandlerResult> {
-        let name = args.get(0).ok_or(anyhow!("Missing template name"))?;
+        let &template_name = args.get(0).ok_or(anyhow!("Missing template name"))?;
+        if template_name.is_empty() {
+            return Err(anyhow!("Template name cannot be empty!"));
+        }
+
+        if template_name == "help" {
+            let help_message = generate_help_message(context).await?;
+            context.sender.send_text(help_message.as_str(), true).await?;
+            return Ok(PreHandlerResult::Return);
+        }
+
         let public_command: Result<DataBasePublicCommand, sqlx::Error> = sqlx::query_as!(
                         DataBasePublicCommand,
                         "SELECT * FROM public_command WHERE command = $1 LIMIT 1",
-                        name
+                        template_name
                     )
             .fetch_one(&context.global_data.data_base)
             .await;
@@ -34,7 +78,7 @@ impl CommandHandler for TemplateHandler {
                             DataBasePrivateCommand,
                             "SELECT * FROM private_command WHERE user_id = $1 AND command = $2 LIMIT 1",
                             context.user_id,
-                            name
+                            template_name
                         )
                 .fetch_one(&context.global_data.data_base)
                 .await;
@@ -58,7 +102,7 @@ impl CommandHandler for TemplateHandler {
             parse_template(context, public_command.prompt.as_str())?;
         }
 
-        info!("User {:?} used template {}", context.user_id, name);
+        info!("User {:?} used template {}", context.user_id, template_name);
         Ok(PreHandlerResult::Pass)
     }
 }
