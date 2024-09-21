@@ -65,7 +65,6 @@ impl CommandHandler for TemplateHandler {
             return Ok(PreHandlerResult::Return);
         }
 
-        println!("template_name: {:?}", template_name);
         if template_name == "end-template" {
             let prompt_messages = serde_json::to_string(&context.sender.request.messages).map_err(|e| {
                 error!("Error when serializing prompt messages: {:?}", e);
