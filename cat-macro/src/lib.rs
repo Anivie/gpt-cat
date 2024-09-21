@@ -6,9 +6,8 @@ mod new_keyword;
 
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
-use syn::parse::{Parse, ParseBuffer, ParseStream, Parser};
-use syn::spanned::Spanned;
-use syn::token::{Paren, Token};
+use syn::parse::{Parse, ParseBuffer, ParseStream};
+use syn::token::Paren;
 use syn::{bracketed, parenthesized, parse_macro_input, LitStr, Token};
 use crate::new_keyword::keyword;
 use crate::type_wrapper::{LitStrWrapper, LitStrWrapper2};

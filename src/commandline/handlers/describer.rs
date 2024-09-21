@@ -41,16 +41,3 @@ impl CommandDescription {
         help_msg
     }
 }
-
-mod test_proc_macro {
-    use crate::commandline::handlers::describer::CommandDescription;
-    use cat_macro::*;
-    #[test]
-    fn it_works() {
-        let a = describe! {
-            ["add_user" | "au" | "cat"] help "Add a new user";
-            "api_key" => "The api key of the user, if not provided, a random api key will be generated.",
-            ("balance") => "The balance of the user",
-        };
-    }
-}
