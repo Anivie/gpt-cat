@@ -1,8 +1,8 @@
 use crate::commandline::handlers::describer::CommandDescription;
-use crate::describe;
 use crate::http::client::client_sender::channel_manager::ChannelSender;
 use crate::http::server::pre_handler::command::handlers::CommandHandler;
 use crate::http::server::pre_handler::{ClientJoinContext, PreHandlerResult};
+use cat_macro::describe;
 
 #[derive(Default)]
 pub struct SayHi;
@@ -10,8 +10,8 @@ pub struct SayHi;
 impl CommandHandler for SayHi {
     fn description(&self) -> CommandDescription {
         describe! {
-            ["say_hi" | "sh"] help "Say hi to the user.",
-            ("name") => "The name of the user.";
+            ["say_hi" | "sh"] help "Say hi to the user.";
+            ("name") => "The name of the user.",
         }
     }
 

@@ -1,7 +1,7 @@
-use log::info;
-
 use crate::commandline::handlers::describer::{CommandDescription, CommandHandler};
 use crate::data::config::entity::runtime_data::GlobalData;
+use cat_macro::describe;
+use log::info;
 
 #[derive(Default)]
 pub(in crate::commandline::handlers) struct SearchBalance;
@@ -9,7 +9,7 @@ pub(in crate::commandline::handlers) struct SearchBalance;
 impl CommandHandler for SearchBalance {
     fn description(&self) -> CommandDescription {
         describe! {
-            ["search_balance" | "sb"] help "Search balance of a user",
+            ["search_balance" | "sb"] help "Search balance of a user";
             "api_key" => "The api key of the user",
         }
     }

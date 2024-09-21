@@ -12,6 +12,8 @@ lto = true
 codegen-units = 1
 
 [dependencies]
+cat-macro = { path = "./cat-macro" }
+
 time = "0.3.36"
 thiserror = "1.0.63"
 

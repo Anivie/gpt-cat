@@ -1,8 +1,8 @@
-use log::info;
-use rust_decimal::Decimal;
-
 use crate::commandline::handlers::describer::{CommandDescription, CommandHandler};
 use crate::data::config::entity::runtime_data::GlobalData;
+use cat_macro::describe;
+use log::info;
+use rust_decimal::Decimal;
 
 #[derive(Default)]
 pub(in crate::commandline::handlers) struct EditUserBalance;
@@ -10,7 +10,7 @@ pub(in crate::commandline::handlers) struct EditUserBalance;
 impl CommandHandler for EditUserBalance {
     fn description(&self) -> CommandDescription {
         describe! {
-            ["edit_balance" | "eb"] help "Edit balance of a user",
+            ["edit_balance" | "eb"] help "Edit balance of a user";
             "api_key" => "The api key of the user",
             "balance" => "The new balance of the user",
         }

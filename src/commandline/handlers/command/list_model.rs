@@ -3,6 +3,7 @@ use crate::data::config::entity::endpoint::Endpoint;
 use crate::data::config::entity::runtime_data::GlobalData;
 use anyhow::anyhow;
 use anyhow::Result;
+use cat_macro::describe;
 use strum::IntoEnumIterator;
 
 #[derive(Default)]
@@ -11,7 +12,7 @@ pub(in crate::commandline::handlers) struct ListModel;
 impl CommandHandler for ListModel {
     fn description(&self) -> CommandDescription {
         describe! {
-            ["list_model" | "lm"] help "List all endpoints support the model",
+            ["list_model" | "lm"] help "List all endpoints support the model";
             "model name" => "Name of the model to list",
         }
     }

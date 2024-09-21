@@ -1,13 +1,13 @@
 use crate::commandline::handlers::describer::CommandDescription;
 use crate::data::database::entity::user_command::{DataBasePrivateCommand, DataBasePublicCommand};
 use crate::data::http_api::openai::openai_request::Message;
-use crate::describe;
+use crate::http::client::client_sender::channel_manager::ChannelSender;
 use crate::http::server::pre_handler::command::handlers::CommandHandler;
 use crate::http::server::pre_handler::{ClientJoinContext, PreHandlerResult};
 use anyhow::anyhow;
 use anyhow::Result;
+use cat_macro::describe;
 use log::{error, info};
-use crate::http::client::client_sender::channel_manager::ChannelSender;
 
 #[derive(Default)]
 pub struct TemplateHandler;
@@ -48,7 +48,7 @@ async fn generate_help_message(context: &mut ClientJoinContext<'_>) -> Result<St
 impl CommandHandler for TemplateHandler {
     fn description(&self) -> CommandDescription {
         describe! {
-            ["template" | "t"] help "A template command.",
+            ["template" | "t"] help "A template command.";
             "template name" => "The name of the template you want to use.\nUse `help` to get a list of available templates.",
         }
     }

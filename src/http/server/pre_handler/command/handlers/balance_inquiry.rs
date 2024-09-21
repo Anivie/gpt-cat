@@ -1,10 +1,10 @@
 use crate::commandline::handlers::describer::CommandDescription;
 use crate::data::database::entity::user_usage::UserUsage;
-use crate::describe;
 use crate::http::client::client_sender::channel_manager::ChannelSender;
 use crate::http::server::pre_handler::command::handlers::CommandHandler;
 use crate::http::server::pre_handler::{ClientJoinContext, PreHandlerResult};
 use anyhow::anyhow;
+use cat_macro::describe;
 
 #[derive(Default)]
 pub struct BalanceInquiryHandler;

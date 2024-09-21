@@ -1,10 +1,10 @@
-use log::info;
-
 use crate::commandline::handlers::describer::{CommandDescription, CommandHandler};
 use crate::data::config::entity::endpoint::Endpoint;
 use crate::data::config::entity::runtime_data::GlobalData;
 use crate::http::client::util::account_manager::load_account_from_database;
 use crate::http::client::util::counter::concurrency_pool::VecSafePool;
+use cat_macro::describe;
+use log::info;
 
 #[derive(Default)]
 pub(in crate::commandline::handlers) struct ManageAccountPool;
@@ -12,7 +12,7 @@ pub(in crate::commandline::handlers) struct ManageAccountPool;
 impl CommandHandler for ManageAccountPool {
     fn description(&self) -> CommandDescription {
         describe! {
-            ["manage_account_pool" | "map"] help "Enable or disable a endpoint in the account pool",
+            ["manage_account_pool" | "map"] help "Enable or disable a endpoint in the account pool";
             "endpoint" => "The endpoint to enable or disable",
             "enable" => "Enable or disable the endpoint",
         }
