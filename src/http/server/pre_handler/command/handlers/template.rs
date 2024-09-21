@@ -65,6 +65,30 @@ impl CommandHandler for TemplateHandler {
             return Ok(PreHandlerResult::Return);
         }
 
+        println!("template_name: {:?}", template_name);
+        if template_name == "end-template" {
+            let prompt_messages = serde_json::to_string(&context.sender.request.messages).map_err(|e| {
+                error!("Error when serializing prompt messages: {:?}", e);
+                anyhow!("Error when serializing prompt messages!")
+            })?;
+            let &template_name = args.get(1).ok_or(anyhow!("Missing custom template name."))?;
+            let &template_describe = args.get(2).ok_or(anyhow!("Missing custom template describe."))?;
+
+            let result = sqlx::query!(
+                "INSERT INTO private_command (user_id, command, describe, prompt) VALUES ($1, $2, $3, $4)",
+                context.user_id, template_name, template_describe, prompt_messages
+            )
+                .execute(&context.global_data.data_base)
+                .await?;
+
+            return if result.rows_affected() == 0 {
+                 Err(anyhow!("Failed to save template!"))
+            }else {
+                context.sender.send_text("Template saved successfully!", true).await?;
+                Ok(PreHandlerResult::Return)
+            }
+        }
+
         let public_command: Result<DataBasePublicCommand, sqlx::Error> = sqlx::query_as!(
                         DataBasePublicCommand,
                         "SELECT * FROM public_command WHERE command = $1 LIMIT 1",
