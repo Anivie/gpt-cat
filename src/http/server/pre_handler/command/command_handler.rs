@@ -5,7 +5,6 @@ use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerIm
 use anyhow::Result;
 use std::ops::Deref;
 use std::sync::LazyLock;
-use anyhow::__private::not;
 use hashbrown::HashMap;
 use log::info;
 

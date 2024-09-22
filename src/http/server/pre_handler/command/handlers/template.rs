@@ -55,7 +55,7 @@ impl CommandHandler for TemplateHandler {
             ["template" | "t"] help "将模板应用到当前对话中"
             example "`/t translate` -> 翻译一段文本\n`/t end-template translate` -> 添加自定义模板\n`/t help` -> 查看当前可用模板";
             "template_name" => "The name of the template you want to use.",
-            ("end-template [模板名称]") => "添加自定义模板，可供后续使用",
+            ("end-template [模板名称] [模板描述]") => "添加自定义模板，可供后续使用",
             ("help") => "查看当前可用模板",
         }
     }

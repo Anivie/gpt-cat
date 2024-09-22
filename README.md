@@ -35,6 +35,20 @@ GPT-Cat支持多种后端，您可以自由添加您的后端，并通过适配�
 ### 快捷指令支持
 支持快捷指令，可以在请求中使用快捷指令来快速进行问答，默认支持translate等指令，可帮助LLM稳定提供回答。
 
+----
+## 展示
+
+![HELP](./.github/readme_image/builtin_help.png)  
+预置的指令，可以使用help查看所有支持的指令
+
+![HELP](./.github/readme_image/template_help.png)
+预置的模板，可以自由修改
+
+![模板使用](./.github/readme_image/template1.png)  
+使用模板进行对话
+
+![模板使用](./.github/readme_image/template2.png)  
+模板可以插入任意位置，方便进行对话
 
 ----
 ## 快速开始
