@@ -12,7 +12,7 @@ pub struct BalanceInquiryHandler;
 impl CommandHandler for BalanceInquiryHandler {
     fn description(&self) -> CommandDescription {
         describe! {
-            ["balance_inquiry" | "bi"] help "Check your balance"
+            ["balance_inquiry" | "bi"] help "获取您当前的可用余额。"
         }
     }
 
@@ -29,7 +29,7 @@ impl CommandHandler for BalanceInquiryHandler {
             user
         ).fetch_one(&context.global_data.data_base).await?;
 
-        let message = format!("Your balance is: {}.", usage.total_purchased);
+        let message = format!("当前可用: {}元.", usage.total_purchased);
         context.sender.send_text(&message, true).await?;
 
         Ok(PreHandlerResult::Return)

@@ -14,26 +14,32 @@ command_handler_dispatcher! [
 
 impl CommandDescription {
     fn help_messages(&self) -> String {
-        let command_names = self.name.join(", ");
-        let description = format!("### ▶️ [{}]：{}", command_names, self.help);
-        let mut parameters = String::new();
+        let command_names = self.name.join("| ");
+        let mut parameters = format!("\n###  🔎命令： **[{}]** \n   **描述:** {}\n", command_names, self.help);
 
         match (&self.param, &self.param_description) {
             (None, None) => {
-                parameters.push_str("无参数\n");
+                parameters.push_str("   - **参数:** 无参数\n");
             }
             (Some(param), Some(param_describe)) => {
+                parameters.push_str("   - **参数:** \n");
                 for (index, &(param_name, optional)) in param.iter().enumerate() {
-                    if !optional {
-                        parameters.push_str(&format!("- **{}** _(可选)_：{}\n", param_name, param_describe[index]));
-                    } else {
-                        parameters.push_str(&format!("- **{}**：{}\n", param_name, param_describe[index]));
-                    }
+                    parameters.push_str(&format!(
+                        "     - `{}` {}: {}\n",
+                        param_name,
+                        if !optional { "(可选)" } else { "" },
+                        param_describe[index],
+                    ));
                 }
             }
             _ => panic!("Unexpected parameter format."),
         }
 
-        format!("{}\n{}\n---\n", description, parameters)
+        if let Some(example) = self.example {
+            parameters.push_str(&format!("\n   - **示例:** \n     - {}\n", example));
+        }
+        parameters.push_str("\n---\n\n");
+
+        parameters
     }
 }

@@ -5,6 +5,7 @@ use crate::http::server::pre_handler::{ClientJoinContext, ClientJoinPreHandlerIm
 use anyhow::Result;
 use std::ops::Deref;
 use std::sync::LazyLock;
+use anyhow::__private::not;
 use hashbrown::HashMap;
 use log::info;
 
@@ -25,13 +26,12 @@ impl ClientJoinPreHandlerImpl for CommandJoinPreHandler {
             map
         });
         static HELP_MESSAGE: LazyLock<String> = LazyLock::new(|| {
-            let mut help_message = String::from("# 🤖 命令帮助\n\n欢迎使用交互式命令！以下是一些可用的命令以及如何使用它们：\n\n## 📢 基本命令\n\n");
+            let mut help_message = String::from("# 🛠️ 帮助指南\n\n欢迎使用Markdown交互界面！以下是可用命令列表以及它们的详细描述，帮助您更高效地使用系统。\n\n---\n\n");
             let handlers = HANDLER.deref();
             for handler in handlers {
                 help_message.push_str(&handler.description().help_messages());
             }
-            help_message.push_str("### 📚 [help, h]：显示帮助页面\n- **command** _(可选)_：指定命令以获取更详细的帮助(仍在施工)\n\n---\n");
-            help_message.push_str("\n希望这份帮助页面能让你快速上手！💡 如果有任何疑问，随时可以输入 `help` 命令获取帮助哦！🚀\n");
+            help_message.push_str("💡 提示: 使用正确的参数类型和格式来确保命令执行的正确性。如果需要更多帮助，随时可以通过发送帮助命令来获取支持！\n");
             help_message
         });
 

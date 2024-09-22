@@ -34,13 +34,17 @@ async fn generate_help_message(context: &mut ClientJoinContext<'_>) -> Result<St
         help_message.push_str(&format!("|`{}`|{}|\n", command.command, command.describe));
     }
 
-    help_message.push_str("\n## 🔒 私有模板\n\n只有经过授权的用户可以使用这些命令：\n\n| 📋 名称\t  | 📝 描述\t\t        |\n|---------------------|------------------------------------|\n");
+    if private_commands.is_empty() {
+        help_message.push_str("\n## 🔒 私有模板\n\n您还没有添加任何私有模板！\n");
+    }else {
+        help_message.push_str("\n## 🔒 私有模板\n\n只有您可以使用这些命令：\n\n| 📋 名称\t  | 📝 描述\t\t        |\n|---------------------|------------------------------------|\n");
 
-    for command in private_commands {
-        help_message.push_str(&format!("|`{}`|{}|\n", command.command, command.describe));
+        for command in private_commands {
+            help_message.push_str(&format!("|`{}`|{}|\n", command.command, command.describe));
+        }
     }
 
-    help_message.push_str("\n---\n\n**提示：**\n- 使用模板时，请确保正确拼写并添加必要的参数。\n- 如果您需要更多帮助或指导，请随时使用`help`命令获取详细信息！\n");
+    help_message.push_str("\n---\n\n**提示：**\n- 使用模板时，请确保模板是否存在额外要求，如特定的询问方式等。\n- 如果您需要更多帮助或指导，请随时使用`help`命令获取详细信息！\n");
 
     Ok(help_message)
 }
@@ -48,8 +52,11 @@ async fn generate_help_message(context: &mut ClientJoinContext<'_>) -> Result<St
 impl CommandHandler for TemplateHandler {
     fn description(&self) -> CommandDescription {
         describe! {
-            ["template" | "t"] help "A template command.";
-            "template name" => "The name of the template you want to use.\nUse `help` to get a list of available templates.",
+            ["template" | "t"] help "将模板应用到当前对话中"
+            example "`/t translate` -> 翻译一段文本\n`/t end-template translate` -> 添加自定义模板\n`/t help` -> 查看当前可用模板";
+            "template_name" => "The name of the template you want to use.",
+            ("end-template [模板名称]") => "添加自定义模板，可供后续使用",
+            ("help") => "查看当前可用模板",
         }
     }
 
@@ -88,41 +95,41 @@ impl CommandHandler for TemplateHandler {
             }
         }
 
-        let public_command: Result<DataBasePublicCommand, sqlx::Error> = sqlx::query_as!(
-                        DataBasePublicCommand,
-                        "SELECT * FROM public_command WHERE command = $1 LIMIT 1",
-                        template_name
-                    )
-            .fetch_one(&context.global_data.data_base)
-            .await;
-
-        if let Err(sqlx::Error::RowNotFound) = public_command {
-            let private_command: Result<DataBasePrivateCommand, sqlx::Error> = sqlx::query_as!(
+        let private_command: Result<DataBasePrivateCommand, sqlx::Error> = sqlx::query_as!(
                             DataBasePrivateCommand,
                             "SELECT * FROM private_command WHERE user_id = $1 AND command = $2 LIMIT 1",
                             context.user_id,
                             template_name
                         )
+            .fetch_one(&context.global_data.data_base)
+            .await;
+
+        if let Err(sqlx::Error::RowNotFound) = private_command {
+            let public_command: Result<DataBasePublicCommand, sqlx::Error> = sqlx::query_as!(
+                        DataBasePublicCommand,
+                        "SELECT * FROM public_command WHERE command = $1 LIMIT 1",
+                        template_name
+                    )
                 .fetch_one(&context.global_data.data_base)
                 .await;
 
-            if let Err(sqlx::Error::RowNotFound) = private_command {
+            if let Err(sqlx::Error::RowNotFound) = public_command {
                 return Err(anyhow!("Template not found!"));
             }
 
-            let private_command = private_command.map_err(|e| {
-                error!("Error when fetching private command: {:?}", e);
-                anyhow!("Error when fetching command!")
-            })?;
-
-            apply_template(context, private_command.prompt.as_str())?;
-        }else {
             let public_command = public_command.map_err(|e| {
                 error!("Error when fetching public command: {:?}", e);
                 anyhow!("Error when fetching command!")
             })?;
 
             apply_template(context, public_command.prompt.as_str())?;
+        }else {
+            let private_command = private_command.map_err(|e| {
+                error!("Error when fetching private command: {:?}", e);
+                anyhow!("Error when fetching command!")
+            })?;
+
+            apply_template(context, private_command.prompt.as_str())?;
         }
 
         info!("User {:?} used template {}", context.user_id, template_name);

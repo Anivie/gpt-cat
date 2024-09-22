@@ -10,8 +10,8 @@ pub struct SayHi;
 impl CommandHandler for SayHi {
     fn description(&self) -> CommandDescription {
         describe! {
-            ["say_hi" | "sh"] help "Say hi to the user.";
-            ("name") => "The name of the user.",
+            ["say_hi" | "sh"] help "来打个招呼！";
+            ("name") => "你的名字？",
         }
     }
 
