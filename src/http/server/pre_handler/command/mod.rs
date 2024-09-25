@@ -14,7 +14,7 @@ command_handler_dispatcher! [
 
 impl CommandDescription {
     fn help_messages(&self) -> String {
-        let command_names = self.name.join("| ");
+        let command_names = self.name.join(" | ");
         let mut parameters = format!("\n###  🔎命令： **[{}]** \n   **描述:** {}\n", command_names, self.help);
 
         match (&self.param, &self.param_description) {

@@ -28,6 +28,7 @@ use std::io::BufReader;
 use std::net::IpAddr;
 use std::path::Path;
 use std::str::FromStr;
+use ntex::web::types::JsonConfig;
 use tokio::task::spawn_blocking;
 
 mod data;
@@ -107,8 +108,10 @@ async fn main() -> anyhow::Result<()> {
 
     info!("HTTP server listening on: {}:{}", http_address, http_port);
     let server = server(move || {
+        let json_config = JsonConfig::default().limit(40960000);
         App::new()
             .service(main_chat)
+            .state(json_config)
             .state((data, server_pipeline))
             .wrap(Compress::default())
             .wrap(Cors::new().finish())

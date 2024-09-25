@@ -64,7 +64,7 @@ version = "0.8.2"
 features = ["json", "migrate"]
 
 [dependencies.ntex]
-version = "2.4.1"
+version = "2.5.0"
 features = ["tokio", "tls-rustls", "rustls", "compress"]
 
 [dependencies.tokio]
