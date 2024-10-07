@@ -46,7 +46,7 @@ tiktoken-rs = "0.5.9"
 anyhow = "1.0.89"
 base64 = "0.22.1"
 
-futures = "0.3.30"
+futures = "0.3.31"
 futures-util = "0.3.30"
 
 mime = "0.3.17"
