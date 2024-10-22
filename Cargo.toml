@@ -20,7 +20,7 @@ thiserror = "1.0.64"
 async-stream = "0.3.6"
 tokio-util = "0.7.12"
 
-bytes = "1.7.2"
+bytes = "1.8.0"
 rustls = "0.23.15"
 rustls-pemfile = "2.2.0"
 
