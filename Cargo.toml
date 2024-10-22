@@ -34,7 +34,7 @@ parking_lot = { version = "0.12.3", features = ["send_guard"] }
 hashbrown = { version = "0.15.0", features = ["rayon", "serde"] }
 
 strum = { version = "0.26.3", features = ["derive"] }
-serde = { version = "1.0.210", features = ["derive"] }
+serde = { version = "1.0.213", features = ["derive"] }
 serde_json = "1.0.132"
 notify = "6.1.1"
 rayon = "1.10.0"
