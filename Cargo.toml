@@ -43,7 +43,7 @@ uuid = { version = "1.11.0", features = ["v4"] }
 rand = "0.9.0-alpha.2"
 
 tiktoken-rs = "0.6.0"
-anyhow = "1.0.90"
+anyhow = "1.0.91"
 base64 = "0.22.1"
 
 futures = "0.3.31"
