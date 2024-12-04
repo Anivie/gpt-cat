@@ -1633,9 +1633,9 @@ dependencies = [
 
 [[package]]
 name = "ntex"
-version = "2.9.0"
+version = "2.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2d89f9d82fbcff4998af06815e18773fab96c85ec2b58efe8957f4e8562eb4b4"
+checksum = "a1988f5a24be40f4cd06c5a1d66ff71da4dcf161f19a61013e6f967642c3c5bc"
 dependencies = [
  "base64 0.22.1",
  "bitflags 2.6.0",
@@ -1742,9 +1742,9 @@ dependencies = [
 
 [[package]]
 name = "ntex-io"
-version = "2.8.1"
+version = "2.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8ee2f9932d3303453e79dec7a7016a35f0fb16c4542c5a0a0dc7b5839f17a16f"
+checksum = "30fba9806ac667b1b850a9bdbfcbe9d54109ab3bbcef39b587195ff5027a29c3"
 dependencies = [
  "bitflags 2.6.0",
  "log",
@@ -1812,9 +1812,9 @@ dependencies = [
 
 [[package]]
 name = "ntex-server"
-version = "2.5.0"
+version = "2.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "300921ed1f8626d7bfb06813ff839945eed08f763fbc1296590f878b8ee7f9e3"
+checksum = "36cc0ec66ac03f7a76637a1264a57e3234bd95c478fc282ace88c3bde908dc5f"
 dependencies = [
  "async-broadcast",
  "async-channel",
@@ -1833,9 +1833,9 @@ dependencies = [
 
 [[package]]
 name = "ntex-service"
-version = "3.3.1"
+version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62351b99deeb128baafbd71fc22e8ef93bef643fc60fbb51db8a45006f03cda1"
+checksum = "07867c1db27ae44cc6c796a0995c08d76aac32dffde961677a3b1950a0008a54"
 dependencies = [
  "slab",
 ]
@@ -1870,9 +1870,9 @@ dependencies = [
 
 [[package]]
 name = "ntex-util"
-version = "2.5.0"
+version = "2.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10fc97836b6bf4044897370725b7fbcfecef9a8be29c352c35f8c0a587e2e721"
+checksum = "73a7a68f2b6508ac7da46cc5b78cd9c997580473b3673a308c0f1e27c643a402"
 dependencies = [
  "bitflags 2.6.0",
  "futures-core",
