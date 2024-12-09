@@ -15,7 +15,7 @@ codegen-units = 1
 cat-macro = { path = "./cat-macro" }
 
 time = "0.3.37"
-thiserror = "2.0.4"
+thiserror = "2.0.6"
 
 async-stream = "0.3.6"
 tokio-util = "0.7.13"
