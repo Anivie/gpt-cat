@@ -2,6 +2,9 @@
 #![allow(unused_doc_comments)]
 #![cfg_attr(debug_assertions, allow(warnings))]
 
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 use crate::commandline::hot_reload::enable_config_hot_reload;
 use crate::data::config::config_helper::get_config;
 use crate::data::database::database_manager::connect_to_database_sqlx;

@@ -1,14 +1,13 @@
-use std::fmt::{Display, Formatter};
-
-use crate::data::config::entity::config_file::Config;
+use anyhow::bail;
 use log::warn;
 use serde::{Deserialize, Serialize};
-use strum::EnumIter;
+use strum::{Display, EnumIter};
+use crate::data::config::entity::config_file::Config;
 
 /// Supported endpoint of this server, default have OpenAI and QianWen endpoint.
 /// This app is fully type safe, so you can add a new endpoint here,
 /// and then rustc will tell you what you need to do.
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize, EnumIter)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize, EnumIter, Display)]
 pub enum Endpoint {
     OpenAI,
     QianWen,
@@ -35,12 +34,14 @@ impl Endpoint {
     /// **IMPORTANT NOTE**
     /// Because of string cannot be enumeration, this function will not return a result, but will panic if
     /// you didn't pass a valid name for every endpoint.
-    pub fn from_str(s: &str) -> Endpoint {
-        match s.to_ascii_uppercase().as_str() {
+    pub fn from_str(s: &str) -> anyhow::Result<Endpoint> {
+        let endpoint = match s.to_ascii_uppercase().as_str() {
             "OPENAI" => Endpoint::OpenAI,
             "QIANWEN" => Endpoint::QianWen,
-            _ => panic!("Unknown endpoint: {}", s),
-        }
+            _ => bail!("No EndPoint found for: {}", s)
+        };
+
+        Ok(endpoint)
     }
 
     /// Get the default url of this endpoint.
@@ -51,16 +52,6 @@ impl Endpoint {
             Endpoint::QianWen => {
                 "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
             }
-        }
-    }
-}
-
-/// Display the endpoint name.
-impl Display for Endpoint {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Endpoint::OpenAI => write!(f, "OpenAI"),
-            Endpoint::QianWen => write!(f, "QianWen"),
         }
     }
 }

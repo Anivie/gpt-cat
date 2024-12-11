@@ -22,7 +22,7 @@ impl ClientEndAfterHandlerImpl for TokenMeterHandler {
         let buffer = context.sender.get_buffer();
 
         let tick_token = match context.sender.request.model.as_str() {
-            "gpt-4o" => &TICK_TOKEN[1],
+            x if x.contains("4o") || x.contains("o1")  => &TICK_TOKEN[1],
             _ => &TICK_TOKEN[0],
         };
 
