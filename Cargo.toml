@@ -23,7 +23,7 @@ rustls-pemfile = "2.2.0"
 
 log = "0.4.22"
 fast_log = { version = "1.7.6", features = ["lz4"] }
-colored = "2.1.0"
+colored = "2.2.0"
 color-eyre = { version = "0.6.3", default-features = false }
 rustyline = "15.0.0"
 
