@@ -54,7 +54,7 @@ ntex-cors = "2.0.0"
 mimalloc = "0.1.43"
 
 [dependencies.sqlx]
-version = "0.8.2"
+version = "0.8.3"
 default-features = false
 features = ["runtime-tokio", "tls-rustls", "postgres", "macros", "time", "rust_decimal"]
 
