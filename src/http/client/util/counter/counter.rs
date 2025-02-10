@@ -24,7 +24,7 @@ impl Default for Counter {
 
 impl Counter {
     pub(in crate::http) fn lock(&self) {
-        let random = rand::thread_rng().gen_range(SLEEP_RANGE);
+        let random = rand::rng().random_range(SLEEP_RANGE);
         self.counter.fetch_add(random, Relaxed);
 
         self.locked.store(true, Relaxed);
