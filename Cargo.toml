@@ -15,7 +15,7 @@ codegen-units = 1
 cat-macro = { path = "./cat-macro" }
 
 time = "0.3.37"
-thiserror = "2.0.11"
+thiserror = "2.0.12"
 
 bytes = "1.10.0"
 rustls = "0.23.23"
