@@ -71,6 +71,6 @@ version = "1.44.1"
 features = ["full"]
 
 [dependencies.reqwest]
-version = "0.12.14"
+version = "0.12.15"
 default-features = false
 features = ["gzip", "deflate", "brotli", "json", "stream", "socks", "rustls-tls"]
