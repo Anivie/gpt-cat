@@ -47,7 +47,7 @@ futures = "0.3.31"
 futures-util = "0.3.31"
 
 mime = "0.3.17"
-rust_decimal = "1.37.0"
+rust_decimal = "1.37.1"
 
 ntex-cors = "2.0.0"
 
