@@ -1,3 +1,4 @@
+use std::error::Error;
 use reqwest::StatusCode;
 
 use crate::data::config::entity::runtime_data::AccountVisitor;
@@ -10,6 +11,15 @@ use crate::http::client::specific_responder::{ResponderError, ResponseParser, Sp
 
 #[derive(Default)]
 pub struct OpenAIResponder;
+
+pub type QianDuoDuoResponder = OpenAIResponder;
+pub type QianDuo35DuoResponder = OpenAIResponder;
+pub type YunAIResponder = OpenAIResponder;
+pub type NewYunAIResponder = OpenAIResponder;
+pub type KKSJResponder = OpenAIResponder;
+pub type AITomResponder = OpenAIResponder;
+pub type TomChatResponder = OpenAIResponder;
+pub type ZeroAIResponder = OpenAIResponder;
 
 /// The parser for the OpenAI response
 #[derive(Default)]
@@ -89,7 +99,7 @@ impl SpecificResponder for OpenAIResponder {
             )
             .send()
             .await
-            .map_err(|e| ResponderError::Request(format!("Error when send request: {}", e)))?;
+            .map_err(|e| ResponderError::Request(format!("Error when send request: {}, reason: {:?}", e, e.source())))?;
 
         if stream.status() != StatusCode::OK {
             return Err(ResponderError::Request(format!(

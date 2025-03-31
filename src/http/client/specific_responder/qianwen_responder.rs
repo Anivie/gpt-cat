@@ -1,3 +1,4 @@
+use std::error::Error;
 use reqwest::StatusCode;
 
 use crate::data::config::entity::runtime_data::AccountVisitor;
@@ -85,7 +86,7 @@ impl SpecificResponder for QianWenResponder {
             })
             .send()
             .await
-            .map_err(|e| ResponderError::Request(format!("Error when send request: {}", e)))?;
+            .map_err(|e| ResponderError::Request(format!("Error when send request: {}, reason: {:?}", e, e.source())))?;
 
         if stream.status() != StatusCode::OK {
             return Err(ResponderError::Request(format!(
