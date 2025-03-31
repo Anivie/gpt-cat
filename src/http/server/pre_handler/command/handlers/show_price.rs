@@ -26,11 +26,19 @@ impl CommandHandler for ShowPriceHandler {
         let mut price_message = String::from("###  💰模型价格\n");
 
         let mut is_empty = true;
-        context.global_data.model_price.read().iter().for_each(|(model, price)| {
+        let mut price = context.global_data.model_price.read().clone();
+        let model_mapping = context.global_data.model_mapping.read();
+        for x in model_mapping.values() {
+            for x in x.values() {
+                price.remove(x);
+            }
+        }
+
+        price.iter().for_each(|(model, price)| {
             if model.contains(&model_name) {
                 if is_empty {
                     is_empty = false;
-                    price_message.push_str("| 模型名称 | 输入价格(元/千token) | 输出价格(元/千token) |\n");
+                    price_message.push_str("| 模型名称 | 输入价格[元/千token & 元/次] | 输出价格(元/千token) |\n");
                     price_message.push_str("| --- | --- | --- |\n");
                 }
                 match price {
@@ -47,7 +55,7 @@ impl CommandHandler for ShowPriceHandler {
                     }
                     ModelPriceValue::PerTimes(times) => {
                         price_message.push_str(&format!(
-                            "| {} | {:} |  |\n",
+                            "| {} | {:} | - |\n",
                             model,
                             times.price
                         ));
@@ -57,7 +65,6 @@ impl CommandHandler for ShowPriceHandler {
         });
 
         if is_empty {
-            price_message.push_str("|  |  |  |\n");
             price_message.push_str("没有找到符合条件的模型价格信息。\n");
         }
 
