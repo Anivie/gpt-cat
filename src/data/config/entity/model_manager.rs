@@ -24,20 +24,18 @@ impl Default for ModelManager {
             .expect("Unable to open model mapping file.");
         let mapping: ModelMapping = serde_json::from_reader(file).expect("Unable to read json");
 
+        for (endpoint, value) in mapping.iter() {
+            if let Some(set) = info.get_mut(endpoint) {
+                for (_, after) in value.iter() {
+                    set.insert(after.to_string());
+                }
+            }
+        }
+
         let mut global = HashSet::new();
         for (_, value) in info.iter() {
             for model in value.iter() {
                 global.insert(model.to_string());
-            }
-        }
-        for (endpoint, value) in mapping.iter() {
-            for model in value.values() {
-                global.insert(model.to_string());
-            }
-            if let Some(set) = info.get_mut(endpoint) {
-                for (_, new_model) in value.iter() {
-                    set.insert(new_model.to_string());
-                }
             }
         }
 
