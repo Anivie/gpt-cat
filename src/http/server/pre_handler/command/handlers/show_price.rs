@@ -2,6 +2,7 @@ use anyhow::anyhow;
 use rust_decimal::Decimal;
 use cat_macro::describe;
 use crate::commandline::handlers::describer::CommandDescription;
+use crate::data::config::entity::model_price::ModelPriceValue;
 use crate::http::client::client_sender::channel_manager::ChannelSender;
 use crate::http::server::pre_handler::{ClientJoinContext, PreHandlerResult};
 use crate::http::server::pre_handler::command::handlers::CommandHandler;
@@ -32,15 +33,26 @@ impl CommandHandler for ShowPriceHandler {
                     price_message.push_str("| 模型名称 | 输入价格(元/千token) | 输出价格(元/千token) |\n");
                     price_message.push_str("| --- | --- | --- |\n");
                 }
-                //当前的模型价格是元每个token，把它转换为元每千token
-                let input_price_per_1000_tokens = price.input_price.saturating_mul(Decimal::new(1000, 0));
-                let output_price_per_1000_tokens = price.output_price.saturating_mul(Decimal::new(1000, 0));
-                price_message.push_str(&format!(
-                    "| {} | {:} | {:} |\n",
-                    model,
-                    input_price_per_1000_tokens,
-                    output_price_per_1000_tokens
-                ));
+                match price {
+                    ModelPriceValue::PerToken(token) => {
+                        //当前的模型价格是元每个token，把它转换为元每千token
+                        let input_price_per_1000_tokens = token.input_price.saturating_mul(Decimal::new(1000, 0));
+                        let output_price_per_1000_tokens = token.output_price.saturating_mul(Decimal::new(1000, 0));
+                        price_message.push_str(&format!(
+                            "| {} | {:} | {:} |\n",
+                            model,
+                            input_price_per_1000_tokens,
+                            output_price_per_1000_tokens
+                        ));
+                    }
+                    ModelPriceValue::PerTimes(times) => {
+                        price_message.push_str(&format!(
+                            "| {} | {:} |  |\n",
+                            model,
+                            times.price
+                        ));
+                    }
+                }
             }
         });
 

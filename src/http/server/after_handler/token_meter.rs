@@ -5,7 +5,9 @@ use crate::http::client::client_sender::channel_manager::ChannelBufferManager;
 use crate::http::server::after_handler::{ClientEndAfterHandlerImpl, ClientEndContext};
 use color_eyre::owo_colors::OwoColorize;
 use log::{error, info};
+use rust_decimal::Decimal;
 use tiktoken_rs::{cl100k_base, o200k_base, CoreBPE};
+use crate::data::config::entity::model_price::ModelPriceValue;
 
 #[derive(Default, Clone)]
 pub struct TokenMeterHandler;
@@ -56,19 +58,39 @@ impl ClientEndAfterHandlerImpl for TokenMeterHandler {
             );
             let price = price.clone();
 
-            let insert_id = sqlx::query!(
-                "
-                    INSERT INTO
-                    usage_list (user_id, input_tokens, output_tokens, input_token_price, output_token_price)
-                    VALUES
-                    ($1, $2, $3, $4, $5)
-                ",
-                context.user_id,
-                user_token as i32,
-                ai_token as i32,
-                price.input_price,
-                price.output_price
-            )
+            let query = match price {
+                ModelPriceValue::PerToken(token) => {
+                    sqlx::query!(
+                        "
+                            INSERT INTO
+                            usage_list (user_id, input_tokens, output_tokens, input_token_price, output_token_price)
+                            VALUES
+                            ($1, $2, $3, $4, $5)
+                        ",
+                        context.user_id,
+                        user_token as i32,
+                        ai_token as i32,
+                        token.input_price,
+                        token.output_price
+                    )
+                }
+                ModelPriceValue::PerTimes(times) => {
+                    sqlx::query!(
+                        "
+                            INSERT INTO
+                            usage_list (user_id, input_tokens, output_tokens, input_token_price, output_token_price)
+                            VALUES
+                            ($1, $2, $3, $4, $5)
+                        ",
+                        context.user_id,
+                        user_token as i32,
+                        ai_token as i32,
+                        times.price,
+                        Decimal::new(0, 0)
+                    )
+                }
+            };
+            let insert_id = query
                 .execute(&context.data.data_base)
                 .await
                 .map_err(|err| format!("Error when insert usage list: {}", err))?;

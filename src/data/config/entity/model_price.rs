@@ -16,14 +16,28 @@ pub struct ModelPriceMap {
     inner: HashMap<ModelName, ModelPriceValue>,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub enum ModelPriceValue {
+    PerToken(ModelPerToken),
+    PerTimes(ModelPerTimes),
+}
+
 /// The value of the model price.
 /// # Fields
 /// - input_price: The price of the input.
 /// - output_price: The price of the output.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ModelPriceValue {
+pub struct ModelPerToken {
     pub input_price: Decimal,
     pub output_price: Decimal,
+}
+
+/// The value of the model price.
+/// # Fields
+/// - price: The price of the model.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ModelPerTimes {
+    pub price: Decimal,
 }
 
 impl Deref for ModelPriceMap {
