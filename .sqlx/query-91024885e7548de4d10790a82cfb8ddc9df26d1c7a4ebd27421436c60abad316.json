@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                            INSERT INTO\n                            usage_list (user_id, input_tokens, output_tokens, input_token_price, output_token_price)\n                            VALUES\n                            ($1, $2, $3, $4, $5)\n                        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4",
+        "Int4",
+        "Numeric",
+        "Numeric"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "91024885e7548de4d10790a82cfb8ddc9df26d1c7a4ebd27421436c60abad316"
+}
