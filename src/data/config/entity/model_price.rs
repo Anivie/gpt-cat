@@ -2,7 +2,6 @@ use hashbrown::HashMap;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
-use std::io::BufReader;
 use std::ops::Deref;
 
 type ModelName = String;
@@ -17,6 +16,7 @@ pub struct ModelPriceMap {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
 pub enum ModelPriceValue {
     PerToken(ModelPerToken),
     PerTimes(ModelPerTimes),
@@ -50,9 +50,8 @@ impl Deref for ModelPriceMap {
 
 impl Default for ModelPriceMap {
     fn default() -> Self {
-        let file = File::open("./config/model_price.json").expect("Unable to open model file.");
-        let config = BufReader::new(file);
-
-        serde_json::from_reader(config).expect("Unable to read json")
+        let file = File::open("./config/model_price.json")
+            .expect("Unable to open model file.");
+        serde_json::from_reader(file).expect("Unable to read json")
     }
 }
