@@ -1,8 +1,7 @@
 use hashbrown::{HashMap, HashSet};
 use std::fs::File;
-use std::io::BufReader;
-
 use crate::data::config::entity::endpoint::Endpoint;
+use crate::data::config::entity::model_mapping::ModelMapping;
 
 type ModelInfo = HashMap<Endpoint, HashSet<String>>;
 
@@ -19,19 +18,32 @@ pub struct ModelManager {
 impl Default for ModelManager {
     fn default() -> Self {
         let file = File::open("./config/model.json").expect("Unable to open model file.");
-        let config = BufReader::new(file);
-        let config: ModelInfo = serde_json::from_reader(config).expect("Unable to read json");
+        let mut info: ModelInfo = serde_json::from_reader(file).expect("Unable to read json");
+
+        let file = File::open("./config/model_mapping.json")
+            .expect("Unable to open model mapping file.");
+        let mapping: ModelMapping = serde_json::from_reader(file).expect("Unable to read json");
 
         let mut global = HashSet::new();
-        for (_, value) in config.iter() {
+        for (_, value) in info.iter() {
             for model in value.iter() {
                 global.insert(model.to_string());
             }
         }
+        for (endpoint, value) in mapping.iter() {
+            for model in value.values() {
+                global.insert(model.to_string());
+            }
+            if let Some(set) = info.get_mut(endpoint) {
+                for (_, new_model) in value.iter() {
+                    set.insert(new_model.to_string());
+                }
+            }
+        }
 
         ModelManager {
+            info,
             global_info: global,
-            info: config,
         }
     }
 }
