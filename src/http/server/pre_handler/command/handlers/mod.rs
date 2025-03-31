@@ -5,6 +5,7 @@ use anyhow::Result;
 pub(super) mod say_hi;
 pub(super) mod template;
 pub(super) mod balance_inquiry;
+pub(super) mod show_price;
 
 pub(super) trait CommandHandler {
     fn description(&self) -> CommandDescription;

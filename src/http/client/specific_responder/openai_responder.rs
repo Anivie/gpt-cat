@@ -12,15 +12,6 @@ use crate::http::client::specific_responder::{ResponderError, ResponseParser, Sp
 #[derive(Default)]
 pub struct OpenAIResponder;
 
-pub type QianDuoDuoResponder = OpenAIResponder;
-pub type QianDuo35DuoResponder = OpenAIResponder;
-pub type YunAIResponder = OpenAIResponder;
-pub type NewYunAIResponder = OpenAIResponder;
-pub type KKSJResponder = OpenAIResponder;
-pub type AITomResponder = OpenAIResponder;
-pub type TomChatResponder = OpenAIResponder;
-pub type ZeroAIResponder = OpenAIResponder;
-
 /// The parser for the OpenAI response
 #[derive(Default)]
 struct OpenAIResponderParser;
