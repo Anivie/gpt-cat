@@ -33,6 +33,7 @@ use std::path::Path;
 use std::str::FromStr;
 use ntex::web::types::JsonConfig;
 use tokio::task::spawn_blocking;
+use data::config::entity::model_mapping::ModelMapping;
 
 mod data;
 mod http;
@@ -63,7 +64,8 @@ async fn main() -> anyhow::Result<()> {
         let config = get_config().expect("Error loading config");
 
         // Load model price from file
-        let model = ModelPriceMap::default();
+        let price_map = ModelPriceMap::default();
+        let model_mapping = ModelMapping::default();
 
         // Connect to database
         let db = connect_to_database_sqlx(&config).await.expect("Error connecting to database");
@@ -76,7 +78,8 @@ async fn main() -> anyhow::Result<()> {
             data_base: db,
             account_pool: RwLock::new(account.to_vec_safe_pool(config.request_concurrency_count)),
             config: RwLock::new(config),
-            model_price: RwLock::new(model),
+            model_price: RwLock::new(price_map),
+            model_mapping: RwLock::new(model_mapping),
             model_info: Default::default(),
         };
 

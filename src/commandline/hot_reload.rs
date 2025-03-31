@@ -9,6 +9,7 @@ use notify::{PollWatcher, RecursiveMode, Watcher};
 
 use crate::data::config::entity::config_file::Config;
 use crate::data::config::entity::model_manager::ModelManager;
+use crate::data::config::entity::model_mapping::ModelMapping;
 use crate::data::config::entity::model_price::ModelPriceMap;
 use crate::data::config::entity::runtime_data::GlobalData;
 
@@ -23,11 +24,9 @@ pub fn enable_config_hot_reload(global_data: &GlobalData) -> notify::Result<()> 
 
     let mut watcher = PollWatcher::new(tx, config)?;
     watcher.watch(Path::new("./config/config.json"), RecursiveMode::Recursive)?;
-    watcher.watch(
-        Path::new("./config/model_price.json"),
-        RecursiveMode::Recursive,
-    )?;
+    watcher.watch(Path::new("./config/model_price.json"), RecursiveMode::Recursive)?;
     watcher.watch(Path::new("./config/model.json"), RecursiveMode::Recursive)?;
+    watcher.watch(Path::new("./config/model_mapping.json"), RecursiveMode::Recursive)?;
 
     for res in rx {
         match res {
@@ -69,6 +68,15 @@ pub fn enable_config_hot_reload(global_data: &GlobalData) -> notify::Result<()> 
                                 );
                                 *global_data.model_info.write() = ModelManager::default();
                                 info!("{}", "Hot reload model file success.".green());
+                            }
+                            "model_mapping.json" => {
+                                info!(
+                                    "{}",
+                                    format!("Start hot reload model mapping file: {:?}", event)
+                                        .blue()
+                                );
+                                *global_data.model_mapping.write() = ModelMapping::default();
+                                info!("{}", "Hot reload model mapping file success.".green());
                             }
                             _ => {}
                         }

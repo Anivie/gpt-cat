@@ -6,6 +6,7 @@ use sqlx_postgres::Postgres;
 use crate::data::config::entity::config_file::Config;
 use crate::data::config::entity::endpoint::Endpoint;
 use crate::data::config::entity::model_manager::ModelManager;
+use crate::data::config::entity::model_mapping::ModelMapping;
 use crate::data::config::entity::model_price::ModelPriceMap;
 use crate::http::client::util::counter::concurrency_pool::SafePool;
 use crate::http::client::ResponderDispatcher;
@@ -40,6 +41,7 @@ pub struct GlobalData {
     pub account_pool: RwLock<Vec<SafePool<AccountVisitor>>>,
     pub config: RwLock<Config>,
     pub model_price: RwLock<ModelPriceMap>,
+    pub model_mapping: RwLock<ModelMapping>,
     pub model_info: RwLock<ModelManager>,
 }
 

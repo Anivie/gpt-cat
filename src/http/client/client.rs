@@ -61,6 +61,16 @@ impl GlobalData {
                 .get_user_input(MessageLocation::LAST)
         );
 
+        // Apply the model mapping
+        let model_mapping = self.model_mapping.read();
+        if let Some(model) = model_mapping.get(&account.endpoint) {
+            if let Some(model_name) = model.get(&sender.request.model) {
+                info!("Apply model mapping: {} -> {}", sender.request.model, model_name);
+                sender.request.model = model_name.to_string();
+            }
+        }
+        drop(model_mapping);
+
         loop {
             match account.responder.make_response(sender, *account).await {
                 Err(err) => match err {
