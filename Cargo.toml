@@ -51,7 +51,7 @@ rust_decimal = "1.37.1"
 
 ntex-cors = "2.0.0"
 
-mimalloc = "0.1.45"
+mimalloc = "0.1.46"
 
 [dependencies.sqlx]
 version = "0.8.3"
