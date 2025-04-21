@@ -18,7 +18,7 @@ time = "0.3.41"
 thiserror = "2.0.12"
 
 bytes = "1.10.1"
-rustls = "0.23.25"
+rustls = "0.23.26"
 rustls-pemfile = "2.2.0"
 
 log = "0.4.27"
@@ -37,10 +37,10 @@ notify = "8.0.0"
 rayon = "1.10.0"
 
 uuid = { version = "1.16.0", features = ["v4"] }
-rand = "0.9.0"
+rand = "0.9.1"
 
 tiktoken-rs = "0.6.0"
-anyhow = "1.0.97"
+anyhow = "1.0.98"
 base64 = "0.22.1"
 
 futures = "0.3.31"
@@ -51,10 +51,10 @@ rust_decimal = "1.37.1"
 
 ntex-cors = "2.0.0"
 
-mimalloc = "0.1.44"
+mimalloc = "0.1.46"
 
 [dependencies.sqlx]
-version = "0.8.3"
+version = "0.8.5"
 default-features = false
 features = ["runtime-tokio", "tls-rustls", "postgres", "macros", "time", "rust_decimal"]
 
@@ -67,7 +67,7 @@ version = "2.12.4"
 features = ["tokio", "tls-rustls", "rustls", "compress"]
 
 [dependencies.tokio]
-version = "1.44.1"
+version = "1.44.2"
 features = ["full"]
 
 [dependencies.reqwest]
