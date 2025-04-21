@@ -1,4 +1,6 @@
+use std::borrow::Cow;
 use std::fmt::Display;
+use std::ops::Deref;
 use anyhow::bail;
 use log::warn;
 use serde::{Deserialize, Serialize, Serializer};
@@ -12,7 +14,7 @@ use crate::data::config::entity::config_file::Config;
 pub enum Endpoint {
     OpenAI,
     QianWen,
-    Alias(String, Box<Endpoint>),
+    Alias(Cow<'static, str>, Box<Endpoint>),
 }
 
 impl Display for Endpoint {
@@ -42,7 +44,7 @@ impl Endpoint {
                     Endpoint::Alias(from, to) => {
                         config.endpoint_mapping
                             .as_ref()
-                            .and_then(|mapping| mapping.get(from))
+                            .and_then(|mapping| mapping.get(from.deref()))
                             .map(|x| x.1.as_deref())
                             .unwrap_or_else(|| { to.default_url().ok() })
                     }
@@ -59,7 +61,7 @@ impl Endpoint {
     /// **IMPORTANT NOTE**
     /// Because of string cannot be enumeration, this function will not return a result, but will panic if
     /// you didn't pass a valid name for every endpoint.
-    pub fn from_str(s: &str, config: &Config) -> anyhow::Result<Endpoint> {
+    pub fn from_str(s: &'static str, config: &Config) -> anyhow::Result<Endpoint> {
         let endpoint = match s {
             "OpenAI" => Some(Endpoint::OpenAI),
             "QianWen" => Some(Endpoint::QianWen),
@@ -73,7 +75,7 @@ impl Endpoint {
                     .as_ref()
                     .and_then(|x| { x.get(s) })
                     .cloned()
-                    .map(|x| Endpoint::Alias(s.to_string(), Box::new(x.0)))
+                    .map(|x| Endpoint::Alias(Cow::from(s), Box::new(x.0)))
             })
             .ok_or(anyhow::anyhow!("Endpoint {} not found in config", s))
     }

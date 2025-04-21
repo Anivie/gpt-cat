@@ -24,7 +24,7 @@ use crate::http::server::pre_handler::dispatcher::pre_handler_dispatcher::Client
 pub struct AccountVisitor {
     pub account_id: i32,
     pub endpoint: Endpoint,
-    pub endpoint_url: String,
+    pub endpoint_url: &'static str,
     pub responder: ResponderDispatcher,
     pub client: Client,
 }

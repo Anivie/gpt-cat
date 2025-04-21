@@ -24,7 +24,7 @@ impl ModelManager {
             info
                 .into_iter()
                 .map(|(key, value)| {
-                    let endpoint = Endpoint::from_str(&key, config)?;
+                    let endpoint = Endpoint::from_str(key.leak(), config)?;
                     Ok((endpoint, value))
                 })
                 .collect::<anyhow::Result<HashMap<_, _>>>()?

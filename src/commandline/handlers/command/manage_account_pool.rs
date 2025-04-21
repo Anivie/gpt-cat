@@ -21,10 +21,7 @@ impl CommandHandler for ManageAccountPool {
     }
 
     async fn execute(&self, global_data: &GlobalData, args: &Vec<&str>) -> anyhow::Result<()> {
-        let endpoint = if let Some(&first) = args.first() {
-            let config = global_data.config.read();
-            Endpoint::from_str(first, config.deref()).map_err(|_| anyhow!("Fail to find endpoint: {}.", first))?
-        } else {
+        let Some(endpoint) = args.first() else {
             return Err(anyhow::anyhow!("Missing endpoint"));
         };
 
@@ -37,7 +34,7 @@ impl CommandHandler for ManageAccountPool {
         sqlx::query!(
             r#"UPDATE "account_list" SET is_disabled = $1 WHERE endpoint = $2"#,
             !enable,
-            endpoint.to_string()
+            endpoint
         ).execute(&global_data.data_base)
             .await?;
 
@@ -48,10 +45,9 @@ impl CommandHandler for ManageAccountPool {
             info!("Endpoint {} has been enabled, now {} accounts in pool.", endpoint, pool.len());
         }else {
             let mut pool = global_data.account_pool.write();
-            pool.retain(|x| *x.get_endpoint() != endpoint);
+            pool.retain(|x| x.get_endpoint().to_string().as_str() != *endpoint);
             info!("Endpoint {} has been disabled, now {} accounts in pool.", endpoint, pool.len());
         }
-
 
         Ok(())
     }
