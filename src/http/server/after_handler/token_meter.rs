@@ -83,8 +83,8 @@ impl ClientEndAfterHandlerImpl for TokenMeterHandler {
                             ($1, $2, $3, $4, $5)
                         ",
                         context.user_id,
-                        user_token as i32,
-                        ai_token as i32,
+                        1,
+                        0,
                         times.price,
                         Decimal::new(0, 0)
                     )

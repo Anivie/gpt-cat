@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use rayon::prelude::*;
 use sqlx::Pool;
 use sqlx_postgres::Postgres;
