@@ -65,7 +65,7 @@ impl SpecificResponder for QianWenResponder {
     ) -> Result<(), ResponderError> {
         let stream = accessor
             .client
-            .post(accessor.endpoint_url.clone())
+            .post(accessor.endpoint_url)
             .header(
                 "X-DashScope-SSE",
                 if sender.is_stream() {

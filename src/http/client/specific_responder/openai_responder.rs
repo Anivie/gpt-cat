@@ -83,7 +83,7 @@ impl SpecificResponder for OpenAIResponder {
     ) -> Result<(), ResponderError> {
         let stream = accessor
             .client
-            .post(accessor.endpoint_url.clone())
+            .post(accessor.endpoint_url)
             .body(
                 serde_json::to_string(&sender.request)
                     .map_err(|e| ResponderError::Request(e.to_string()))?,

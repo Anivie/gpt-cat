@@ -3,8 +3,8 @@ use std::fmt::Display;
 use std::ops::Deref;
 use anyhow::bail;
 use log::warn;
-use serde::{Deserialize, Serialize, Serializer};
-use strum::{Display, EnumIter};
+use serde::{Deserialize, Serialize};
+use strum::EnumIter;
 use crate::data::config::entity::config_file::Config;
 
 /// Supported endpoint of this server, default have OpenAI and QianWen endpoint.
