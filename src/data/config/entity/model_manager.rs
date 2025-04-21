@@ -1,5 +1,6 @@
 use hashbrown::{HashMap, HashSet};
 use std::fs::File;
+use crate::data::config::entity::config_file::Config;
 use crate::data::config::entity::endpoint::Endpoint;
 use crate::data::config::entity::model_mapping::ModelMapping;
 
@@ -15,10 +16,19 @@ pub struct ModelManager {
     info: ModelInfo,
 }
 
-impl Default for ModelManager {
-    fn default() -> Self {
+impl ModelManager {
+    pub(crate) fn new(config: &Config) -> anyhow::Result<Self> {
         let file = File::open("./config/model.json").expect("Unable to open model file.");
-        let mut info: ModelInfo = serde_json::from_reader(file).expect("Unable to read json");
+        let mut info = {
+            let info: HashMap<String, HashSet<String>> = serde_json::from_reader(file).expect("Unable to read json");
+            info
+                .into_iter()
+                .map(|(key, value)| {
+                    let endpoint = Endpoint::from_str(&key, config)?;
+                    Ok((endpoint, value))
+                })
+                .collect::<anyhow::Result<HashMap<_, _>>>()?
+        };
 
         let file = File::open("./config/model_mapping.json")
             .expect("Unable to open model mapping file.");
@@ -39,17 +49,21 @@ impl Default for ModelManager {
             }
         }
 
-        ModelManager {
+        Ok(ModelManager {
             info,
             global_info: global,
-        }
+        })
     }
 }
 
 impl ModelManager {
     /// Check if the model is available for the endpoint.
     pub fn check_available(&self, endpoint: &Endpoint, model: &str) -> bool {
-        self.info.get(endpoint).unwrap().contains(model)
+        self
+            .info
+            .get(endpoint)
+            .map(|x| x.contains(model))
+            .unwrap_or(false)
     }
 
     /// Check if the model is available for any endpoint.

@@ -1,3 +1,4 @@
+use std::ops::Deref;
 use anyhow::anyhow;
 use crate::commandline::handlers::describer::{CommandDescription, CommandHandler};
 use crate::data::config::entity::endpoint::Endpoint;
@@ -21,7 +22,8 @@ impl CommandHandler for ManageAccountPool {
 
     async fn execute(&self, global_data: &GlobalData, args: &Vec<&str>) -> anyhow::Result<()> {
         let endpoint = if let Some(&first) = args.first() {
-            Endpoint::from_str(first).map_err(|_| anyhow!("Fail to find endpoint: {}.", first))?
+            let config = global_data.config.read();
+            Endpoint::from_str(first, config.deref()).map_err(|_| anyhow!("Fail to find endpoint: {}.", first))?
         } else {
             return Err(anyhow::anyhow!("Missing endpoint"));
         };

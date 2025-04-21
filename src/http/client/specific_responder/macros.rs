@@ -82,6 +82,14 @@ macro_rules! impl_specific_responder {
                     $(
                         $endpoint::$variant => ResponderDispatcher::$responder($responder::default()),
                     )*
+                    Endpoint::Alias(_, endpoint) => {
+                        match endpoint.as_ref() {
+                            $(
+                                $endpoint::$variant => ResponderDispatcher::$responder($responder::default()),
+                            )*
+                            _ => panic!("No responder for endpoint: {}", endpoint),
+                        }
+                    }
                 }
             }
         }

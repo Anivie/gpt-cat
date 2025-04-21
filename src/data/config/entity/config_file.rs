@@ -37,6 +37,9 @@ pub struct Config {
 
     #[serde(flatten)]
     pub http_config: HttpServerConfig,
+    
+    ///                       Mapping from Mapping to         URL
+    pub endpoint_mapping: Option<HashMap<String, (Endpoint, Option<String>)>>,
 
     pub proxy: Option<HashMap<String, ProxyConfig>>,
 }

@@ -34,6 +34,7 @@ use std::str::FromStr;
 use ntex::web::types::JsonConfig;
 use tokio::task::spawn_blocking;
 use data::config::entity::model_mapping::ModelMapping;
+use crate::data::config::entity::model_manager::ModelManager;
 
 mod data;
 mod http;
@@ -73,6 +74,8 @@ async fn main() -> anyhow::Result<()> {
         // Load account from database
         let account = load_account_from_database(&config, &db).await?;
         info!("Loaded {} accounts from database.", account.len());
+        
+        let model_info = ModelManager::new(&config).expect("Error loading model info");
 
         let data = GlobalData {
             data_base: db,
@@ -80,7 +83,7 @@ async fn main() -> anyhow::Result<()> {
             config: RwLock::new(config),
             model_price: RwLock::new(price_map),
             model_mapping: RwLock::new(model_mapping),
-            model_info: Default::default(),
+            model_info: RwLock::new(model_info),
         };
 
         Box::leak(Box::new(data))

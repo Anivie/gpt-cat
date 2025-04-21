@@ -21,13 +21,11 @@ pub async fn load_account_from_database(
     let back = row
         .into_par_iter()
         .map(|account| {
-            let endpoint = Endpoint::from_str(&account.endpoint)
-                .map_err(|_| anyhow!("No endpoint {} found!", &account.endpoint))
-                .unwrap();
+            let endpoint = Endpoint::from_str(&account.endpoint, config).unwrap();
             let client = get_client(&account.use_proxy, &config, &endpoint, &account.api_key);
             AccountVisitor {
                 account_id: account.id,
-                endpoint_url: endpoint.to_url(config),
+                endpoint_url: endpoint.to_url(config).expect("Failed to get endpoint url"),
 
                 responder: endpoint.specific_responder_dispatcher(),
 

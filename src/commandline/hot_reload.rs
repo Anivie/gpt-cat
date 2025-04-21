@@ -13,7 +13,7 @@ use crate::data::config::entity::model_mapping::ModelMapping;
 use crate::data::config::entity::model_price::ModelPriceMap;
 use crate::data::config::entity::runtime_data::GlobalData;
 
-pub fn enable_config_hot_reload(global_data: &GlobalData) -> notify::Result<()> {
+pub fn enable_config_hot_reload(global_data: &GlobalData) -> anyhow::Result<()> {
     info!("{}", "Start watching config file.".to_string().green());
 
     let config = notify::Config::default()
@@ -66,7 +66,8 @@ pub fn enable_config_hot_reload(global_data: &GlobalData) -> notify::Result<()> 
                                     "{}",
                                     format!("Start hot reload model file: {:?}", event).blue()
                                 );
-                                *global_data.model_info.write() = ModelManager::default();
+                                let config = global_data.config.read();
+                                *global_data.model_info.write() = ModelManager::new(&config)?;
                                 info!("{}", "Hot reload model file success.".green());
                             }
                             "model_mapping.json" => {
