@@ -65,8 +65,8 @@ async fn main() -> anyhow::Result<()> {
         let config = get_config().expect("Error loading config");
 
         // Load model price from file
-        let price_map = ModelPriceMap::default();
-        let model_mapping = ModelMapping::default();
+        let price_map = ModelPriceMap::new(&config)?;
+        let model_mapping = ModelMapping::new(&config)?;
 
         // Connect to database
         let db = connect_to_database_sqlx(&config).await.expect("Error connecting to database");

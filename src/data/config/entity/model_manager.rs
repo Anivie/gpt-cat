@@ -30,9 +30,7 @@ impl ModelManager {
                 .collect::<anyhow::Result<HashMap<_, _>>>()?
         };
 
-        let file = File::open("./config/model_mapping.json")
-            .expect("Unable to open model mapping file.");
-        let mapping: ModelMapping = serde_json::from_reader(file).expect("Unable to read json");
+        let mapping = ModelMapping::new(config)?;
 
         for (endpoint, value) in mapping.iter() {
             if let Some(set) = info.get_mut(endpoint) {

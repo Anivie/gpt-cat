@@ -2,7 +2,6 @@ use std::borrow::Cow;
 use std::fmt::Display;
 use std::ops::Deref;
 use anyhow::bail;
-use log::warn;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 use crate::data::config::entity::config_file::Config;
@@ -38,8 +37,6 @@ impl Endpoint {
             .map(|url| url.as_str())
             .or(self.default_url().ok())
             .or_else(|| {
-                warn!("Endpoint {} not found in config, use default url.", self);
-                
                 match self {
                     Endpoint::Alias(from, to) => {
                         config.endpoint_mapping
@@ -85,9 +82,7 @@ impl Endpoint {
     fn default_url(&self) -> anyhow::Result<&str> {
         match self {
             Endpoint::OpenAI => Ok("https://api.openai.com/v1/chat/completions"),
-            Endpoint::QianWen => {
-                Ok("https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation")
-            }
+            Endpoint::QianWen => Ok("https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"),
             Endpoint::Alias(_,_) => bail!("Unknown url for endpoint: {}", self),
         }
     }

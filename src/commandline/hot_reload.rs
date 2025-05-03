@@ -58,7 +58,8 @@ pub fn enable_config_hot_reload(global_data: &GlobalData) -> anyhow::Result<()> 
                                     format!("Start hot reload model price file: {:?}", event)
                                         .blue()
                                 );
-                                *global_data.model_price.write() = ModelPriceMap::default();
+                                let config = global_data.config.read();
+                                *global_data.model_price.write() = ModelPriceMap::new(&config)?;
                                 info!("{}", "Hot reload price file success.".green());
                             }
                             "model.json" => {
@@ -76,7 +77,8 @@ pub fn enable_config_hot_reload(global_data: &GlobalData) -> anyhow::Result<()> 
                                     format!("Start hot reload model mapping file: {:?}", event)
                                         .blue()
                                 );
-                                *global_data.model_mapping.write() = ModelMapping::default();
+                                let config = global_data.config.read();
+                                *global_data.model_mapping.write() = ModelMapping::new(&config)?;
                                 info!("{}", "Hot reload model mapping file success.".green());
                             }
                             _ => {}

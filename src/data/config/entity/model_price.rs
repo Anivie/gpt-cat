@@ -3,6 +3,7 @@ use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::ops::Deref;
+use crate::data::config::entity::config_file::Config;
 use crate::data::config::entity::model_mapping::ModelMapping;
 
 type ModelName = String;
@@ -49,15 +50,12 @@ impl Deref for ModelPriceMap {
     }
 }
 
-impl Default for ModelPriceMap {
-    fn default() -> Self {
+impl ModelPriceMap {
+    pub fn new(config: &Config) -> anyhow::Result<Self> {
         let file = File::open("./config/model_price.json")
             .expect("Unable to open model file.");
         let mut inner: HashMap<ModelName, ModelPriceValue> = serde_json::from_reader(file).expect("Unable to read json");
-
-        let file = File::open("./config/model_mapping.json")
-            .expect("Unable to open model mapping file.");
-        let mapping: ModelMapping = serde_json::from_reader(file).expect("Unable to read json");
+        let mapping = ModelMapping::new(config)?;
 
         for (_, value) in mapping.iter() {
             for (before, after) in value.iter() {
@@ -67,8 +65,6 @@ impl Default for ModelPriceMap {
             }
         }
 
-        Self {
-            inner
-        }
+        Ok(Self { inner })
     }
 }
