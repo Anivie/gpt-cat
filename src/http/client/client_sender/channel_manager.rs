@@ -46,46 +46,50 @@ pub struct ClientSender {
 
 impl ClientSender {
     pub fn new(inner: ClientSenderInner, request: OpenAIRequest) -> Self {
-        let sender_weak = inner.downgrade();
         let last_activity = Box::leak(Box::new(Mutex::new(Instant::now())));
-        let last_activity_clone = last_activity as *const Mutex<Instant> as usize;
-        let last_activity_clone = unsafe {
-            &mut *(last_activity_clone as *mut Mutex<Instant>)
-        };
+        if request.is_stream() {
+            let sender_weak = inner.downgrade();
+            let last_activity_clone = last_activity as *const Mutex<Instant> as usize;
+            let last_activity_clone = unsafe {
+                &mut *(last_activity_clone as *mut Mutex<Instant>)
+            };
 
-        // 启动心跳检查任务
-        debug!("Every sender will keep alive for 25 seconds");
-        spawn(async move {
-            let mut interval = interval(Duration::from_secs(5));
+            // 启动心跳检查任务
+            debug!("Every sender will keep alive for 25 seconds");
+            spawn(async move {
+                let mut interval = interval(Duration::from_secs(5));
 
-            loop {
-                interval.tick().await;
+                loop {
+                    interval.tick().await;
 
-                if let Some(sender) = sender_weak.upgrade() {
-                    let mut last = last_activity_clone.lock().await;
-                    let should_send_heartbeat = {
-                        last.elapsed() > Duration::from_secs(30)
-                    };
+                    if let Some(sender) = sender_weak.upgrade() {
+                        let mut last = last_activity_clone.lock().await;
+                        let should_send_heartbeat = {
+                            last.elapsed() > Duration::from_secs(30)
+                        };
 
-                    if should_send_heartbeat {
-                        info!("Send heartbeat to client");
-                        if let Err(e) = sender.send(Bytes::from(":\n\n")).await {
-                            error!("Error when send heartbeat to client: {}", e);
-                            break;
+                        if should_send_heartbeat {
+                            info!("Send heartbeat to client");
+                            if let Err(e) = sender.send(Bytes::from(
+                                concat!(r#"data:  {"id":"chatcmpl-9709rQdvMSIASrvcWGVsJMQouP2UV","object":"chat.completion.chunk","created":1746818209,"model":"heartbeat","system_fingerprint":"fp_3bc1b5746c","choices":[{"index":0,"delta":{"content":""},"logprobs":null,"finish_reason":null}]}"#, "\n\n")
+                            )).await {
+                                error!("Error when send heartbeat to client: {}", e);
+                                break;
+                            }
+                            *last = Instant::now();
                         }
-                        *last = Instant::now();
-                    }
 
-                    drop(last);
-                    drop(sender);
-                }else {
-                    drop(unsafe {
-                        Box::from_raw(last_activity_clone)
-                    });
-                    break;
+                        drop(last);
+                        drop(sender);
+                    }else {
+                        drop(unsafe {
+                            Box::from_raw(last_activity_clone)
+                        });
+                        break;
+                    }
                 }
-            }
-        });
+            });
+        }
 
         Self {
             inner,
