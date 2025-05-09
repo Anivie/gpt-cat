@@ -2,16 +2,20 @@ use crate::data::http_api::openai::openai_request::OpenAIRequest;
 use crate::data::http_api::openai::openai_stream_response::OpenAIStreamResponse;
 use crate::data::http_api::openai::openai_sync_response::OpenAISyncResponse;
 use anyhow::Result;
-use log::error;
+use log::{debug, error, info};
 use ntex::util::Bytes;
+use std::time::{Duration, Instant};
 use tokio::spawn;
 use tokio::sync::mpsc::Sender;
+use tokio::sync::Mutex;
+use tokio::time::interval;
 
 /// This struct represents an error that occurred while processing a request.
 /// It contains information about the component that caused the error, the reason for the error,
 /// the error message, and an optional suggestion for how to fix the error.
 /// This struct is used to send error messages to the client.
 /// The client will display the error message to the user.
+#[derive(Debug)]
 pub struct ResponsiveError {
     pub component: String,
     pub reason: String,
@@ -28,11 +32,13 @@ pub type ClientSenderInner = Sender<Bytes>;
 /// * `buffer` - A buffer that is used to store messages that are sent to the client.
 /// * `request` - The request that is sending from client.
 /// * `is_stream` - A flag that indicates whether the request is a stream request.
+#[derive(Debug)]
 pub struct ClientSender {
     inner: ClientSenderInner,
     error_message: Vec<ResponsiveError>,
     buffer: String,
     is_empty: bool,
+    last_activity: &'static mut Mutex<Instant>,
 
     pub stopped: bool,
     pub request: OpenAIRequest,
@@ -40,6 +46,47 @@ pub struct ClientSender {
 
 impl ClientSender {
     pub fn new(inner: ClientSenderInner, request: OpenAIRequest) -> Self {
+        let sender_weak = inner.downgrade();
+        let last_activity = Box::leak(Box::new(Mutex::new(Instant::now())));
+        let last_activity_clone = last_activity as *const Mutex<Instant> as usize;
+        let last_activity_clone = unsafe {
+            &mut *(last_activity_clone as *mut Mutex<Instant>)
+        };
+
+        // 启动心跳检查任务
+        debug!("Every sender will keep alive for 25 seconds");
+        spawn(async move {
+            let mut interval = interval(Duration::from_secs(5));
+
+            loop {
+                interval.tick().await;
+
+                if let Some(sender) = sender_weak.upgrade() {
+                    let mut last = last_activity_clone.lock().await;
+                    let should_send_heartbeat = {
+                        last.elapsed() > Duration::from_secs(30)
+                    };
+
+                    if should_send_heartbeat {
+                        info!("Send heartbeat to client");
+                        if let Err(e) = sender.send(Bytes::from(":\n\n")).await {
+                            error!("Error when send heartbeat to client: {}", e);
+                            break;
+                        }
+                        *last = Instant::now();
+                    }
+
+                    drop(last);
+                    drop(sender);
+                }else {
+                    drop(unsafe {
+                        Box::from_raw(last_activity_clone)
+                    });
+                    break;
+                }
+            }
+        });
+
         Self {
             inner,
             request,
@@ -47,17 +94,18 @@ impl ClientSender {
             stopped: false,
             buffer: String::new(),
             error_message: Vec::new(),
+            last_activity,
         }
     }
 
     pub fn is_stream(&self) -> bool {
         self.request.stream.unwrap_or(false)
     }
-    
+
     pub fn is_empty(&self) -> bool {
         self.is_empty && self.buffer.is_empty()
     }
-    
+
     pub fn not_empty(&mut self) {
         self.is_empty = false;
     }
@@ -119,6 +167,11 @@ trait ChannelSenderUtil {
 
 impl ChannelSender for ClientSender {
     async fn send(&self, mut buffer: Vec<u8>) -> Result<()> {
+        {
+            let mut last = self.last_activity.lock().await;
+            *last = Instant::now();
+        }
+
         if self.is_stream() {
             let mut vec = b"data: ".to_vec();
             vec.append(&mut buffer);
