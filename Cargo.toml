@@ -18,13 +18,13 @@ time = "0.3.41"
 thiserror = "2.0.12"
 
 bytes = "1.10.1"
-rustls = "0.23.26"
+rustls = "0.23.27"
 rustls-pemfile = "2.2.0"
 
 log = "0.4.27"
 fast_log = { version = "1.7.6", features = ["lz4"] }
 colored = "3.0.0"
-color-eyre = { version = "0.6.3", default-features = false }
+color-eyre = { version = "0.6.4", default-features = false }
 rustyline = "15.0.0"
 
 parking_lot = { version = "0.12.3", features = ["send_guard"] }
@@ -67,7 +67,7 @@ version = "2.12.4"
 features = ["tokio", "tls-rustls", "rustls", "compress"]
 
 [dependencies.tokio]
-version = "1.44.2"
+version = "1.45.0"
 features = ["full"]
 
 [dependencies.reqwest]
