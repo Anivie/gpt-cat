@@ -39,7 +39,7 @@ rayon = "1.10.0"
 uuid = { version = "1.16.0", features = ["v4"] }
 rand = "0.9.1"
 
-tiktoken-rs = "0.6.0"
+tiktoken-rs = "0.7.0"
 anyhow = "1.0.98"
 base64 = "0.22.1"
 
