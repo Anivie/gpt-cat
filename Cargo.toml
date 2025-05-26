@@ -67,7 +67,7 @@ version = "2.12.4"
 features = ["tokio", "tls-rustls", "rustls", "compress"]
 
 [dependencies.tokio]
-version = "1.45.0"
+version = "1.45.1"
 features = ["full"]
 
 [dependencies.reqwest]
