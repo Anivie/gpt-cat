@@ -27,7 +27,7 @@ colored = "3.0.0"
 color-eyre = { version = "0.6.4", default-features = false }
 rustyline = "16.0.0"
 
-parking_lot = { version = "0.12.3", features = ["send_guard"] }
+parking_lot = { version = "0.12.4", features = ["send_guard"] }
 hashbrown = { version = "0.15.3", features = ["rayon", "serde"] }
 
 strum = { version = "0.27.1", features = ["derive"] }
